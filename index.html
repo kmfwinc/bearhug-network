@@ -95,7 +95,12 @@ if (!window.gtag) {
     padding: 0 24px;
   }
   .bn-block { width: 100%; margin: 0; padding: 0; }
-  .bn-block + .bn-block { margin-top: 16px; }
+  /* Sibling combinator (~) instead of adjacent (+) so the 16px gap survives
+     non-block elements between sections — specifically the 1px IO sentinel
+     (#bn-sticky-sentinel) that sits between the action cards and Grand Slam
+     sections. With +, the sentinel broke adjacency and Grand Slam lost its
+     margin-top, creating an uneven seam visible only at that one boundary. */
+  .bn-block ~ .bn-block { margin-top: 16px; }
   .bn-grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; width: 100%; }
   .bn-grid-2-55-45 { display: grid; grid-template-columns: 55fr 45fr; gap: 10px; width: 100%; }
   .bn-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 100%; }
