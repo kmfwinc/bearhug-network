@@ -1812,7 +1812,7 @@ if (!window.gtag) {
           <a class="bn-net-card" id="toggle-emerging" href="#" onclick="switchNetwork('emerging');return false;">
             <h4>Our Emerging Leaders Network</h4>
             <p>Manager and individual contributor. The next generation of functional leaders, earlier in their career and ready to step up.</p>
-            <span class="bn-net-count bn-net-count-soon">Coming soon</span>
+            <span class="bn-net-count" id="emerging-count">557 profiles</span>
           </a>
         </div>
       </section>
@@ -4568,10 +4568,14 @@ if (!window.gtag) {
   /* ==============================================
      STATS (v8 change 12)
      ============================================== */
+  // Tracks which dataset is currently loaded so updateStats() writes the count
+  // to the right tile (exec-count vs emerging-count). Set by switchNetwork().
+  var currentNetwork = 'exec';
   function updateStats() {
     var featured = allProfiles.length;
-    var execCountEl = document.getElementById('exec-count');
-    if (execCountEl) execCountEl.textContent = featured + ' profiles';
+    var elId = (currentNetwork === 'emerging') ? 'emerging-count' : 'exec-count';
+    var el = document.getElementById(elId);
+    if (el) el.textContent = featured + ' profiles';
   }
 
   /* ==============================================
@@ -4579,19 +4583,26 @@ if (!window.gtag) {
      ============================================== */
   window.switchNetwork = function(type) {
     bnTrack('network_toggle', { network: type });
-    // Emerging Leaders Network is marked "Coming soon", so track the interest but do not
-    // swap the active card or fetch a non-existent dataset.
-    if (type !== 'exec') return;
+    if (type !== 'exec' && type !== 'emerging') return;
 
     var execLink = document.getElementById('toggle-exec');
     var emergingLink = document.getElementById('toggle-emerging');
     if (!execLink || !emergingLink) return;
-    execLink.classList.add('active');
-    emergingLink.classList.remove('active');
 
-    fetchAndApply(EXEC_URL).catch(function(err) {
-      console.warn('Network toggle fetch failed:', err);
-    });
+    currentNetwork = type;
+    if (type === 'emerging') {
+      emergingLink.classList.add('active');
+      execLink.classList.remove('active');
+      fetchAndApply(EMERGING_URL).catch(function(err) {
+        console.warn('Emerging fetch failed:', err);
+      });
+    } else {
+      execLink.classList.add('active');
+      emergingLink.classList.remove('active');
+      fetchAndApply(EXEC_URL).catch(function(err) {
+        console.warn('Exec fetch failed:', err);
+      });
+    }
   };
 
   /* ==============================================
