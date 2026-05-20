@@ -4560,6 +4560,15 @@ if (!window.gtag) {
           continue;
         }
         var count = counts[value] || counts[label] || 0;
+        // FIX: pin the option's value to the canonical label BEFORE mutating
+        // textContent. Without this, <option> tags that lack an explicit
+        // value= attribute (Type / Function / Expertise dropdowns) end up
+        // with <select>.value === "Sales and Commercial (147)" instead of
+        // "Sales and Commercial", and matchesFilter()'s indexOf check fails
+        // every profile → "You've gotten very specific" zero-result state.
+        // The Stage dropdown is unaffected because its options already set
+        // value= explicitly, but setting it again here is idempotent.
+        opt.value = label;
         opt.textContent = label + ' (' + count + ')';
       }
     }
