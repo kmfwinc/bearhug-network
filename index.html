@@ -764,8 +764,11 @@ if (!window.gtag) {
   .bn-dark-brand .bn-brand-name { color: var(--parchment); }
   .bn-dark-contacts {
     display: flex;
-    gap: 20px;
+    align-items: center;
+    gap: 12px;
     flex-wrap: wrap;
+    font-family: var(--ff-body);
+    font-size: 13px;
   }
   .bn-dark-contacts a {
     font-family: var(--ff-body);
@@ -775,6 +778,15 @@ if (!window.gtag) {
     transition: color 0.2s;
   }
   .bn-dark-contacts a:hover { color: var(--gold); }
+  .bn-foot-sep {
+    color: #6B665E;
+    opacity: 0.6;
+    user-select: none;
+  }
+  .bn-dark-foot-copy {
+    color: #6B665E;
+    font-size: 12px;
+  }
   .bn-dark-copyright {
     font-family: var(--ff-body);
     font-size: 12px;
@@ -1609,6 +1621,8 @@ if (!window.gtag) {
     .bn-dark-cta-row { grid-template-columns: 1fr; }
     .bn-dark-practices { grid-template-columns: 1fr; gap: 24px; }
     .bn-dark-brand-row { flex-direction: column; align-items: flex-start; }
+    .bn-dark-contacts { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .bn-foot-sep { display: none; }
     .bn-sticky-sub-inner { flex-direction: column; gap: 10px; }
     .bn-sticky-sub-form { width: 100%; }
     .bn-sticky-sub-input { flex: 1; }
@@ -1955,11 +1969,14 @@ if (!window.gtag) {
           </div>
           <div class="bn-dark-contacts">
             <a href="https://www.bearhugrecruiting.com" target="_blank" rel="noopener noreferrer">BearhugRecruiting.com</a>
+            <span class="bn-foot-sep" aria-hidden="true">&middot;</span>
             <a href="mailto:hello@bearhugrecruiting.com">hello@bearhugrecruiting.com</a>
+            <span class="bn-foot-sep" aria-hidden="true">&middot;</span>
             <a href="tel:+18583246480">(858) 324-6480</a>
+            <span class="bn-foot-sep" aria-hidden="true">&middot;</span>
+            <span class="bn-dark-foot-copy">Copyright 2026 Bearhug Recruiting</span>
           </div>
         </div>
-        <div class="bn-dark-copyright">Copyright 2026 Bearhug Recruiting</div>
       </footer>
 
     </div>
@@ -2120,9 +2137,21 @@ if (!window.gtag) {
       bnAlreadySubscribed = true;
       bnSubInteracted = true;
       bnTrack('subscribe_completed', { capture_point: source });
-      // Hide sticky bar after successful subscribe from any source
+      // Sticky bar hide rules:
+      //   - source === 'sticky' → user subscribed from the bottom bar itself.
+      //     The form is now hidden and the success message is showing inside
+      //     the bar. Give them 3s to register the success before dismissing.
+      //   - source !== 'sticky' (popup, etc.) → the popup already owns the
+      //     screen with its own success state, so hide any visible sticky
+      //     immediately to avoid double-confirmation.
       var stickyEl = document.getElementById('bn-sticky-sub');
-      if (stickyEl) stickyEl.classList.remove('visible');
+      if (source === 'sticky') {
+        setTimeout(function() {
+          if (stickyEl) stickyEl.classList.remove('visible');
+        }, 3000);
+      } else {
+        if (stickyEl) stickyEl.classList.remove('visible');
+      }
       stickyDismissed = true;
     }).catch(function(err) {
       // Network-level failure (DNS, offline, fetch rejected before reaching
@@ -4759,6 +4788,27 @@ if (!window.gtag) {
     var execLink = document.getElementById('toggle-exec');
     var emergingLink = document.getElementById('toggle-emerging');
     if (!execLink || !emergingLink) return;
+
+    // Clean-slate the filters when toggling tiers. Switching from Exec to
+    // Emerging (or back) shouldn't carry over a "Marketing and Brand" or
+    // a search like "CFO" — the two networks have different distributions
+    // and an old filter could produce a misleading empty state on the new
+    // tier. Reset UI immediately, run applyFilters() so the grid refreshes
+    // against current data without filters before the new tier's JSON
+    // arrives, then fetchAndApply swaps in the new dataset.
+    var searchEl = document.getElementById('bn-search');
+    var searchClearEl = document.getElementById('bn-search-clear');
+    var typeEl  = document.getElementById('bn-filter-type');
+    var fnEl    = document.getElementById('bn-filter-fn');
+    var expEl   = document.getElementById('bn-filter-expertise');
+    var stageEl = document.getElementById('bn-filter-stage');
+    if (searchEl)      searchEl.value = '';
+    if (searchClearEl) searchClearEl.style.display = 'none';
+    if (typeEl)  typeEl.value  = 'All Types';
+    if (fnEl)    fnEl.value    = 'All Functions';
+    if (expEl)   expEl.value   = 'All Expertise';
+    if (stageEl) stageEl.value = 'All Stages';
+    applyFilters();
 
     currentNetwork = type;
     if (type === 'emerging') {
