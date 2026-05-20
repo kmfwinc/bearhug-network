@@ -1702,7 +1702,7 @@ if (!window.gtag) {
           <div class="bn-brand-icon"><span>B</span></div>
           <span class="bn-brand-name">Bearhug Recruiting</span>
         </div>
-        <a href="/">&larr; Back to site</a>
+        <a href="https://www.bearhugrecruiting.com">&larr; Return to the main Bearhug website</a>
       </div>
 
       <!-- 1. Headline -->
@@ -2079,9 +2079,13 @@ if (!window.gtag) {
       formEl = document.getElementById('bn-sticky-sub-form');
       successEl = document.getElementById('bn-sticky-sub-success');
     } else {
-      emailEl = document.getElementById('bn-inline-email');
-      formEl = document.getElementById('bn-inline-subscribe-form');
-      successEl = document.getElementById('bn-inline-subscribe-success');
+      // The inline subscribe block was removed in an earlier revision; the
+      // bn-inline-email / bn-inline-subscribe-form / bn-inline-subscribe-success
+      // IDs no longer exist. Only 'popup' and 'sticky' are valid sources today.
+      // Any other source is a caller bug — log and bail rather than calling
+      // getElementById on a missing node and dereferencing null below.
+      console.warn('Unknown subscribe source: ' + source);
+      return;
     }
     var email = (emailEl.value || '').trim();
     if (!email || email.indexOf('@') === -1) {
@@ -2111,11 +2115,15 @@ if (!window.gtag) {
       if (stickyEl) stickyEl.classList.remove('visible');
       stickyDismissed = true;
     }).catch(function(err) {
+      // Network-level failure (DNS, offline, fetch rejected before reaching
+      // the Apps Script proxy). The previous handler silently showed the
+      // success state and set the bn_subscribed cookie, lying to the user and
+      // permanently suppressing future subscribe prompts. New behavior:
+      // surface the error in the button itself and leave the form visible so
+      // the user can retry or use the fallback email.
       console.error('Beehiiv subscribe error:', err);
-      formEl.style.display = 'none';
-      successEl.style.display = 'block';
-      bnSetCookie('bn_subscribed', '1', 365);
-      bnAlreadySubscribed = true;
+      var btn = formEl.querySelector('button');
+      if (btn) btn.textContent = 'Something went wrong. Try again or email hello@bearhugrecruiting.com';
     });
   };
 
@@ -2532,9 +2540,8 @@ if (!window.gtag) {
     var capMsgEl = document.getElementById('bn-grid-cap-msg');
     if (filteredProfiles.length === 0) {
       grid.innerHTML = '<div id="zero-results" style="grid-column:1/-1;text-align:center;padding:48px 24px;">'
-        + '<h3 style="font-family:\'Playfair Display\',serif;font-size:1.5rem;color:#0E0E0E;margin-bottom:12px;">You\'ve gotten very specific.</h3>'
-        + '<p style="font-family:\'DM Sans\',sans-serif;font-size:1rem;color:#555;margin-bottom:8px;">The right person may already be in our wider network.</p>'
-        + '<p style="font-family:\'DM Sans\',sans-serif;font-size:0.95rem;color:#555;margin-bottom:24px;">You\'re browsing a curated selection from a much larger network.</p>'
+        + '<h3 style="font-family:\'Playfair Display\',serif;font-size:1.5rem;color:#0E0E0E;margin-bottom:12px;">Not finding the right person?</h3>'
+        + '<p style="font-family:\'DM Sans\',sans-serif;font-size:1rem;color:#555;margin-bottom:24px;">This is a slice of a much larger network. Book a call to browse the full database, or have us build you a custom slate.</p>'
         + '<a href="#" onclick="event.preventDefault();bnTrack(\'zero_results_cta\',{context:\'zero_results\'});bnOpenScreenPopup(\'https://cal.mixmax.com/kraigward-722/bearhug-network-inquiry?source=zero_results\',\'zero_results_cta\')" style="display:inline-block;padding:12px 28px;background:#B8963E;color:#fff;font-family:\'DM Sans\',sans-serif;font-weight:600;text-decoration:none;border-radius:4px;">Let\'s talk</a>'
         + '</div>';
       if (capEl) capEl.style.display = 'none';
@@ -4625,22 +4632,36 @@ if (!window.gtag) {
       for (var i = 0; i < select.options.length; i++) {
         var opt = select.options[i];
         if (!opt.dataset.original) opt.dataset.original = opt.textContent;
+        // Also cache the original VALUE separately. For options with an
+        // explicit value= attribute (Stage dropdown), this preserves the
+        // canonical value ("Zero-to-One Build") that matches the JSON,
+        // distinct from the display label ("Ground-up build"). For options
+        // without value=, browsers return textContent for .value, so the
+        // origValue equals origLabel.
+        if (!opt.dataset.origValue) opt.dataset.origValue = opt.value || opt.textContent;
         var label = opt.dataset.original;
-        var value = opt.value || opt.dataset.original;
+        var value = opt.dataset.origValue;
         if (label === cfg.allLabel || value === cfg.allLabel) {
           opt.textContent = label;
           continue;
         }
         var count = counts[value] || counts[label] || 0;
-        // FIX: pin the option's value to the canonical label BEFORE mutating
-        // textContent. Without this, <option> tags that lack an explicit
-        // value= attribute (Type / Function / Expertise dropdowns) end up
-        // with <select>.value === "Sales and Commercial (147)" instead of
-        // "Sales and Commercial", and matchesFilter()'s indexOf check fails
-        // every profile → "You've gotten very specific" zero-result state.
-        // The Stage dropdown is unaffected because its options already set
-        // value= explicitly, but setting it again here is idempotent.
-        opt.value = label;
+        // FIX: pin the option's value to the canonical original BEFORE
+        // mutating textContent. Without this, <option> tags that lack an
+        // explicit value= attribute (Type / Function / Expertise dropdowns)
+        // end up with <select>.value === "Sales and Commercial (147)" instead
+        // of "Sales and Commercial", and matchesFilter() rejects every
+        // profile → "Not finding the right person?" zero-result state.
+        //
+        // Two branches:
+        //   - origValue === origLabel → no explicit value= attr → safe to
+        //     use the label (canonical = display text)
+        //   - origValue !== origLabel → explicit value= attr (Stage) → must
+        //     restore the canonical value so JSON match works; setting
+        //     opt.value to the label would clobber Stage's "Zero-to-One
+        //     Build" with the display "Ground-up build".
+        if (opt.dataset.origValue === opt.dataset.original) opt.value = label;
+        else opt.value = opt.dataset.origValue;
         opt.textContent = label + ' (' + count + ')';
       }
     }
