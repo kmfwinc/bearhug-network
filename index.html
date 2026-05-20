@@ -1,0 +1,4717 @@
+<!-- Bearhug Network / Production Build v8 / Agent-Sweep / May 17, 2026 -->
+<!-- v8 changes. External JSON architecture, Mapbox GL density map (21K+ dots), filter counts, conversion zero-result, exec/emerging toggle, Grand Slam section, user journey mockups -->
+<!-- Squarespace: paste into a single Code Block on /network page -->
+
+<!-- GA4 (loads only if not already present from Squarespace site settings) -->
+<script>
+if (!window.gtag) {
+  var _gs = document.createElement('script');
+  _gs.async = true;
+  _gs.src = 'https://www.googletagmanager.com/gtag/js?id=G-85N316YN9J';
+  document.head.appendChild(_gs);
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-85N316YN9J');
+}
+</script>
+
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+<!-- Mapbox GL JS (density map dependencies, v8) -->
+<link href="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css" rel="stylesheet" />
+<script src="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
+
+<style>
+  /* -- Reset & Tokens -- */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --ink: #0E0E0E;
+    --parchment: #F5F1EA;
+    --gold: #B8963E;
+    --card-bg: #FDFCF9;
+    --border: #E5E1D8;
+    --border-strong: #D5D0C7;
+    --muted: #6B665E;
+    --muted-mid: #8A8478;
+    --muted-light: #A9A49B;
+    --divider: #DDD8CE;
+    --ff-display: 'Playfair Display', serif;
+    --ff-body: 'DM Sans', sans-serif;
+  }
+
+  /* -- Keyframes -- */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes shimmer {
+    0% { background-position: -400px 0; }
+    100% { background-position: 400px 0; }
+  }
+
+  /* -- Base -- */
+  .bn-root {
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    background-color: var(--parchment);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
+  /* Squarespace hygiene. First visible block has no top margin, last visible
+     block (Grand Slam, when subscribe/footer are hidden in embedded variants)
+     has no bottom margin, so Squarespace's section spacing controls the gap. */
+  .bn-root > *:first-child { margin-top: 0 !important; }
+  .bn-root > *:last-child { margin-bottom: 0 !important; }
+
+  /* ==============================================
+     UNIFIED LAYOUT (single 1100px container)
+     Every block lives inside .bn-container with the same width.
+     Grids inside it use width: 100% so left/right edges align.
+     ============================================== */
+  .bn-page-bg { background-color: var(--parchment); padding: 32px 0 24px; }
+  .bn-container {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+  .bn-block { width: 100%; margin: 0; padding: 0; }
+  .bn-block + .bn-block { margin-top: 16px; }
+  .bn-block + .bn-block.bn-block-tight { margin-top: 8px; }
+  .bn-grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; width: 100%; }
+  .bn-grid-2-55-45 { display: grid; grid-template-columns: 55fr 45fr; gap: 10px; width: 100%; }
+  .bn-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 100%; }
+  .bn-grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; width: 100%; }
+
+  /* -- Brand icon (used in top strip + footer) -- */
+  .bn-brand-icon {
+    width: 28px; height: 28px;
+    background-color: var(--ink);
+    border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .bn-brand-icon span {
+    color: var(--gold);
+    font-size: 14px; font-weight: 700;
+    font-family: var(--ff-display);
+  }
+  .bn-brand-name {
+    font-family: var(--ff-body);
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 3.5px;
+    text-transform: uppercase;
+    color: var(--ink);
+  }
+
+  /* -- 1. Headline + 2/3. Subhead paragraphs -- */
+  .bn-title {
+    font-family: var(--ff-display);
+    font-size: 3rem; font-weight: 600;
+    color: var(--ink);
+    margin: 0 0 16px;
+    line-height: 1.15;
+    text-align: left;
+  }
+  .bn-subtitle {
+    font-family: var(--ff-body);
+    font-size: 16px; line-height: 1.65;
+    color: #4a4a4a;
+    margin: 0 0 12px;
+    text-align: left;
+  }
+  .bn-subtitle:last-child { margin-bottom: 0; }
+
+  /* -- 4. Stats cards (centered content) -- */
+  .bn-stat-card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 24px 18px;
+    text-align: center;
+  }
+  .bn-stat-number {
+    font-family: var(--ff-display);
+    font-size: 2.4rem; font-weight: 600;
+    color: var(--gold);
+    line-height: 1.05;
+    margin: 0 0 6px;
+    text-align: center;
+  }
+  .bn-stat-label {
+    font-family: var(--ff-body);
+    font-size: 0.85rem;
+    color: var(--muted);
+    line-height: 1.45;
+    margin: 0;
+    text-align: center;
+  }
+
+  /* -- 5. Mapbox heatmap wrap -- */
+  .bn-map-wrap {
+    width: 100%;
+    height: 280px;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #F0EDE5;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    position: relative;
+  }
+
+  /* -- 6. Section heading (matches Grand Slam title weight) -- */
+  .bn-section-heading {
+    font-family: var(--ff-display);
+    font-size: 1.5rem; font-weight: 600;
+    color: var(--ink);
+    margin: 0 0 14px;
+    line-height: 1.3;
+    text-align: left;
+  }
+
+  /* -- 6. Journey cards (full visual weight) -- */
+  .bn-journey-card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 18px;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .bn-badge {
+    font-family: var(--ff-body);
+    font-size: 0.65rem; font-weight: 700;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+    color: #fff;
+    padding: 3px 9px;
+    border-radius: 3px;
+    align-self: flex-start;
+  }
+  .bn-badge-hiring { background-color: #B8963E; }
+  .bn-badge-hired { background-color: #1a5276; }
+  .bn-journey-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .bn-journey-persona {
+    font-family: var(--ff-body);
+    font-size: 0.78rem;
+    color: var(--muted-mid);
+    line-height: 1.3;
+  }
+  .bn-journey-card h4 {
+    font-family: var(--ff-display);
+    font-size: 1.05rem; font-weight: 600;
+    color: var(--ink);
+    margin: 0;
+    line-height: 1.3;
+  }
+  .bn-journey-card p {
+    font-family: var(--ff-body);
+    font-size: 0.88rem;
+    color: var(--muted);
+    margin: 0;
+    line-height: 1.55;
+  }
+
+  /* -- 7. Grand Slam (plain bordered white card, matches action cards) -- */
+  .bn-grand-slam-card {
+    background-color: #fff;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 22px 24px;
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .bn-grand-slam-card h3 {
+    font-family: var(--ff-display);
+    font-style: italic;
+    font-size: 1.5rem; font-weight: 600;
+    color: var(--ink);
+    margin: 0;
+    line-height: 1.3;
+  }
+  .bn-grand-slam-card .bn-gs-body {
+    font-family: var(--ff-body);
+    font-size: 0.92rem;
+    color: #444;
+    margin: 0;
+    line-height: 1.6;
+  }
+  .bn-grand-slam-card .bn-gs-guarantee {
+    font-family: var(--ff-body);
+    font-size: 0.92rem;
+    color: var(--gold);
+    font-weight: 600;
+    margin: 0;
+    line-height: 1.6;
+  }
+  .bn-grand-slam-cta {
+    display: inline-block;
+    align-self: center;
+    margin-top: 6px;
+    padding: 12px 28px;
+    background-color: var(--gold);
+    color: #fff;
+    font-family: var(--ff-body);
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: 6px;
+    transition: opacity 0.2s;
+  }
+  .bn-grand-slam-cta:hover { opacity: 0.9; }
+
+  /* -- 8/13. Action cards -- */
+  .bn-action-card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 18px;
+    text-decoration: none;
+    color: inherit;
+    display: flex; flex-direction: column; gap: 6px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .bn-action-card:hover {
+    border-color: var(--gold);
+    box-shadow: 0 2px 12px rgba(184,150,62,0.1);
+  }
+  .bn-action-card h4 {
+    font-family: var(--ff-display);
+    font-size: 1.05rem; font-weight: 600;
+    color: var(--ink);
+    margin: 0;
+  }
+  .bn-action-card p {
+    font-family: var(--ff-body);
+    font-size: 0.88rem;
+    color: var(--muted);
+    margin: 0;
+    line-height: 1.5;
+  }
+  .bn-action-link {
+    margin-top: auto;
+    padding-top: 8px;
+    color: var(--gold);
+    font-family: var(--ff-body);
+    font-size: 0.88rem;
+    font-weight: 600;
+  }
+
+  /* Header action cards (icon-beside-text, arrow on the far right) */
+  .bn-action-card.bn-has-icon {
+    flex-direction: row;
+    align-items: center;
+    text-align: left;
+    gap: 14px;
+    padding: 18px 18px;
+  }
+  .bn-action-icon-wrap {
+    width: 44px; height: 44px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    line-height: 1;
+  }
+  .bn-action-icon-search { background-color: #F1EEE8; }
+  .bn-action-icon-star { background-color: rgba(184, 150, 62, 0.16); }
+  .bn-action-icon-mail { background-color: rgba(26, 82, 118, 0.12); }
+  .bn-action-body {
+    flex: 1;
+    min-width: 0;
+    display: flex; flex-direction: column; gap: 3px;
+  }
+  .bn-action-card.bn-has-icon .bn-action-link {
+    margin-top: 2px;
+    padding-top: 0;
+  }
+  .bn-action-arrow {
+    flex-shrink: 0;
+    font-size: 22px;
+    line-height: 1;
+    color: var(--muted-mid);
+    transition: color 0.2s, transform 0.2s;
+  }
+  .bn-action-card.bn-has-icon:hover .bn-action-arrow {
+    color: var(--gold);
+    transform: translateX(2px);
+  }
+
+  /* Footer plain-text action items (no card box) */
+  .bn-foot-action {
+    display: flex; flex-direction: column; gap: 6px;
+    padding: 0;
+    background: transparent;
+    border: none;
+  }
+  .bn-foot-action h4 {
+    font-family: var(--ff-display);
+    font-size: 1.05rem; font-weight: 600;
+    color: var(--ink);
+    margin: 0;
+  }
+  .bn-foot-action p {
+    font-family: var(--ff-body);
+    font-size: 0.9rem;
+    color: var(--muted);
+    margin: 0;
+    line-height: 1.5;
+  }
+  .bn-foot-action-link {
+    color: var(--gold);
+    font-family: var(--ff-body);
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    margin-top: 2px;
+  }
+  .bn-foot-action-link:hover { text-decoration: underline; }
+
+  /* Footer plain-text practice items (no card box) */
+  .bn-foot-practice {
+    display: flex; flex-direction: column; gap: 6px;
+    padding: 0;
+    background: transparent;
+    border: none;
+  }
+  .bn-foot-practice-head {
+    display: flex; align-items: center; gap: 10px;
+  }
+  .bn-foot-practice h4 {
+    font-family: var(--ff-display);
+    font-size: 1.1rem; font-weight: 600;
+    color: var(--ink);
+    margin: 0;
+  }
+  .bn-foot-practice p {
+    font-family: var(--ff-body);
+    font-size: 0.9rem;
+    color: var(--muted);
+    margin: 0;
+    line-height: 1.55;
+  }
+  .bn-foot-practice-link {
+    color: var(--gold);
+    font-family: var(--ff-body);
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    margin-top: 2px;
+  }
+  .bn-foot-practice-link:hover { text-decoration: underline; }
+
+  /* Footer column layout (3-up: Our practices / Hiring? / Open to opportunities?) */
+  .bn-foot-col {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .bn-foot-col-title {
+    font-family: var(--ff-display);
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--ink);
+    margin: 0 0 4px;
+    line-height: 1.3;
+  }
+  .bn-foot-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .bn-foot-item-link {
+    font-family: var(--ff-display);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--ink);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    line-height: 1.3;
+    transition: color 0.2s;
+  }
+  .bn-foot-item-link:hover { color: var(--gold); }
+  .bn-foot-item-link .bn-practice-dot { width: 9px; height: 9px; }
+  .bn-foot-item-note {
+    font-family: var(--ff-body);
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin: 0;
+    line-height: 1.5;
+  }
+  .bn-foot-practice-name {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    font-family: var(--ff-display);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.3;
+  }
+  .bn-foot-practice-name .bn-practice-dot {
+    width: 9px;
+    height: 9px;
+  }
+  .bn-foot-overview-link {
+    font-size: 0.9rem;
+    color: var(--gold);
+    margin-top: 2px;
+  }
+
+  /* -- 9. Network selector cards -- */
+  .bn-net-card {
+    background-color: #faf9f6;
+    border: 1px solid var(--border);
+    border-left: 4px solid transparent;
+    border-radius: 10px;
+    padding: 20px 20px;
+    text-decoration: none;
+    color: inherit;
+    display: flex; flex-direction: column; gap: 6px;
+    transition: background-color 0.2s, border-color 0.2s;
+    cursor: pointer;
+  }
+  .bn-net-card.active {
+    padding-left: 24px;
+    background-color: #fff;
+    border-left-color: var(--gold);
+    border-color: var(--gold) var(--border) var(--border) var(--gold);
+  }
+  .bn-net-card h4 {
+    font-family: var(--ff-display);
+    font-size: 1.1rem; font-weight: 600;
+    color: var(--ink);
+    margin: 0;
+  }
+  .bn-net-card:not(.active) h4 { color: var(--muted-mid); }
+  .bn-net-card p {
+    font-family: var(--ff-body);
+    font-size: 0.88rem;
+    color: var(--muted);
+    margin: 0;
+    line-height: 1.5;
+  }
+  .bn-net-count {
+    margin-top: 4px;
+    font-family: var(--ff-body);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--gold);
+  }
+  .bn-net-count-soon { color: var(--muted-mid); }
+
+  /* -- 12. Divider above repeated action cards -- */
+  .bn-divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 32px 0 16px;
+    width: 100%;
+  }
+
+  /* -- 14. Practice overview cards -- */
+  .bn-practice-card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 22px;
+    text-decoration: none;
+    color: inherit;
+    display: flex; flex-direction: column; gap: 8px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .bn-practice-card:hover {
+    border-color: var(--gold);
+    box-shadow: 0 2px 12px rgba(184,150,62,0.1);
+  }
+  .bn-practice-card .bn-practice-head {
+    display: flex; align-items: center; gap: 10px;
+  }
+  .bn-practice-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .bn-practice-card h4 {
+    font-family: var(--ff-display);
+    font-size: 1.05rem; font-weight: 600;
+    color: var(--ink);
+    margin: 0;
+  }
+  .bn-practice-card p {
+    font-family: var(--ff-body);
+    font-size: 0.88rem;
+    color: var(--muted);
+    margin: 0;
+    line-height: 1.55;
+  }
+  .bn-practice-card .bn-practice-link {
+    margin-top: 4px;
+    color: var(--gold);
+    font-family: var(--ff-body);
+    font-size: 0.88rem;
+    font-weight: 600;
+  }
+
+  /* -- 15. Inline subscribe bar (dark rounded) -- */
+  .bn-sub-card {
+    background-color: var(--ink);
+    border-radius: 10px;
+    padding: 28px 28px;
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 24px;
+    align-items: center;
+  }
+  .bn-sub-card-text h4 {
+    font-family: var(--ff-display);
+    font-size: 1.2rem; font-weight: 600;
+    color: var(--parchment);
+    margin: 0 0 6px;
+  }
+  .bn-sub-card-text p {
+    font-family: var(--ff-body);
+    font-size: 0.9rem;
+    color: var(--muted-light);
+    margin: 0;
+    line-height: 1.55;
+  }
+  .bn-sub-card-form {
+    display: flex;
+    gap: 8px;
+  }
+  .bn-sub-card-form input {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 12px 14px;
+    font-family: var(--ff-body);
+    font-size: 14px;
+    border: 1px solid #333;
+    border-radius: 6px;
+    background-color: #1A1917;
+    color: var(--parchment);
+    outline: none;
+  }
+  .bn-sub-card-form input::placeholder { color: #777; }
+  .bn-sub-card-form input:focus { border-color: var(--gold); }
+  .bn-sub-card-form button {
+    padding: 12px 20px;
+    font-family: var(--ff-body);
+    font-size: 13px; font-weight: 700;
+    color: #fff;
+    background-color: var(--gold);
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: opacity 0.2s;
+  }
+  .bn-sub-card-form button:hover { opacity: 0.9; }
+  .bn-sub-card-success {
+    grid-column: 1 / -1;
+    font-family: var(--ff-body);
+    color: var(--gold);
+    font-size: 0.95rem;
+    margin: 0;
+  }
+
+  /* -- 16. Dark rounded footer card (CTAs + practices + brand row) -- */
+  .bn-dark-footer {
+    background-color: #0E0E0E;
+    border-radius: 12px;
+    padding: 32px 28px;
+    margin-top: 16px;
+    margin-bottom: 60px;
+    color: #E5E1D8;
+  }
+  .bn-dark-cta-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+  .bn-dark-cta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    border-radius: 8px;
+    border: 1px solid;
+    text-decoration: none;
+    font-family: var(--ff-body);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.2;
+    transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+  }
+  .bn-dark-cta-gold {
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+  .bn-dark-cta-gold:hover {
+    background-color: rgba(184, 150, 62, 0.12);
+  }
+  .bn-dark-cta-muted {
+    border-color: #3a3833;
+    color: #D5D0C7;
+  }
+  .bn-dark-cta-muted:hover {
+    border-color: #6B665E;
+    color: #fff;
+  }
+  .bn-dark-cta-icon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+  .bn-dark-cta-body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+  .bn-dark-cta-sub {
+    font-size: 11px;
+    font-weight: 400;
+    color: #8A8478;
+  }
+  .bn-dark-cta-gold .bn-dark-cta-sub { color: rgba(184, 150, 62, 0.7); }
+
+  .bn-dark-practices {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 28px;
+    margin-bottom: 28px;
+  }
+  .bn-dark-practice {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .bn-dark-practice-head {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-family: var(--ff-display);
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #F5F1EA;
+  }
+  .bn-dark-practice-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .bn-dark-practice-desc {
+    font-family: var(--ff-body);
+    font-size: 0.9rem;
+    color: #A9A49B;
+    line-height: 1.55;
+    margin: 0;
+  }
+  .bn-dark-practice-link {
+    color: var(--gold);
+    font-family: var(--ff-body);
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    margin-top: 2px;
+  }
+  .bn-dark-practice-link:hover { text-decoration: underline; }
+
+  .bn-dark-divider {
+    border: none;
+    border-top: 1px solid #2A2723;
+    margin: 0 0 20px;
+  }
+
+  .bn-dark-brand-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .bn-dark-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .bn-dark-brand .bn-brand-icon { background-color: var(--gold); }
+  .bn-dark-brand .bn-brand-icon span { color: #0E0E0E; }
+  .bn-dark-brand .bn-brand-name { color: var(--parchment); }
+  .bn-dark-contacts {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .bn-dark-contacts a {
+    font-family: var(--ff-body);
+    font-size: 13px;
+    color: #A9A49B;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .bn-dark-contacts a:hover { color: var(--gold); }
+  .bn-dark-copyright {
+    font-family: var(--ff-body);
+    font-size: 12px;
+    color: #6B665E;
+    margin-top: 12px;
+  }
+
+  /* -- Top brand strip above headline -- */
+  .bn-top-strip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+  }
+  .bn-top-strip a {
+    font-family: var(--ff-body);
+    font-size: 12px; font-weight: 500;
+    color: var(--muted-mid);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .bn-top-strip a:hover { color: var(--gold); }
+
+  /* -- Subscribe Popup -- */
+  .bn-sub-popup-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(14,14,14,0.6);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .bn-sub-popup {
+    background-color: var(--parchment);
+    border-radius: 10px;
+    max-width: 440px;
+    width: 100%;
+    padding: 40px 32px;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+  }
+  .bn-sub-popup-close {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: var(--muted-mid);
+    cursor: pointer;
+    line-height: 1;
+  }
+  .bn-sub-popup-close:hover { color: var(--ink); }
+  .bn-sub-popup-kicker {
+    font-family: var(--ff-body);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--gold);
+    margin-bottom: 10px;
+  }
+  .bn-sub-popup-title {
+    font-family: var(--ff-display);
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 10px;
+    line-height: 1.3;
+  }
+  .bn-sub-popup-text {
+    font-family: var(--ff-body);
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--muted);
+    margin-bottom: 22px;
+  }
+  .bn-sub-popup-form {
+    display: flex;
+    gap: 8px;
+  }
+  .bn-sub-popup-input {
+    flex: 1;
+    padding: 12px 14px;
+    font-family: var(--ff-body);
+    font-size: 14px;
+    border: 1px solid var(--border-strong);
+    border-radius: 6px;
+    background-color: var(--card-bg);
+    color: var(--ink);
+    outline: none;
+  }
+  .bn-sub-popup-input:focus { border-color: var(--gold); }
+  .bn-sub-popup-btn {
+    padding: 12px 20px;
+    font-family: var(--ff-body);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--parchment);
+    background-color: var(--ink);
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background-color 0.2s;
+  }
+  .bn-sub-popup-btn:hover { background-color: var(--gold); }
+
+  /* -- Intro Screening Popup -- */
+  .bn-screen-popup {
+    background-color: var(--parchment);
+    border-radius: 10px;
+    max-width: 460px;
+    width: 100%;
+    padding: 40px 32px 32px;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+  }
+  .bn-screen-popup-close {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: var(--muted-mid);
+    cursor: pointer;
+    line-height: 1;
+  }
+  .bn-screen-popup-close:hover { color: var(--ink); }
+  .bn-screen-kicker {
+    font-family: var(--ff-body);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--gold);
+    margin-bottom: 10px;
+  }
+  .bn-screen-title {
+    font-family: var(--ff-display);
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 8px;
+    line-height: 1.3;
+  }
+  .bn-screen-text {
+    font-family: var(--ff-body);
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--muted);
+    margin-bottom: 20px;
+  }
+  .bn-screen-options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .bn-screen-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: border-color 0.2s;
+    font-family: var(--ff-body);
+    font-size: 14px;
+    color: var(--ink);
+  }
+  .bn-screen-option:hover { border-color: var(--gold); }
+  .bn-screen-option.selected {
+    border-color: var(--gold);
+    background-color: rgba(184,150,62,0.06);
+  }
+  .bn-screen-radio {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid var(--border-strong);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: border-color 0.2s;
+  }
+  .bn-screen-option.selected .bn-screen-radio {
+    border-color: var(--gold);
+  }
+  .bn-screen-radio-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--gold);
+    display: none;
+  }
+  .bn-screen-option.selected .bn-screen-radio-dot { display: block; }
+  .bn-screen-proceed {
+    width: 100%;
+    padding: 13px 0;
+    font-family: var(--ff-body);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--parchment);
+    background-color: var(--ink);
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s, opacity 0.2s;
+    opacity: 0.4;
+    pointer-events: none;
+  }
+  .bn-screen-proceed.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .bn-screen-proceed.active:hover { background-color: var(--gold); }
+
+  /* -- Share Button -- */
+
+  /* -- Practice Pills (header inline) -- */
+  .bn-practice-pills {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+  }
+  .bn-practice-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 14px;
+    font-family: var(--ff-body);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted);
+    background-color: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    text-decoration: none;
+    transition: border-color 0.2s, color 0.2s;
+    white-space: nowrap;
+  }
+  .bn-practice-pill:hover {
+    border-color: var(--gold);
+    color: var(--ink);
+  }
+  .bn-practice-pill-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* -- Share Button -- */
+  .bn-share-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .bn-share-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 9px 0;
+    font-family: var(--ff-body);
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--muted);
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+    text-decoration: none;
+  }
+  .bn-share-btn:hover {
+    border-color: var(--gold);
+    color: var(--ink);
+  }
+  .bn-share-btn svg {
+    flex-shrink: 0;
+    vertical-align: middle;
+    position: relative;
+    top: -1px;
+  }
+  .bn-share-btn.copied {
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  /* -- Back to Top -- */
+  .bn-back-top {
+    position: fixed;
+    bottom: 80px;
+    right: 24px;
+    width: 44px;
+    height: 44px;
+    background-color: var(--ink);
+    color: var(--parchment);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s, background-color 0.2s;
+    z-index: 20;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+  }
+  .bn-back-top.visible {
+    opacity: 1;
+    visibility: visible;
+  }
+  .bn-back-top:hover { background-color: var(--gold); }
+
+  /* -- Sticky Subscribe Bar -- */
+  .bn-sticky-sub {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: var(--gold);
+    padding: 16px 24px;
+    z-index: 25;
+    transform: translateY(100%);
+    transition: transform 0.4s ease;
+    box-shadow: 0 -4px 24px rgba(0,0,0,0.2);
+  }
+  .bn-sticky-sub.visible { transform: translateY(0); }
+  .bn-sticky-sub-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .bn-sticky-sub-text {
+    font-family: var(--ff-body);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink);
+    flex-shrink: 0;
+  }
+  .bn-sticky-sub-form {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .bn-sticky-sub-input {
+    padding: 10px 14px;
+    font-family: var(--ff-body);
+    font-size: 14px;
+    border: 2px solid var(--ink);
+    border-radius: 6px;
+    background-color: var(--parchment);
+    color: var(--ink);
+    outline: none;
+    width: 240px;
+  }
+  .bn-sticky-sub-input::placeholder { color: var(--muted); }
+  .bn-sticky-sub-input:focus { border-color: var(--ink); background-color: #fff; }
+  .bn-sticky-sub-btn {
+    padding: 10px 20px;
+    font-family: var(--ff-body);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--parchment);
+    background-color: var(--ink);
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: opacity 0.2s;
+  }
+  .bn-sticky-sub-btn:hover { opacity: 0.85; }
+  .bn-sticky-sub-close {
+    background: none;
+    border: none;
+    color: var(--ink);
+    font-size: 20px;
+    cursor: pointer;
+    padding: 0 4px;
+    line-height: 1;
+    transition: opacity 0.2s;
+    flex-shrink: 0;
+    opacity: 0.5;
+  }
+  .bn-sticky-sub-close:hover { opacity: 1; }
+  .bn-sticky-sub-success {
+    font-family: var(--ff-body);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  /* -- Legend -- */
+  .bn-legend {
+    background-color: var(--parchment);
+  }
+  .bn-legend-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 12px 24px;
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .bn-legend-label {
+    font-family: var(--ff-body);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--muted-mid);
+    flex-shrink: 0;
+  }
+  .bn-legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: var(--ff-body);
+    font-size: 11px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .bn-legend-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* -- Filters (inside .bn-container, no width of its own) -- */
+  .bn-filters { width: 100%; }
+  .bn-search-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  .bn-search-input {
+    padding: 12px 14px;
+    font-family: var(--ff-body);
+    font-size: 14px;
+    border: 1px solid var(--border-strong);
+    border-radius: 6px;
+    background-color: var(--card-bg);
+    color: var(--ink);
+    outline: none;
+    min-width: 0;
+  }
+  .bn-search-input::placeholder { color: var(--muted-mid); }
+  .bn-search-input:focus { border-color: var(--gold); }
+  .bn-search-wrap {
+    position: relative;
+    flex: 1;
+    min-width: 0;
+  }
+  .bn-search-wrap .bn-search-input {
+    width: 100%;
+    padding-right: 36px;
+  }
+  .bn-search-clear {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 22px;
+    height: 22px;
+    border: none;
+    background: var(--border);
+    color: var(--muted);
+    border-radius: 50%;
+    font-size: 13px;
+    font-family: var(--ff-body);
+    font-weight: 600;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    padding: 0;
+    transition: background 0.15s;
+  }
+  .bn-search-clear:hover { background: var(--border-strong); color: var(--ink); }
+
+  .bn-filter-toggle {
+    padding: 12px 16px;
+    font-family: var(--ff-body);
+    font-size: 12px;
+    font-weight: 600;
+    border: 1px solid var(--border-strong);
+    border-radius: 6px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+  }
+  .bn-filter-toggle.open {
+    color: var(--parchment);
+    background-color: var(--ink);
+    border-color: var(--ink);
+  }
+  .bn-filter-toggle.closed {
+    color: var(--ink);
+    background-color: transparent;
+  }
+  .bn-count {
+    font-family: var(--ff-body);
+    font-size: 12px;
+    color: var(--muted-mid);
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  .bn-count strong { color: var(--ink); }
+  .bn-filter-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-top: 12px;
+    width: 100%;
+    animation: fadeUp 0.2s ease both;
+  }
+  .bn-filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 0;
+  }
+  .bn-filter-label {
+    font-family: var(--ff-body);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.8px;
+    color: var(--gold);
+  }
+  .bn-filter-select {
+    font-family: var(--ff-body);
+    font-size: 13px;
+    padding: 10px 32px 10px 12px;
+    border: 1px solid var(--border-strong);
+    border-radius: 6px;
+    background-color: var(--card-bg);
+    color: var(--ink);
+    cursor: pointer;
+    outline: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='%23999'%3E%3Cpath d='M0 0l5 6 5-6z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+  }
+
+  /* -- Cards (inside .bn-container, width 100%) -- */
+  .bn-main {
+    width: 100%;
+    padding: 0;
+    margin: 0;
+  }
+  .bn-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    width: 100%;
+  }
+  .bn-grid-cap {
+    text-align: center;
+    margin: 24px 0 0;
+  }
+  .bn-grid-cap-msg {
+    font-family: var(--ff-body);
+    font-size: 0.9rem;
+    color: var(--muted);
+    margin: 0;
+    line-height: 1.5;
+  }
+  .bn-grid-cap-link {
+    font-family: var(--ff-body);
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--gold);
+    text-decoration: none;
+    margin-left: 6px;
+  }
+  .bn-grid-cap-link:hover { text-decoration: underline; }
+  .bn-card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+  }
+  .bn-card:hover {
+    box-shadow: 0 6px 24px rgba(14,14,14,0.07);
+    transform: translateY(-2px);
+  }
+  .bn-card-bar { height: 3px; }
+  .bn-card-body { padding: 20px 20px 0; flex: 1; }
+  .bn-card-tags {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+  .bn-card-id {
+    font-family: var(--ff-body);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    color: var(--gold);
+  }
+  .bn-card-type-pill {
+    font-family: var(--ff-body);
+    font-size: 9px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 3px;
+    color: var(--parchment);
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+  }
+  .bn-card-sector-pill {
+    font-family: var(--ff-body);
+    font-size: 9px;
+    font-weight: 500;
+    padding: 3px 8px;
+    border-radius: 3px;
+    border: 1px solid var(--border-strong);
+    color: var(--muted);
+  }
+  .bn-card-meta {
+    font-family: var(--ff-body);
+    font-size: 12px;
+    color: var(--muted-mid);
+    margin-bottom: 10px;
+  }
+  .bn-card-summary {
+    font-family: var(--ff-body);
+    font-size: 14px;
+    line-height: 1.7;
+    color: #2A2723;
+    margin: 0 0 16px 0 !important;
+  }
+  .bn-card-summary.clamped {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .bn-card-expanded { margin-bottom: 12px; }
+  .bn-card-expanded-label {
+    font-family: var(--ff-body);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--gold);
+    margin: 0 0 6px 0;
+  }
+  .bn-card-expanded-text {
+    font-family: var(--ff-body);
+    font-size: 14px;
+    line-height: 1.7;
+    color: #2A2723;
+    margin: 0;
+  }
+  .bn-card-dispositions {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 16px !important;
+  }
+  .bn-disposition-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    border-radius: 100px;
+    font-family: var(--ff-body);
+    font-size: 11px;
+    font-weight: 500;
+  }
+  .bn-disposition-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+  }
+  .bn-card-toggle {
+    font-family: var(--ff-body);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--gold);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    margin-bottom: 20px !important;
+    display: block;
+  }
+  .bn-card-toggle:hover { text-decoration: underline; }
+  .bn-card-cta {
+    padding: 0 20px 20px;
+    margin-top: auto;
+  }
+  .bn-intro-btn {
+    display: block;
+    width: 100%;
+    padding: 12px 0;
+    font-family: var(--ff-body);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--parchment);
+    background-color: var(--ink);
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+  }
+  .bn-intro-btn:hover { background-color: var(--gold); color: var(--parchment); }
+
+  /* -- Loading skeleton -- */
+  .bn-skeleton-card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    height: 280px;
+  }
+  .bn-skeleton-bar { height: 3px; background: var(--border-strong); }
+  .bn-skeleton-line {
+    height: 14px;
+    margin: 16px 20px 0;
+    border-radius: 4px;
+    background: linear-gradient(90deg, var(--border) 25%, var(--divider) 50%, var(--border) 75%);
+    background-size: 400px 100%;
+    animation: shimmer 1.5s infinite;
+  }
+  .bn-skeleton-line.short { width: 40%; }
+  .bn-skeleton-line.med { width: 65%; }
+  .bn-skeleton-line.long { width: 90%; }
+
+  /* -- Zero Results -- */
+  .bn-zero {
+    text-align: center;
+    padding: 60px 20px;
+  }
+  .bn-zero-text {
+    font-family: var(--ff-body);
+    font-size: 15px;
+    color: var(--muted-mid);
+    margin-bottom: 28px;
+  }
+  .bn-zero-cta-title {
+    font-family: var(--ff-display);
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+  .bn-zero-cta-text {
+    font-family: var(--ff-body);
+    font-size: 14px;
+    color: var(--muted);
+    margin-bottom: 18px;
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.6;
+  }
+
+  /* -- CTA Button (shared) -- */
+  .bn-cta-btn {
+    display: inline-block;
+    padding: 13px 36px;
+    font-family: var(--ff-body);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--ink);
+    background-color: var(--gold);
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+  }
+  .bn-cta-btn:hover { opacity: 0.85; }
+
+  /* -- Responsive -- */
+  @media (max-width: 900px) {
+    .bn-grid-3 { grid-template-columns: repeat(2, 1fr); }
+    .bn-grid-4 { grid-template-columns: repeat(2, 1fr); }
+    .bn-grid { grid-template-columns: repeat(2, 1fr); }
+    .bn-filter-row { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 768px) {
+    .bn-title { font-size: 2.1rem; }
+    .bn-subtitle { font-size: 15px; }
+    .bn-map-wrap { height: 220px; border-radius: 10px; }
+    .bn-stat-number { font-size: 2rem; }
+    .bn-grid-2 { grid-template-columns: 1fr; }
+    .bn-grid-3 { grid-template-columns: 1fr; }
+    .bn-grid-4 { grid-template-columns: 1fr; }
+    .bn-grid { grid-template-columns: 1fr; }
+    .bn-filter-row { grid-template-columns: 1fr; }
+    .bn-sub-card { grid-template-columns: 1fr; }
+    .bn-foot-row { flex-direction: column; align-items: flex-start; }
+    .bn-dark-cta-row { grid-template-columns: 1fr; }
+    .bn-dark-practices { grid-template-columns: 1fr; gap: 24px; }
+    .bn-dark-brand-row { flex-direction: column; align-items: flex-start; }
+    .bn-sticky-sub-inner { flex-direction: column; gap: 10px; }
+    .bn-sticky-sub-form { width: 100%; }
+    .bn-sticky-sub-input { flex: 1; }
+    .bn-back-top { bottom: 72px; right: 16px; }
+  }
+  @media (max-width: 480px) {
+    .bn-page-bg { padding: 24px 0 24px; }
+    .bn-container { padding: 0 16px; }
+    .bn-sub-popup { padding: 32px 24px; }
+    .bn-sub-popup-form { flex-direction: column; }
+  }
+</style>
+
+<div class="bn-root" id="bn-root">
+
+  <!-- Subscribe Popup -->
+  <div class="bn-sub-popup-overlay" id="bn-sub-popup" style="display:none;" onclick="bnCloseSubPopup()">
+    <div class="bn-sub-popup" onclick="event.stopPropagation()">
+      <button class="bn-sub-popup-close" onclick="bnCloseSubPopup()">&#x2715;</button>
+      <div id="bn-sub-popup-form-state">
+        <p class="bn-sub-popup-kicker">Weekly preview</p>
+        <h3 class="bn-sub-popup-title">See who joined before anyone else</h3>
+        <p class="bn-sub-popup-text">Every week we send a short preview of the newest profiles added to the network. One email, no spam. You'll know exactly when to check back and who's worth requesting an introduction to.</p>
+        <div class="bn-sub-popup-form">
+          <input type="email" class="bn-sub-popup-input" id="bn-sub-popup-email" placeholder="your@email.com" />
+          <button class="bn-sub-popup-btn" onclick="bnSubscribe('popup')">Subscribe</button>
+        </div>
+      </div>
+      <div id="bn-sub-popup-success-state" style="display:none;text-align:center;padding:10px 0;">
+        <p class="bn-sub-popup-kicker">You're in</p>
+        <h3 class="bn-sub-popup-title">Welcome to the network</h3>
+        <p class="bn-sub-popup-text" style="margin-bottom:0;">We'll be in touch when new profiles are live.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Intro Screening Popup -->
+  <div class="bn-sub-popup-overlay" id="bn-screen-popup" style="display:none;" onclick="if(event.target===this)bnCloseScreenPopup()">
+    <div class="bn-screen-popup" onclick="event.stopPropagation()">
+      <button class="bn-screen-popup-close" onclick="bnCloseScreenPopup()">&#x2715;</button>
+      <div class="bn-screen-kicker">Before we connect you</div>
+      <h3 class="bn-screen-title">What are you looking to do?</h3>
+      <p class="bn-screen-text">We screen every introduction to make sure the conversation is worth everyone's time. Let us know what you have in mind.</p>
+      <div class="bn-screen-options" id="bn-screen-options">
+        <div class="bn-screen-option" onclick="bnSelectIntent(this, 'hiring')">
+          <div class="bn-screen-radio"><div class="bn-screen-radio-dot"></div></div>
+          I have a leadership gap to fill
+        </div>
+        <div class="bn-screen-option" onclick="bnSelectIntent(this, 'advisory')">
+          <div class="bn-screen-radio"><div class="bn-screen-radio-dot"></div></div>
+          I need advisory or fractional support
+        </div>
+        <div class="bn-screen-option" onclick="bnSelectIntent(this, 'board')">
+          <div class="bn-screen-radio"><div class="bn-screen-radio-dot"></div></div>
+          I'm looking for a board member
+        </div>
+        <div class="bn-screen-option" onclick="bnSelectIntent(this, 'investment')">
+          <div class="bn-screen-radio"><div class="bn-screen-radio-dot"></div></div>
+          I want to explore deal flow
+        </div>
+      </div>
+      <button class="bn-screen-proceed" id="bn-screen-proceed" onclick="bnProceedIntro()">Continue to Booking</button>
+    </div>
+  </div>
+
+  <!-- Sticky Subscribe Bar -->
+  <div class="bn-sticky-sub" id="bn-sticky-sub">
+    <div class="bn-sticky-sub-inner">
+      <span class="bn-sticky-sub-text">New profiles added weekly. Stay in the loop.</span>
+      <div class="bn-sticky-sub-form" id="bn-sticky-sub-form">
+        <input type="email" class="bn-sticky-sub-input" id="bn-sticky-email" placeholder="your@email.com" />
+        <button class="bn-sticky-sub-btn" onclick="bnSubscribe('sticky')">Subscribe</button>
+      </div>
+      <div id="bn-sticky-sub-success" style="display:none;">
+        <span class="bn-sticky-sub-success">You're in. We'll be in touch.</span>
+      </div>
+      <button class="bn-sticky-sub-close" onclick="bnDismissSticky()">&#x2715;</button>
+    </div>
+  </div>
+
+  <!-- Back to Top -->
+  <button class="bn-back-top" id="bn-back-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">&#x2191;</button>
+
+  <!-- ONE shared 1100px container. Every block aligns to the same edges. -->
+  <div class="bn-page-bg">
+    <div class="bn-container">
+
+      <!-- Top brand strip -->
+      <div class="bn-top-strip">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div class="bn-brand-icon"><span>B</span></div>
+          <span class="bn-brand-name">Bearhug Recruiting</span>
+        </div>
+        <a href="/">&larr; Back to site</a>
+      </div>
+
+      <!-- 1. Headline -->
+      <section class="bn-block">
+        <h1 class="bn-title">Bearhug Network</h1>
+      </section>
+
+      <!-- 2. Stats cards (under headline) -->
+      <section class="bn-block">
+        <div class="bn-grid-3">
+          <div class="bn-stat-card">
+            <p class="bn-stat-number">7,857+</p>
+            <p class="bn-stat-label">introductions facilitated so far...</p>
+          </div>
+          <div class="bn-stat-card">
+            <p class="bn-stat-number">$7Bn+</p>
+            <p class="bn-stat-label">in growth behind leaders we've placed</p>
+          </div>
+          <div class="bn-stat-card">
+            <p class="bn-stat-number">21,594+</p>
+            <p class="bn-stat-label">vetted professionals available</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. Journey cards (between stats and subhead) -->
+      <section class="bn-block">
+        <div class="bn-grid-2">
+          <div class="bn-journey-card">
+            <div class="bn-journey-meta">
+              <span class="bn-badge bn-badge-hiring">HIRING</span>
+              <span class="bn-journey-persona">CEO of a Series B ClimateTech startup needing a CRO</span>
+            </div>
+            <h4>Intro booked in less than 48 hours. Found their CRO.</h4>
+            <p>Four profiles matched. One had the exact enterprise experience they needed. Requested an intro. On the phone within two days.</p>
+          </div>
+          <div class="bn-journey-card">
+            <div class="bn-journey-meta">
+              <span class="bn-badge bn-badge-hired">GETTING HIRED</span>
+              <span class="bn-journey-persona">COO with 20 years in technical consumer brands</span>
+            </div>
+            <h4>Registered on a Tuesday. Met their new CEO by Thursday.</h4>
+            <p>Five-minute signup. Profile live within 24 hours. Hiring CEO found new COO using the network. Fireworks conversation within 36 hours.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 5. Mapbox heatmap -->
+      <section class="bn-block bn-block-tight">
+        <div id="density-map" class="bn-map-wrap"></div>
+      </section>
+
+      <!-- 7. Three action cards (header, v7 emoji icon style) -->
+      <section class="bn-block">
+        <div class="bn-grid-3">
+          <a class="bn-action-card bn-has-icon" href="#" onclick="event.preventDefault();bnTrack('cant_find_clicked',{context:'action_cards_top'});bnOpenScreenPopup('https://cal.mixmax.com/kraigward-722/bearhug-network-inquiry?source=cant_find','cant_find_action')">
+            <div class="bn-action-icon-wrap bn-action-icon-search">&#x1F50D;</div>
+            <div class="bn-action-body">
+              <h4>Can't find the right person?</h4>
+              <p>Request private access to our full database of 21,594+ professionals.</p>
+              <span class="bn-action-link">Request access &rarr;</span>
+            </div>
+          </a>
+          <a class="bn-action-card bn-has-icon" href="https://bearhugrecruiting.com/join-network" target="_blank" rel="noopener" onclick="bnTrack('submit_yourself_clicked',{context:'action_cards_top'})">
+            <div class="bn-action-icon-wrap bn-action-icon-star">&#x2B50;</div>
+            <div class="bn-action-body">
+              <h4>Want to be featured?</h4>
+              <p>Submit your profile and join the network. Takes less than 5 minutes.</p>
+              <span class="bn-action-link">Register now &rarr;</span>
+            </div>
+          </a>
+          <a class="bn-action-card bn-has-icon" href="#" onclick="bnTrack('subscribe_clicked',{context:'action_cards_top'});bnScrollToSubscribe();return false;">
+            <div class="bn-action-icon-wrap bn-action-icon-mail">&#x1F4E7;</div>
+            <div class="bn-action-body">
+              <h4>Stay in the loop</h4>
+              <p>Profiles refreshed daily. Weekly highlights delivered to your inbox.</p>
+              <span class="bn-action-link">Subscribe &rarr;</span>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <!-- 8. Grand Slam (plain bordered white card) -->
+      <section class="bn-block">
+        <div class="bn-grand-slam-card">
+          <h3>When browsing turns into a full search process</h3>
+          <p class="bn-gs-body">While 1-off intros may get the job done, often times a full search process is required. Every Bearhug search engagement includes a complimentary Structural Growth Review where we'll map your leadership team against the leadership benchmark we've developed over 30 years of category-specific searches. You'll walk away with a concrete 90-day Topgrading and sequencing recommendation whether you engage us for a formal search or not. When you do, every search includes a comp benchmarking deck for the role and a qualified shortlist delivered in 21 days.</p>
+          <p class="bn-gs-guarantee">If we can't present a candidate worth interviewing in 30 days, we will cut you a check for $5,000 and keep working until we do.</p>
+        </div>
+      </section>
+
+      <!-- Subhead paragraphs (below Grand Slam) -->
+      <section class="bn-block">
+        <p class="bn-subtitle">What you see below is a freshly curated cross-section of our pre-vetted executive and emerging leader network across the consumer and B2B landscape. Every person featured is either actively exploring their next move or has been in their current role long enough that the right opportunity would get their attention.</p>
+        <p class="bn-subtitle">The network is updated daily with anonymized profiles to protect their identity. Browse to learn what each person has built, the relationships and channels they bring, and what they're open to. Request an intro to anyone, and we'll handle the rest. Subscribe for weekly updates, and book a call for private access to browse our entire database.</p>
+      </section>
+
+      <!-- 9. Network selector (equal 50/50) -->
+      <section class="bn-block">
+        <div class="bn-grid-2">
+          <a class="bn-net-card active" id="toggle-exec" href="#" onclick="switchNetwork('exec');return false;">
+            <h4>Our Executive Network</h4>
+            <p>Director-level and above. Proven executives who've scaled companies through the exact stage you're navigating.</p>
+            <span class="bn-net-count" id="exec-count">61 profiles</span>
+          </a>
+          <a class="bn-net-card" id="toggle-emerging" href="#" onclick="switchNetwork('emerging');return false;">
+            <h4>Our Emerging Leaders Network</h4>
+            <p>Manager and individual contributor. The next generation of functional leaders, earlier in their career and ready to step up.</p>
+            <span class="bn-net-count bn-net-count-soon">Coming soon</span>
+          </a>
+        </div>
+      </section>
+
+      <!-- 10/11. Search + Filters -->
+      <section class="bn-block">
+        <div class="bn-filters">
+          <div class="bn-search-row">
+            <div class="bn-search-wrap">
+              <input type="text" class="bn-search-input" id="bn-search" placeholder="City, state, or keyword (Denver, California, VP Sales, REI, Remote...)" />
+              <button class="bn-search-clear" id="bn-search-clear" type="button" onclick="bnClearSearch()" aria-label="Clear search">&times;</button>
+            </div>
+            <button class="bn-filter-toggle open" id="bn-filter-btn" onclick="bnToggleFilters()">Filters</button>
+            <span class="bn-count" id="bn-count"></span>
+          </div>
+          <div class="bn-filter-row" id="bn-filter-row">
+            <div class="bn-filter-group">
+              <label class="bn-filter-label">Person Type</label>
+              <select class="bn-filter-select" id="bn-filter-type">
+                <option>All Types</option>
+                <option>Operator</option>
+                <option>Founder</option>
+                <option>Investor</option>
+                <option>Board Member / Advisor</option>
+              </select>
+            </div>
+            <div class="bn-filter-group">
+              <label class="bn-filter-label">Function</label>
+              <select class="bn-filter-select" id="bn-filter-fn">
+                <option>All Functions</option>
+                <option>Sales and Commercial</option>
+                <option>Marketing and Brand</option>
+                <option>Product and Design</option>
+                <option>Digital and Ecommerce</option>
+                <option>Engineering and Technology</option>
+                <option>Operations and Supply Chain</option>
+                <option>Finance and Strategy</option>
+                <option>People and Culture</option>
+                <option>Data and Analytics</option>
+                <option>General Management</option>
+                <option>Legal Compliance and Security</option>
+                <option>Customer Success and Support</option>
+              </select>
+            </div>
+            <div class="bn-filter-group">
+              <label class="bn-filter-label">Key Expertise</label>
+              <select class="bn-filter-select" id="bn-filter-expertise">
+                <option>All Expertise</option>
+                <option>DTC / Ecommerce</option>
+                <option>Wholesale / Retail</option>
+                <option>Amazon / Marketplace</option>
+                <option>Brand / Creative / Content</option>
+                <option>Supply Chain / Sourcing</option>
+                <option>Enterprise / Direct Sales</option>
+                <option>Channel / Partner</option>
+                <option>Product-Led Growth</option>
+                <option>Platform / Developer Ecosystem</option>
+                <option>AI / Machine Learning</option>
+                <option>International / Global</option>
+              </select>
+            </div>
+            <div class="bn-filter-group">
+              <label class="bn-filter-label">Stage Experience</label>
+              <select class="bn-filter-select" id="bn-filter-stage">
+                <option value="All Stages">All Stages</option>
+                <option value="Zero-to-One Build">Ground-up build</option>
+                <option value="Early Growth">Early-stage growth</option>
+                <option value="Growth and Expansion">Scaling and expansion</option>
+                <option value="At-Scale Operations">Large-org leadership</option>
+                <option value="Turnaround / Transformation">Turnaround and transformation</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 12. Profile cards (show all) -->
+      <main class="bn-block bn-main" id="bn-main">
+        <div class="bn-grid" id="bn-grid">
+          <div class="bn-skeleton-card"><div class="bn-skeleton-bar"></div><div class="bn-skeleton-line long"></div><div class="bn-skeleton-line med"></div><div class="bn-skeleton-line long"></div><div class="bn-skeleton-line short"></div></div>
+          <div class="bn-skeleton-card"><div class="bn-skeleton-bar"></div><div class="bn-skeleton-line long"></div><div class="bn-skeleton-line med"></div><div class="bn-skeleton-line long"></div><div class="bn-skeleton-line short"></div></div>
+          <div class="bn-skeleton-card"><div class="bn-skeleton-bar"></div><div class="bn-skeleton-line long"></div><div class="bn-skeleton-line med"></div><div class="bn-skeleton-line long"></div><div class="bn-skeleton-line short"></div></div>
+        </div>
+        <div class="bn-grid-cap" id="bn-grid-cap" style="display:none;">
+          <span class="bn-grid-cap-msg" id="bn-grid-cap-msg"></span>
+          <a class="bn-grid-cap-link" href="#" onclick="bnShowAllCards();return false;">Show all &rarr;</a>
+        </div>
+      </main>
+
+      <!-- 13/14/15/16. Dark rounded footer (CTAs + practices + brand row) -->
+      <footer class="bn-block bn-dark-footer">
+        <div class="bn-dark-cta-row">
+          <a class="bn-dark-cta bn-dark-cta-gold" href="#" onclick="event.preventDefault();bnTrack('cant_find_clicked',{context:'footer_dark_cta'});bnOpenScreenPopup('https://cal.mixmax.com/kraigward-722/bearhug-network-inquiry?source=browse_database','browse_full_database')">
+            <svg class="bn-dark-cta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M3 5v6c0 1.66 4.03 3 9 3s9-1.34 9-3V5"></path><path d="M3 11v6c0 1.66 4.03 3 9 3s9-1.34 9-3v-6"></path></svg>
+            <span class="bn-dark-cta-body">
+              <span>Request to browse the full network</span>
+              <span class="bn-dark-cta-sub">21,594+ and growing</span>
+            </span>
+          </a>
+          <a class="bn-dark-cta bn-dark-cta-muted" href="https://bearhugrecruiting.com/join-network" target="_blank" rel="noopener" onclick="bnTrack('submit_yourself_clicked',{context:'footer_dark_cta'})">
+            <svg class="bn-dark-cta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><line x1="19" y1="8" x2="19" y2="14"></line><line x1="22" y1="11" x2="16" y2="11"></line></svg>
+            <span class="bn-dark-cta-body">
+              <span>Register yourself to be featured</span>
+              <span class="bn-dark-cta-sub">Takes less than 5 minutes</span>
+            </span>
+          </a>
+          <a class="bn-dark-cta bn-dark-cta-muted" href="#" onclick="bnScrollToSubscribe();return false;">
+            <svg class="bn-dark-cta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2" ry="2"></rect><polyline points="3 7 12 13 21 7"></polyline></svg>
+            <span class="bn-dark-cta-body">
+              <span>Subscribe for weekly updates</span>
+              <span class="bn-dark-cta-sub">Get first dibs on the best new profiles</span>
+            </span>
+          </a>
+        </div>
+
+        <div class="bn-dark-practices">
+          <div class="bn-dark-practice">
+            <div class="bn-dark-practice-head">
+              <span class="bn-dark-practice-dot" style="background-color:#B8963E;"></span>
+              Human Performance Brands
+            </div>
+            <p class="bn-dark-practice-desc">Product, commercial, and operational executive search. Performance apparel, footwear, fitness, action sports, outdoor gear, nutrition, wellness. Brands doing $50M to $500M+.</p>
+            <a class="bn-dark-practice-link" href="https://www.bearhugrecruiting.com/hpb" target="_blank" rel="noopener noreferrer" onclick="bnTrack('deck_viewed',{practice:'hpb'})">Practice overview &rarr;</a>
+          </div>
+          <div class="bn-dark-practice">
+            <div class="bn-dark-practice-head">
+              <span class="bn-dark-practice-dot" style="background-color:#1a5276;"></span>
+              Environmental &amp; DeepTech
+            </div>
+            <p class="bn-dark-practice-desc">GTM, product, and finance executive search. Early- and growth-stage environmental technology and deep-tech startups. Scale-ups doing $3M to $50M+.</p>
+            <a class="bn-dark-practice-link" href="https://drive.google.com/file/d/1V5xut-bFge0djOZTIwTQSmA1Wq0F-J7H/view" target="_blank" rel="noopener noreferrer" onclick="bnTrack('deck_viewed',{practice:'tech'})">Practice overview &rarr;</a>
+          </div>
+        </div>
+
+        <hr class="bn-dark-divider" />
+
+        <div class="bn-dark-brand-row">
+          <div class="bn-dark-brand">
+            <div class="bn-brand-icon"><span>B</span></div>
+            <span class="bn-brand-name">Bearhug Recruiting</span>
+          </div>
+          <div class="bn-dark-contacts">
+            <a href="https://www.bearhugrecruiting.com" target="_blank" rel="noopener noreferrer">BearhugRecruiting.com</a>
+            <a href="mailto:hello@bearhugrecruiting.com">hello@bearhugrecruiting.com</a>
+            <a href="tel:+18583246480">(858) 324-6480</a>
+          </div>
+        </div>
+        <div class="bn-dark-copyright">Copyright 2026 Bearhug Recruiting</div>
+      </footer>
+
+    </div>
+  </div>
+
+<script>
+(function() {
+  'use strict';
+
+  /* ==============================================
+     CONFIG
+     ============================================== */
+  // v8: external JSON URLs (overridable via window.BEARHUG_DATA_URL for Tier 2 private page)
+  var DATA_URL = window.BEARHUG_DATA_URL || 'https://kmfwinc.github.io/bearhug-network/exec-profiles.json';
+  var EXEC_URL = 'https://kmfwinc.github.io/bearhug-network/exec-profiles.json';
+  var EMERGING_URL = 'https://kmfwinc.github.io/bearhug-network/emerging-profiles.json';
+  // Globe pin coordinates, generated weekly by scripts/generate-globe-locations.js.
+  // Fetched alongside the profile JSON; overrides data.map_dots when non-empty.
+  // Fail-soft. on fetch error MAP_DOTS falls back to generateFallbackDots().
+  var GLOBE_URL = 'https://kmfwinc.github.io/bearhug-network/globe-locations.json';
+  var LEGACY_DATA_URL = 'https://kmfwinc.github.io/bearhug-brain/bearhug-network-data.json';
+  var MIXMAX_BASE = 'https://cal.mixmax.com/kraigward-722/bearhug-network-intro-request';
+  var MIXMAX_INQUIRY = 'https://cal.mixmax.com/kraigward-722/bearhug-network-inquiry';
+  var BOOK_DISCOVERY_URL = 'https://cal.mixmax.com/kraigward-722/30-min-bd-discovery';
+  var SUBSCRIBE_PROXY_URL = 'https://script.google.com/macros/s/AKfycbyEBIMZfvlTvruRoBRGLU7Shq7raHhEFna78PUDOMjiqaTCy50eUidJSR5hEGBBK43h/exec';
+  var GA4_ID = 'G-85N316YN9J';
+
+  // v8: shared data state
+  var FILTER_COUNTS = {};
+  var MAP_DOTS = [];
+  var densityMapInstance = null;
+  var TOTAL_NETWORK_SIZE = 21594;
+
+  /* ==============================================
+     CONSTANTS
+     ============================================== */
+  var PERSON_TYPE_COLORS = {
+    'Operator': '#2C5F7C',
+    'Founder': '#8B5E3C',
+    'Investor': '#5F4B8B',
+    'Board Member / Advisor': '#4A6741'
+  };
+  var DISPOSITION_COLORS = {
+    'Actively Looking': '#4a7c59',
+    'Passively Open': '#6B7C8D',
+    'Open to Fractional / Advisory': '#B8963E',
+    'Seeking Board Seats': '#5F4B8B',
+    'Seeking Capital': '#9B6A2F'
+  };
+  var DISPOSITION_ORDER = ['Actively Looking', 'Passively Open', 'Open to Fractional / Advisory', 'Seeking Board Seats', 'Seeking Capital'];
+
+  /* ==============================================
+     STATE
+     ============================================== */
+  var allProfiles = [];
+  var filteredProfiles = [];
+  var DEFAULT_CARD_LIMIT = 9;
+  var showAllCards = false;
+  var filtersOpen = true;
+  var searchTimeout = null;
+  var isInternal = (window.location.search.indexOf('internal=true') > -1);
+
+  /* ==============================================
+     GA4 TRACKING
+     ============================================== */
+  var firstActionEvents = {
+    search_entered: 1, filter_applied: 1, card_expanded: 1,
+    intro_requested: 1, screen_popup_opened: 1,
+    share_copy: 1, share_linkedin: 1, share_x: 1,
+    subscribe_completed: 1, subscribe_popup_opened: 1,
+    deck_viewed: 1
+  };
+
+  window.bnTrack = function(eventName, params) {
+    if (isInternal) return;
+    if (typeof gtag === 'function') {
+      gtag('event', eventName, params || {});
+      if (!firstActionFired && firstActionEvents[eventName]) {
+        firstActionFired = true;
+        var seconds = Math.round((Date.now() - pageLoadTime) / 1000);
+        gtag('event', 'time_to_first_action', {
+          seconds: seconds,
+          first_action: eventName
+        });
+      }
+    }
+  };
+
+  /* ==============================================
+     BEEHIIV SUBSCRIBE
+     ============================================== */
+  function bnSetCookie(name, value, days) {
+    var expires = '';
+    if (days) {
+      var d = new Date();
+      d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+      expires = '; expires=' + d.toUTCString();
+    }
+    document.cookie = name + '=' + value + expires + '; path=/; SameSite=Lax';
+  }
+
+  function bnGetCookie(name) {
+    var match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+    return match ? match[2] : null;
+  }
+
+  var bnAlreadySubscribed = bnGetCookie('bn_subscribed') === '1';
+
+  window.bnSubscribe = function(source) {
+    var emailEl, formEl, successEl;
+    if (source === 'popup') {
+      emailEl = document.getElementById('bn-sub-popup-email');
+      formEl = document.getElementById('bn-sub-popup-form-state');
+      successEl = document.getElementById('bn-sub-popup-success-state');
+    } else if (source === 'sticky') {
+      emailEl = document.getElementById('bn-sticky-email');
+      formEl = document.getElementById('bn-sticky-sub-form');
+      successEl = document.getElementById('bn-sticky-sub-success');
+    } else {
+      emailEl = document.getElementById('bn-inline-email');
+      formEl = document.getElementById('bn-inline-subscribe-form');
+      successEl = document.getElementById('bn-inline-subscribe-success');
+    }
+    var email = (emailEl.value || '').trim();
+    if (!email || email.indexOf('@') === -1) {
+      emailEl.style.borderColor = '#c44';
+      return;
+    }
+    emailEl.style.borderColor = '';
+
+    fetch(SUBSCRIBE_PROXY_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({
+        email: email,
+        utm_source: 'bearhug_network',
+        utm_medium: 'web',
+        utm_campaign: source
+      })
+    }).then(function() {
+      formEl.style.display = 'none';
+      successEl.style.display = 'block';
+      bnSetCookie('bn_subscribed', '1', 365);
+      bnAlreadySubscribed = true;
+      bnTrack('subscribe_completed', { capture_point: source });
+      // Hide sticky bar after successful subscribe from any source
+      var stickyEl = document.getElementById('bn-sticky-sub');
+      if (stickyEl) stickyEl.classList.remove('visible');
+      stickyDismissed = true;
+    }).catch(function(err) {
+      console.error('Beehiiv subscribe error:', err);
+      formEl.style.display = 'none';
+      successEl.style.display = 'block';
+      bnSetCookie('bn_subscribed', '1', 365);
+      bnAlreadySubscribed = true;
+    });
+  };
+
+  /* ==============================================
+     STICKY SUBSCRIBE BAR
+     ============================================== */
+  var stickyDismissed = bnGetCookie('bn_sticky_dismissed') === '1';
+
+  window.bnDismissSticky = function() {
+    document.getElementById('bn-sticky-sub').classList.remove('visible');
+    stickyDismissed = true;
+    // Persist the dismissal for 30 days so the bar doesn't reappear on refresh.
+    bnSetCookie('bn_sticky_dismissed', '1', 30);
+    bnTrack('sticky_bar_dismissed', {});
+  };
+
+  window.bnScrollToSubscribe = function() {
+    document.getElementById('bn-sub-popup').style.display = 'flex';
+    bnTrack('subscribe_popup_opened', {});
+    setTimeout(function() {
+      document.getElementById('bn-sub-popup-email').focus();
+    }, 100);
+  };
+
+  window.bnCloseSubPopup = function() {
+    document.getElementById('bn-sub-popup').style.display = 'none';
+  };
+
+  function initStickyBar() {
+    if (stickyDismissed || bnAlreadySubscribed) return;
+    window.addEventListener('scroll', function onScroll() {
+      if (stickyDismissed || bnAlreadySubscribed) { window.removeEventListener('scroll', onScroll); return; }
+      if (window.scrollY > 400) {
+        document.getElementById('bn-sticky-sub').classList.add('visible');
+        window.removeEventListener('scroll', onScroll);
+      }
+    });
+  }
+
+  /* ==============================================
+     BACK TO TOP
+     ============================================== */
+  function initBackToTop() {
+    var btn = document.getElementById('bn-back-top');
+    window.addEventListener('scroll', function() {
+      if (window.scrollY > 600) {
+        btn.classList.add('visible');
+      } else {
+        btn.classList.remove('visible');
+      }
+    });
+  }
+
+  /* ==============================================
+     FILTERS
+     ============================================== */
+  window.bnToggleFilters = function() {
+    filtersOpen = !filtersOpen;
+    var row = document.getElementById('bn-filter-row');
+    var btn = document.getElementById('bn-filter-btn');
+    row.style.display = filtersOpen ? 'flex' : 'none';
+    btn.className = 'bn-filter-toggle ' + (filtersOpen ? 'open' : 'closed');
+    btn.innerHTML = 'Filters';
+  };
+
+  /* -- Metro Mapping -- */
+  var METRO_MAP = {
+    'San Francisco': 'Bay Area', 'Palo Alto': 'Bay Area', 'San Jose': 'Bay Area',
+    'Mountain View': 'Bay Area', 'Oakland': 'Bay Area', 'Sunnyvale': 'Bay Area',
+    'Menlo Park': 'Bay Area', 'Redwood City': 'Bay Area', 'Santa Clara': 'Bay Area',
+    'Berkeley': 'Bay Area',
+    'Los Angeles': 'Los Angeles', 'Santa Monica': 'Los Angeles', 'Burbank': 'Los Angeles',
+    'Pasadena': 'Los Angeles', 'Long Beach': 'Los Angeles', 'Culver City': 'Los Angeles',
+    'Manhattan Beach': 'Los Angeles', 'El Segundo': 'Los Angeles',
+    'Irvine': 'Orange County', 'Costa Mesa': 'Orange County', 'Newport Beach': 'Orange County',
+    'Huntington Beach': 'Orange County', 'Anaheim': 'Orange County',
+    'San Diego': 'San Diego', 'Carlsbad': 'San Diego', 'Encinitas': 'San Diego',
+    'Del Mar': 'San Diego', 'Oceanside': 'San Diego',
+    'Portland': 'Portland', 'Beaverton': 'Portland', 'Lake Oswego': 'Portland',
+    'Hillsboro': 'Portland',
+    'Seattle': 'Seattle', 'Bellevue': 'Seattle', 'Redmond': 'Seattle',
+    'Kirkland': 'Seattle', 'Tacoma': 'Seattle',
+    'Denver': 'Denver', 'Boulder': 'Denver', 'Broomfield': 'Denver',
+    'Golden': 'Denver', 'Lakewood': 'Denver', 'Littleton': 'Denver',
+    'Aurora': 'Denver', 'Arvada': 'Denver',
+    'Salt Lake City': 'Salt Lake City', 'Park City': 'Salt Lake City',
+    'Provo': 'Salt Lake City', 'Orem': 'Salt Lake City', 'Ogden': 'Salt Lake City',
+    'Lehi': 'Salt Lake City', 'Draper': 'Salt Lake City',
+    'Boise': 'Boise', 'Meridian': 'Boise', 'Eagle': 'Boise', 'Nampa': 'Boise',
+    'Jackson': 'Jackson', 'Teton Village': 'Jackson',
+    'Phoenix': 'Phoenix', 'Scottsdale': 'Phoenix', 'Tempe': 'Phoenix',
+    'Mesa': 'Phoenix', 'Chandler': 'Phoenix',
+    'Chicago': 'Chicago', 'Evanston': 'Chicago', 'Naperville': 'Chicago',
+    'Schaumburg': 'Chicago', 'Oak Brook': 'Chicago', 'Lake Forest': 'Chicago',
+    'Minneapolis': 'Minneapolis', 'St. Paul': 'Minneapolis', 'Minnetonka': 'Minneapolis',
+    'Edina': 'Minneapolis', 'Bloomington': 'Minneapolis',
+    'Austin': 'Austin', 'Round Rock': 'Austin', 'Cedar Park': 'Austin',
+    'Dallas': 'Dallas', 'Fort Worth': 'Dallas', 'Plano': 'Dallas',
+    'Frisco': 'Dallas', 'Richardson': 'Dallas', 'Irving': 'Dallas', 'Arlington': 'Dallas',
+    'Houston': 'Houston', 'The Woodlands': 'Houston', 'Sugar Land': 'Houston',
+    'Nashville': 'Nashville', 'Franklin': 'Nashville', 'Brentwood': 'Nashville',
+    'Atlanta': 'Atlanta', 'Alpharetta': 'Atlanta', 'Buckhead': 'Atlanta',
+    'Marietta': 'Atlanta', 'Decatur': 'Atlanta', 'Sandy Springs': 'Atlanta',
+    'Charlotte': 'Charlotte', 'Huntersville': 'Charlotte', 'Cornelius': 'Charlotte',
+    'Miami': 'Miami', 'Fort Lauderdale': 'Miami', 'Coral Gables': 'Miami',
+    'Boca Raton': 'Miami', 'West Palm Beach': 'Miami',
+    'Charleston': 'Charleston', 'Mount Pleasant': 'Charleston', 'Summerville': 'Charleston',
+    'New York': 'New York', 'Manhattan': 'New York', 'Brooklyn': 'New York',
+    'Hoboken': 'New York', 'Jersey City': 'New York', 'Greenwich': 'New York',
+    'Stamford': 'New York', 'Westchester': 'New York',
+    'Boston': 'Boston', 'Cambridge': 'Boston', 'Somerville': 'Boston',
+    'Brookline': 'Boston', 'Newton': 'Boston', 'Waltham': 'Boston',
+    'Philadelphia': 'Philadelphia', 'King of Prussia': 'Philadelphia',
+    'Wayne': 'Philadelphia', 'Malvern': 'Philadelphia',
+    'Washington': 'Washington DC', 'DC': 'Washington DC', 'Arlington': 'Washington DC',
+    'Bethesda': 'Washington DC', 'McLean': 'Washington DC', 'Reston': 'Washington DC',
+    'Alexandria': 'Washington DC', 'Tysons': 'Washington DC',
+    'London': 'London', 'Toronto': 'Toronto', 'Vancouver': 'Vancouver'
+  };
+
+  function getMetroLabel(region) {
+    if (!region) return '';
+    var city = region.split(',')[0].trim();
+    return METRO_MAP[city] || region;
+  }
+
+  window.bnClearSearch = function() {
+    var input = document.getElementById('bn-search');
+    input.value = '';
+    document.getElementById('bn-search-clear').style.display = 'none';
+    applyFilters();
+    input.focus();
+  };
+
+    function getFilters() {
+    return {
+      search: (document.getElementById('bn-search').value || '').trim().toLowerCase(),
+      type: document.getElementById('bn-filter-type').value,
+      fn: document.getElementById('bn-filter-fn').value,
+      expertise: document.getElementById('bn-filter-expertise').value,
+      stage: document.getElementById('bn-filter-stage').value
+    };
+  }
+
+  function matchesFilter(profile, filters) {
+    if (filters.type !== 'All Types') {
+      if (!profile.person_types || profile.person_types.indexOf(filters.type) === -1) return false;
+    }
+    if (filters.fn !== 'All Functions') {
+      if (!profile.functions || profile.functions.indexOf(filters.fn) === -1) return false;
+    }
+    if (filters.expertise !== 'All Expertise') {
+      if (!profile.channel_expertise || profile.channel_expertise.indexOf(filters.expertise) === -1) return false;
+    }
+    if (filters.stage !== 'All Stages') {
+      if (!profile.stage_experience || profile.stage_experience.indexOf(filters.stage) === -1) return false;
+    }
+
+    if (filters.search) {
+      var metroLabel = getMetroLabel(profile.region || '');
+      var dispositionsLower = (profile.dispositions || []).join(' ').toLowerCase();
+      var lookingForLower = (profile.looking_for || '').toLowerCase();
+      var regionUpper = (profile.region || '').toUpperCase();
+
+      var haystack = [
+        (profile.id || ''),
+        (profile.summary || ''),
+        (profile.key_relationships || ''),
+        (profile.looking_for || ''),
+        (profile.career_highlights || ''),
+        (profile.region || ''),
+        metroLabel,
+        (profile.person_types || []).join(' '),
+        (profile.functions || []).join(' '),
+        (profile.sub_sectors || []).join(' '),
+        (profile.channel_expertise || []).join(' '),
+        (profile.stage_experience || []).join(' '),
+        (profile.dispositions || []).join(' ')
+      ].join(' ').toLowerCase();
+
+      var terms = filters.search.split(/\s+/);
+      for (var i = 0; i < terms.length; i++) {
+        var term = terms[i];
+        if (!term) continue;
+        if (haystack.indexOf(term) !== -1) continue;
+
+        // "Remote" keyword (v8 change 10)
+        if (term === 'remote') {
+          if (dispositionsLower.indexOf('remote') !== -1 || lookingForLower.indexOf('remote') !== -1) continue;
+        }
+
+        // Full state name matching (v8 change 10)
+        if (window.STATE_MAP) {
+          var matched = false;
+          for (var abbr in window.STATE_MAP) {
+            if (!Object.prototype.hasOwnProperty.call(window.STATE_MAP, abbr)) continue;
+            var fullName = window.STATE_MAP[abbr];
+            if (term === fullName.toLowerCase() || term === abbr.toLowerCase()) {
+              if (regionUpper.indexOf(abbr.toUpperCase()) !== -1) { matched = true; break; }
+            }
+          }
+          if (matched) continue;
+        }
+
+        return false;
+      }
+    }
+    return true;
+  }
+
+  function isUnfiltered(filters) {
+    return !filters.search
+      && filters.type === 'All Types'
+      && filters.fn === 'All Functions'
+      && filters.expertise === 'All Expertise'
+      && filters.stage === 'All Stages';
+  }
+
+  function applyFilters() {
+    var filters = getFilters();
+    // Re-evaluate cap on every filter change. Filtered/searched states bypass the limit.
+    showAllCards = false;
+    filteredProfiles = allProfiles.filter(function(p) { return matchesFilter(p, filters); });
+    bnShuffleProfiles(filteredProfiles);
+    renderCards();
+    updateCount();
+
+    if (filters.search) bnTrack('search_entered', { query: filters.search });
+    if (filters.type !== 'All Types') bnTrack('filter_applied', { filter_type: 'person_type', filter_value: filters.type });
+    if (filters.fn !== 'All Functions') bnTrack('filter_applied', { filter_type: 'function', filter_value: filters.fn });
+    if (filters.expertise !== 'All Expertise') bnTrack('filter_applied', { filter_type: 'key_expertise', filter_value: filters.expertise });
+    if (filters.stage !== 'All Stages') bnTrack('filter_applied', { filter_type: 'stage_experience', filter_value: filters.stage });
+
+    if (filteredProfiles.length === 0) {
+      bnTrack('zero_results', { query: filters.search, filters: filters.type + '|' + filters.fn + '|' + filters.expertise + '|' + filters.stage });
+    }
+  }
+
+  function updateCount() {
+    document.getElementById('bn-count').innerHTML = '<strong>' + filteredProfiles.length + '</strong>/' + allProfiles.length;
+  }
+
+  /* ==============================================
+     CARD RENDERING
+     ============================================== */
+  function buildIntroUrl(profile) {
+    var profileLabel = profile.id;
+    if (profile.functions && profile.functions.length) profileLabel += ' | ' + profile.functions[0];
+
+    if (profile.region) profileLabel += ' | ' + profile.region;
+    return MIXMAX_BASE + '?profile=' + encodeURIComponent(profileLabel);
+  }
+
+  function renderCard(profile, index) {
+    var pt = (profile.person_types || ['Operator']);
+    var primaryColor = PERSON_TYPE_COLORS[pt[0]] || '#2C5F7C';
+    var fns = (profile.functions || []).join(', ');
+    var expertise = (profile.channel_expertise || []);
+
+    var typePills = pt.map(function(t) {
+      return '<span class="bn-card-type-pill" style="background-color:' + (PERSON_TYPE_COLORS[t] || '#2C5F7C') + ';">' + t + '</span>';
+    }).join('');
+    var expertisePills = expertise.map(function(e) {
+      return '<span class="bn-card-sector-pill">' + e + '</span>';
+    }).join('');
+
+    var sortedDisps = (profile.dispositions || []).slice().sort(function(a, b) {
+      return (DISPOSITION_ORDER.indexOf(a) === -1 ? 99 : DISPOSITION_ORDER.indexOf(a)) - (DISPOSITION_ORDER.indexOf(b) === -1 ? 99 : DISPOSITION_ORDER.indexOf(b));
+    });
+    var dispBadges = sortedDisps.map(function(d) {
+      var color = DISPOSITION_COLORS[d] || '#999';
+      return '<span class="bn-disposition-badge" style="background-color:' + color + '15;color:' + color + ';"><span class="bn-disposition-dot" style="background-color:' + color + ';opacity:' + (d === 'Actively Looking' ? '1' : '0.6') + ';"></span>' + d + '</span>';
+    }).join('');
+
+    var introUrl = buildIntroUrl(profile);
+    var cardId = 'card-' + profile.id;
+
+    var html = '<div class="bn-card" style="animation:fadeUp 0.4s ease ' + (index * 0.04) + 's both;">';
+    html += '<div class="bn-card-bar" style="background-color:' + primaryColor + ';"></div>';
+    html += '<div class="bn-card-body">';
+    html += '<div class="bn-card-tags">';
+    html += '<span class="bn-card-id">' + profile.id + '</span>';
+    html += typePills + expertisePills;
+    html += '</div>';
+    var displayRegion = getMetroLabel(profile.region || '');
+    html += '<div class="bn-card-meta">' + fns + (displayRegion ? ' &middot; ' + displayRegion : '') + '</div>';
+    html += '<p class="bn-card-summary clamped" id="summary-' + profile.id + '">' + (profile.summary || '') + '</p>';
+
+    // Expanded content (hidden by default)
+    html += '<div class="bn-card-expanded" id="expanded-' + profile.id + '" style="display:none;">';
+    if (profile.looking_for) {
+      html += '<p class="bn-card-expanded-label">Looking to Connect With</p>';
+      html += '<p class="bn-card-expanded-text">' + profile.looking_for + '</p>';
+    }
+    if (profile.key_relationships) {
+      html += '<p class="bn-card-expanded-label" style="margin-top:12px;">Key Relationships</p>';
+      html += '<p class="bn-card-expanded-text">' + profile.key_relationships + '</p>';
+    }
+    if (profile.career_highlights) {
+      html += '<p class="bn-card-expanded-label" style="margin-top:12px;">Career Highlights</p>';
+      html += '<p class="bn-card-expanded-text">' + profile.career_highlights + '</p>';
+    }
+    html += '</div>';
+
+    html += '<div class="bn-card-dispositions">' + dispBadges + '</div>';
+    html += '<button class="bn-card-toggle" id="toggle-' + profile.id + '" onclick="bnToggleCard(\'' + profile.id + '\')">Read full profile &#x2193;</button>';
+    html += '</div>';
+    html += '<div class="bn-card-cta">';
+    html += '<a href="' + introUrl + '" class="bn-intro-btn" onclick="event.preventDefault();bnOpenScreenPopup(\'' + introUrl + '\',\'' + profile.id + '\')">Request Introduction</a>';
+    html += '<div class="bn-share-row">';
+    html += '<button class="bn-share-btn" onclick="bnShareProfile(\'' + profile.id + '\', this)">&#x1F517; Copy Link</button>';
+    html += '<a class="bn-share-btn" href="https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent('https://www.bearhugrecruiting.com/network?q=' + profile.id) + '" target="_blank" rel="noopener noreferrer" onclick="bnTrack(\'share_linkedin\',{profile_id:\'' + profile.id + '\'})"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg> LinkedIn</a>';
+    html += '<a class="bn-share-btn" href="https://x.com/intent/tweet?url=' + encodeURIComponent('https://www.bearhugrecruiting.com/network?q=' + profile.id) + '&text=' + encodeURIComponent('Check out this leadership profile on the Bearhug Network') + '" target="_blank" rel="noopener noreferrer" onclick="bnTrack(\'share_x\',{profile_id:\'' + profile.id + '\'})"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg> Share</a>';
+    html += '</div>';
+    html += '</div>';
+    html += '</div>';
+    return html;
+  }
+
+  window.bnToggleCard = function(id) {
+    var summary = document.getElementById('summary-' + id);
+    var expanded = document.getElementById('expanded-' + id);
+    var toggle = document.getElementById('toggle-' + id);
+    var isExpanded = expanded.style.display !== 'none';
+
+    if (isExpanded) {
+      summary.classList.add('clamped');
+      expanded.style.display = 'none';
+      toggle.innerHTML = 'Read full profile &#x2193;';
+    } else {
+      summary.classList.remove('clamped');
+      expanded.style.display = 'block';
+      toggle.innerHTML = 'Show less &#x2191;';
+      bnTrack('profile_expanded', { profile_id: id });
+    }
+  };
+
+  function renderCards() {
+    var grid = document.getElementById('bn-grid');
+    var capEl = document.getElementById('bn-grid-cap');
+    var capMsgEl = document.getElementById('bn-grid-cap-msg');
+    if (filteredProfiles.length === 0) {
+      grid.innerHTML = '<div id="zero-results" style="grid-column:1/-1;text-align:center;padding:48px 24px;">'
+        + '<h3 style="font-family:\'Playfair Display\',serif;font-size:1.5rem;color:#0E0E0E;margin-bottom:12px;">You\'ve gotten very specific.</h3>'
+        + '<p style="font-family:\'DM Sans\',sans-serif;font-size:1rem;color:#555;margin-bottom:8px;">The right person may already be in our full database of 21,594+ professionals.</p>'
+        + '<p style="font-family:\'DM Sans\',sans-serif;font-size:0.95rem;color:#555;margin-bottom:24px;">You\'re browsing a curated selection from a much larger network.</p>'
+        + '<a href="https://cal.mixmax.com/kraigward-722/30-min-bd-discovery" target="_blank" rel="noopener noreferrer" onclick="bnTrack(\'zero_results_cta\',{context:\'zero_results\'})" style="display:inline-block;padding:12px 28px;background:#B8963E;color:#fff;font-family:\'DM Sans\',sans-serif;font-weight:600;text-decoration:none;border-radius:4px;">Let\'s talk</a>'
+        + '</div>';
+      if (capEl) capEl.style.display = 'none';
+      return;
+    }
+    // Cap to DEFAULT_CARD_LIMIT only when no filter or search is active.
+    var shouldCap = isUnfiltered(getFilters()) && !showAllCards && filteredProfiles.length > DEFAULT_CARD_LIMIT;
+    var visible = shouldCap ? filteredProfiles.slice(0, DEFAULT_CARD_LIMIT) : filteredProfiles;
+    grid.innerHTML = visible.map(function(p, i) { return renderCard(p, i); }).join('');
+    if (capEl) {
+      if (shouldCap) {
+        capMsgEl.textContent = 'Showing ' + DEFAULT_CARD_LIMIT + ' of ' + filteredProfiles.length + ' profiles. Use the filters above to find exactly who you\'re looking for.';
+        capEl.style.display = '';
+      } else {
+        capEl.style.display = 'none';
+      }
+    }
+  }
+
+  window.bnShowAllCards = function() {
+    showAllCards = true;
+    bnTrack('show_all_cards', { total: filteredProfiles.length });
+    renderCards();
+  };
+
+  /* ==============================================
+     SCROLL DEPTH TRACKING
+     ============================================== */
+  function initScrollTracking() {
+    var milestones = { 25: false, 50: false, 75: false, 100: false };
+    window.addEventListener('scroll', function() {
+      var pct = Math.round((window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100);
+      [25, 50, 75, 100].forEach(function(m) {
+        if (pct >= m && !milestones[m]) {
+          milestones[m] = true;
+          bnTrack('scroll_depth', { percentage: m });
+        }
+      });
+    });
+  }
+
+  /* ==============================================
+     DUMMY DATA (for testing before JSON is live)
+     ============================================== */
+  var DUMMY_PROFILES = [
+  {
+    "id": "BH-001",
+    "person_types": [
+      "Operator"
+    ],
+    "functions": [
+      "Sales and Commercial"
+    ],
+    "sub_sectors": [
+      "Apparel and Fashion"
+    ],
+    "dispositions": [
+      "Passively Open"
+    ],
+    "region": "San Francisco, CA",
+    "summary": "Built and scaled wholesale from $40M to $180M at a founder-led activewear brand. Deep Nordstrom, REI, and Dick's relationships. Left after PE acquisition reshaped the commercial team.",
+    "key_relationships": "REI, Nordstrom, Dick's Sporting Goods, Academy Sports",
+    "looking_for": "Founder-led brands between $30M and $200M that need experienced leadership to professionalize and scale. Other operators navigating similar growth transitions who want to compare notes.",
+    "career_highlights": "",
+    "channel_expertise": [
+      "Wholesale / Retail",
+      "DTC / Ecommerce"
+    ],
+    "stage_experience": [
+      "Zero-to-One Build",
+      "Growth and Expansion"
+    ]
+  },
+  {
+    "id": "BH-002",
+    "person_types": [
+      "Operator"
+    ],
+    "functions": [
+      "Sales and Commercial"
+    ],
+    "sub_sectors": [
+      "Footwear"
+    ],
+    "dispositions": [
+      "Actively Looking"
+    ],
+    "region": "Denver, CO",
+    "summary": "Opened 3 new national retail channels for a $90M fitness brand, growing wholesale revenue by 45% in 2 years. Built a 12-person national accounts team from scratch. Landed the brand's first Costco program.",
+    "key_relationships": "Costco, Target, Walmart Sporting Goods, Amazon",
+    "looking_for": "Founder-led brands between $30M and $200M that need experienced leadership to professionalize and scale. Other operators navigating similar growth transitions who want to compare notes.",
+    "career_highlights": "",
+    "channel_expertise": [
+      "DTC / Ecommerce",
+      "Amazon / Marketplace"
+    ],
+    "stage_experience": [
+      "Early Growth",
+      "At-Scale Operations"
+    ]
+  },
+  {
+    "id": "BH-003",
+    "person_types": [
+      "Operator"
+    ],
+    "functions": [
+      "Sales and Commercial"
+    ],
+    "sub_sectors": [
+      "Outdoor and Active Lifestyle"
+    ],
+    "dispositions": [
+      "Passively Open"
+    ],
+    "region": "Portland, OR",
+    "summary": "Led North America sales for a $200M performance footwear company. Managed 40-person field sales org across specialty, sporting goods, and department store channels.",
+    "key_relationships": "Backcountry, Moosejaw, Bass Pro Shops",
+    "looking_for": "Founder-led brands between $30M and $200M that need experienced leadership to professionalize and scale. Other operators navigating similar growth transitions who want to compare notes.",
+    "career_highlights": "",
+    "channel_expertise": [
+      "Amazon / Marketplace",
+      "Enterprise / Direct Sales"
+    ],
+    "stage_experience": [
+      "Growth and Expansion",
+      "Turnaround / Transformation"
+    ]
+  },
+  {
+    "id": "BH-004",
+    "person_types": [
+      "Operator"
+    ],
+    "functions": [
+      "Sales and Commercial"
+    ],
+    "sub_sectors": [
+      "Fitness"
+    ],
+    "dispositions": [
+      "Actively Looking"
+    ],
+    "region": "Los Angeles, CA",
+    "summary": "Grew DTC and wholesale revenue from $15M to $65M at a premium outdoor apparel brand. Built the national accounts function and opened Target, REI, and Backcountry.",
+    "key_relationships": "Whole Foods, Sprouts, GNC, Vitamin Shoppe",
+    "looking_for": "Founder-led brands between $30M and $200M that need experienced leadership to professionalize and scale. Other operators navigating similar growth transitions who want to compare notes.",
+    "career_highlights": "",
+    "channel_expertise": [
+      "Enterprise / Direct Sales",
+      "Channel / Partner"
+    ],
+    "stage_experience": [
+      "At-Scale Operations",
+      "Zero-to-One Build"
+    ]
+  },
+  {
+    "id": "BH-005",
+    "person_types": [
+      "Operator"
+    ],
+    "functions": [
+      "Sales and Commercial"
+    ],
+    "sub_sectors": [
+      "Outdoor and Active Lifestyle"
+    ],
+    "dispositions": [
+      "Passively Open"
+    ],
+    "region": "Austin, TX",
+    "summary": "Scaled a nutrition brand's wholesale from zero to $28M in 3 years. Opened Whole Foods, Sprouts, and GNC nationally. Built broker network across 6 regions.",
+    "key_relationships": "Specialty retail network across 6 regions",
+    "looking_for": "Founder-led brands between $30M and $200M that need experienced leadership to professionalize and scale. Other operators navigating similar growth transitions who want to compare notes.",
+    "career_highlights": "",
+    "channel_expertise": [
+      "Channel / Partner",
+      "International / Global"
+    ],
+    "stage_experience": [
+      "Turnaround / Transformation",
+      "Early Growth"
+    ]
+  },
+  {
+    "id": "BH-006",
+    "person_types": [
+      "Operator"
+    ],
+    "functions": [
+      "Marketing and Brand"
+    ],
+    "sub_sectors": [
+      "Health and Wellness"
+    ],
+    "dispositions": [
+      "Actively Looking"
+    ],
+    "region": "Nashville, TN",
+    "summary": "Led brand repositioning at a heritage camping equipment company during a generational ownership transition. Rebuilt consumer insights, ambassador programs, and retail storytelling from the ground up.",
+    "key_relationships": "Performance marketing agency ecosystem",
+    "looking_for": "Founder-led brands between $30M and $200M that need experienced leadership to professionalize and scale. Other operators navigating similar growth transitions who want to compare notes.",
+    "career_highlights": "",
+    "channel_expertise": [
+      "DTC / Ecommerce",
+      "Amazon / Marketplace"
+    ],
+    "stage_experience": [
+      "Zero-to-One Build",
+      "Growth and Expansion"
+    ]
+  },
+  {
+    "id": "BH-007",
+    "person_types": [
+      "Operator"
+    ],
+    "functions": [
+      "Marketing and Brand"
+    ],
+    "sub_sectors": [
+      "Wellness"
+    ],
+    "dispositions": [
+      "Passively Open"
+    ],
+    "region": "New York, NY",
+    "summary": "CMO who rebuilt a $150M outdoor brand's marketing org from scratch after PE acquisition. Launched first performance marketing function, reducing CAC by 35% in 18 months.",
+    "key_relationships": "Influencer and athlete partnership network",
+    "looking_for": "Founder-led brands between $30M and $200M that need experienced leadership to professionalize and scale. Other operators navigating similar growth transitions who want to compare notes.",
+    "career_highlights": "",
+    "channel_expertise": [
+      "Amazon / Marketplace",
+      "International / Global"
+    ],
+    "stage_experience": [
+      "Early Growth",
+      "At-Scale Operations"
+    ]
+  },
+  {
+    "id": "BH-008",
+    "person_types": [
+      "Operator"
+    ],
+    "functions": [
+      "Marketing and Brand"
+    ],
+    "sub_sectors": [
+      "Technology"
+    ],
+    "dispositions": [
+      "Actively Looking"
+    ],
+    "region": "Boston, MA",
+    "summary": "VP Marketing at a $80M action sports brand. Led the transition from endemic media to digital-first brand building. Grew social following from 200K to 2.1M.",
+    "key_relationships": "Consumer insights and brand research firms",
+    "looking_for": "Founder-led brands between $30M and $200M that need experienced leadership to professionalize and scale. Other operators navigating similar growth transitions who want to compare notes.",
+    "career_highlights": "",
+    "channel_expertise": [
+      "International / Global",
+      "Brand / Creative / Content"
+    ],
+    "stage_experience": [
+      "Growth and Expansion",
+      "Turnaround / Transformation"
+    ]
+  },
+  {
+    "id": "BH-009",
+    "person_types": [
+      "Operator"
+    ],
+    "functions": [
+      "Marketing and Brand"
+    ],
+    "sub_sectors": [
+      "Apparel and Fashion"
+    ],
+    "dispositions": [
+      "Passively Open"
+    ],
+    "region": "Denver, CO",
+    "summary": "Built brand strategy for a wellness startup from pre-revenue to $12M. Created positioning that won shelf space at Whole Foods, Erewhon, and Thrive Market.",
+    "key_relationships": "Outdoor industry media network, ambassador community",
+    "looking_for": "Founder-led brands between $30M and $200M that need experienced leadership to professionalize and scale. Other operators navigating similar growth transitions who want to compare notes.",
+    "career_highlights": "",
+    "channel_expertise": [
+      "Brand / Creative / Content",
+      "DTC / Ecommerce"
+    ],
+    "stage_experience": [
+      "At-Scale Operations",
+      "Zero-to-One Build"
+    ]
+  },
+  {
+    "id": "BH-010",
+    "person_types": [
+      "Operator"
+    ],
+    "functions": [
+      "Product and Design"
+    ],
+    "sub_sectors": [
+      "Footwear"
+    ],
+    "dispositions": [
+      "Actively Looking"
+    ],
+    "region": "Portland, OR",
+    "summary": "15 years in performance footwear product development across trail running and hiking. Managed $90M product line with full P&L. Expertise in overseas manufacturing, materials innovation, and insights-driven product roadmaps.",
+    "key_relationships": "Footwear OEM network, sustainable materials community",
+    "looking_for": "Founder-led brands between $30M and $200M that need experienced leadership to professionalize and scale. Other operators navigating similar growth transitions who want to compare notes.",
+    "career_highlights": "",
+    "channel_expertise": [
+      "DTC / Ecommerce",
+      "Brand / Creative / Content"
+    ],
+    "stage_experience": [
+      "Turnaround / Transformation",
+      "Early Growth"
+    ]
+  },
+  {
+    "id": "BH-011",
+    "person_types": [
+      "Operator"
+    ],
+    "functions": [
+      "Product and Design"
+    ],
+    "sub_sectors": [
+      "Outdoor and Active Lifestyle"
+    ],
+    "dispositions": [
+      "Passively Open"
+    ],
+    "region": "Minneapolis, MN",
+    "summary": "VP Product at a $120M outdoor hardgoods company. Led transition from engineering-driven to consumer insights-driven product development. Reduced time-to-market by 30%.",
+    "key_relationships": "Connected fitness hardware ecosystem",
+    "looking_for": "Founder-led brands between $30M and $200M that need experienced leadership to professionalize and scale. Other operators navigating similar growth transitions who want to compare notes.",
+    "career_highlights": "",
+    "channel_expertise": [
+      "Brand / Creative / Content",
+      "Platform / Developer Ecosystem"
+    ],
+    "stage_experience": [
+      "Zero-to-One Build",
+      "Growth and Expansion"
+    ]
+  },
+  {
+    "id": "BH-012",
+    "person_types": [
+      "Operator"
+    ],
+    "functions": [
+      "Product and Design"
+    ],
+    "sub_sectors": [
+      "Fitness"
+    ],
+    "dispositions": [
+      "Actively Looking"
+    ],
+    "region": "Boulder, CO",
+    "summary": "Director of Design at a heritage action sports brand. Rebuilt the product architecture across 4 categories. Introduced sustainable materials sourcing that became a brand differentiator.",
+    "key_relationships": "Safety certification bodies, testing labs",
+    "looking_for": "Founder-led brands between $30M and $200M that need experienced leadership to professionalize and scale. Other operators navigating similar growth transitions who want to compare notes.",
+    "career_highlights": "",
+    "channel_expertise": [
+      "Platform / Developer Ecosystem",
+      "Product-Led Growth"
+    ],
+    "stage_experience": [
+      "Early Growth",
+      "At-Scale Operations"
+    ]
+  },
+  {
+    "id": "BH-013",
+    "person_types": [
+      "Operator"
+    ],
+    "functions": [
+      "Digital and Ecommerce"
+    ],
+    "sub_sectors": [
+      "Outdoor and Active Lifestyle"
+    ],
+    "dispositions": [
+      "Passively Open"
+    ],
+    "region": "San Francisco, CA",
+    "summary": "Scaled DTC from $8M to $52M at a heritage action sports brand while managing channel conflict with legacy wholesale partners. Built a 20-person digital team across performance marketing, retention, and site experience.",
+    "key_relationships": "Shopify Plus ecosystem, performance marketing agencies",
+    "looking_for": "Founder-led brands between $30M and $200M that need experienced leadership to professionalize and scale. Other operators navigating similar growth transitions who want to compare notes.",
+    "career_highlights": "",
+    "channel_expertise": [
+      "DTC / Ecommerce",
+      "Amazon / Marketplace"
+    ],
+    "stage_experience": [
+      "Growth and Expansion",
+      "Turnaround / Transformation"
+    ]
+  },
+  {
+    "id": "BH-014",
+    "person_types": [
+      "Operator"
+    ],
+    "functions": [
+      "Digital and Ecommerce"
+    ],
+    "sub_sectors": [
+      "Health and Wellness"
+    ],
+    "dispositions": [
+      "Actively Looking"
+    ],
+    "region": "San Diego, CA",
+    "summary": "VP Ecommerce at a $300M performance apparel company. Led migration to headless commerce architecture. Grew online revenue 60% while improving margin by 8 points.",
+    "key_relationships": "Headless commerce platform community",
+    "looking_for": "Founder-led brands between $30M and $200M that need experienced leadership to professionalize and scale. Other operators navigating similar growth transitions who want to compare notes.",
+    "career_highlights": "",
+    "channel_expertise": [
+      "Amazon / Marketplace",
+      "Product-Led Growth"
+    ],
+    "stage_experience": [
+      "At-Scale Operations",
+      "Zero-to-One Build"
+    ]
+  },
+  {
+    "id": "BH-015",
+    "person_types": [
+      "Operator"
+    ],
+    "functions": [
+      "Digital and Ecommerce"
+    ],
+    "sub_sectors": [
+      "Wellness"
+    ],
+    "dispositions": [
+      "Passively Open"
+    ],
+    "region": "Los Angeles, CA",
+    "summary": "Built the entire digital organization at a $45M outdoor gear brand. Hired 15 people across ecommerce, digital marketing, and analytics. DTC grew from 12% to 38% of revenue.",
+    "key_relationships": "Digital analytics and CRO tool network",
+    "looking_for": "Founder-led brands between $30M and $200M that need experienced leadership to professionalize and scale. Other operators navigating similar growth transitions who want to compare notes.",
+    "career_highlights": "",
+    "channel_expertise": [
+      "Product-Led Growth",
+      "AI / Machine Learning"
+    ],
+    "stage_experience": [
+      "Turnaround / Transformation",
+      "Early Growth"
+    ]
+  },
+  {
+    "id": "BH-016",
+    "person_types": [
+      "Operator"
+    ],
+    "functions": [
+      "Engineering and Technology"
+    ],
+    "sub_sectors": [
+      "Technology"
+    ],
+    "dispositions": [
+      "Actively Looking"
+    ],
+    "region": "Chicago, IL",
+    "summary": "Director of R&D with deep expertise in heat exchange systems, safety-critical product design, and overseas manufacturing for outdoor hardgoods. Introduced consumer insights-driven product development to replace an engineering-led process.",
+    "key_relationships": "Connected fitness technology ecosystem",
+    "looking_for": "Founder-led brands between $30M and $200M that need experienced leadership to professionalize and scale. Other operators navigating similar growth transitions who want to compare notes.",
+    "career_highlights": "",
+    "channel_expertise": [
+      "Enterprise / Direct Sales",
+      "Platform / Developer Ecosystem"
+    ],
+    "stage_experience": [
+      "Zero-to-One Build",
+      "Growth and Expansion"
+    ]
+  },
+  {
+    "id": "BH-017",
+    "person_types": [
+      "Operator"
+    ],
+    "functions": [
+      "Engineering and Technology"
+    ],
+    "sub_sectors": [
+      "Apparel and Fashion"
+    ],
+    "dispositions": [
+      "Passively Open"
+    ],
+    "region": "Atlanta, GA",
+    "summary": "CTO at a fitness technology company. Built connected hardware platform from concept to 50K active users. Led team of 25 across firmware, mobile, and cloud.",
+    "key_relationships": "Hardware engineering community, firmware contractors",
+    "looking_for": "Founder-led brands between $30M and $200M that need experienced leadership to professionalize and scale. Other operators navigating similar growth transitions who want to compare notes.",
+    "career_highlights": "",
+    "channel_expertise": [
+      "Platform / Developer Ecosystem",
+      "AI / Machine Learning"
+    ],
+    "stage_experience": [
+      "Early Growth",
+      "At-Scale Operations"
+    ]
+  },
+  {
+    "id": "BH-018",
+    "person_types": [
+      "Operator"
+    ],
+    "functions": [
+      "Engineering and Technology"
+    ],
+    "sub_sectors": [
+      "Footwear"
+    ],
+    "dispositions": [
+      "Actively Looking"
+    ],
+    "region": "Miami, FL",
+    "summary": "VP Engineering at a $60M nutrition brand. Built the formulation and quality systems that enabled scaling from boutique to mass retail without compromising product integrity.",
+    "key_relationships": "R&D and innovation labs, university partnerships",
+    "looking_for": "Founder-led brands between $30M and $200M that need experienced leadership to professionalize and scale. Other operators navigating similar growth transitions who want to compare notes.",
+    "career_highlights": "",
+    "channel_expertise": [
+      "AI / Machine Learning",
+      "Product-Led Growth"
+    ],
+    "stage_experience": [
+      "Growth and Expansion",
+      "Turnaround / Transformation"
+    ]
+  },
+  {
+    "id": "BH-019",
+    "person_types": [
+      "Operator"
+    ],
+    "functions": [
+      "Operations and Supply Chain"
+    ],
+    "sub_sectors": [
+      "Outdoor and Active Lifestyle"
+    ],
+    "dispositions": [
+      "Passively Open"
+    ],
+    "region": "Salt Lake City, UT",
+    "summary": "VP of Global Supply Chain at a $500M performance apparel company for 8 years. Reduced lead times by 35% through nearshoring strategy. Managed a $200M annual sourcing budget across Vietnam, Cambodia, and Mexico.",
+    "key_relationships": "Fulfillment and logistics technology providers",
+    "looking_for": "Founder-led brands between $30M and $200M that need experienced leadership to professionalize and scale. Other operators navigating similar growth transitions who want to compare notes.",
+    "career_highlights": "",
+    "channel_expertise": [
+      "Wholesale / Retail",
+      "Amazon / Marketplace"
+    ],
+    "stage_experience": [
+      "At-Scale Operations",
+      "Zero-to-One Build"
+    ]
+  },
+  {
+    "id": "BH-020",
+    "person_types": [
+      "Operator"
+    ],
+    "functions": [
+      "Operations and Supply Chain"
+    ],
+    "sub_sectors": [
+      "Fitness"
+    ],
+    "dispositions": [
+      "Actively Looking"
+    ],
+    "region": "Seattle, WA",
+    "summary": "COO who scaled a $30M wellness brand to $180M over 5 years. Built operations infrastructure across fulfillment, supply chain, and customer service that supported 6x revenue growth.",
+    "key_relationships": "PE operating partner network",
+    "looking_for": "Founder-led brands between $30M and $200M that need experienced leadership to professionalize and scale. Other operators navigating similar growth transitions who want to compare notes.",
+    "career_highlights": "",
+    "channel_expertise": [
+      "Amazon / Marketplace",
+      "Supply Chain / Sourcing"
+    ],
+    "stage_experience": [
+      "Turnaround / Transformation",
+      "Early Growth"
+    ]
+  },
+  {
+    "id": "BH-021",
+    "person_types": [
+      "Operator"
+    ],
+    "functions": [
+      "Operations and Supply Chain"
+    ],
+    "sub_sectors": [
+      "Outdoor and Active Lifestyle"
+    ],
+    "dispositions": [
+      "Passively Open"
+    ],
+    "region": "San Francisco, CA",
+    "summary": "General Manager at a $75M outdoor equipment division. Full P&L ownership across product, manufacturing, sales, and marketing. Led turnaround from -5% to +12% operating margin.",
+    "key_relationships": "Global supply chain network, 3PL partners",
+    "looking_for": "Founder-led brands between $30M and $200M that need experienced leadership to professionalize and scale. Other operators navigating similar growth transitions who want to compare notes.",
+    "career_highlights": "",
+    "channel_expertise": [
+      "Supply Chain / Sourcing",
+      "International / Global"
+    ],
+    "stage_experience": [
+      "Zero-to-One Build",
+      "Growth and Expansion"
+    ]
+  },
+  {
+    "id": "BH-022",
+    "person_types": [
+      "Operator"
+    ],
+    "functions": [
+      "Finance and Strategy"
+    ],
+    "sub_sectors": [
+      "Health and Wellness"
+    ],
+    "dispositions": [
+      "Actively Looking"
+    ],
+    "region": "Denver, CO",
+    "summary": "CFO who guided a founder-led action sports brand through a PE recapitalization and subsequent bolt-on acquisition. Built the finance and FP&A function from scratch. Deep expertise in inventory planning and EBITDA bridge analysis.",
+    "key_relationships": "Investment banking network (consumer sector)",
+    "looking_for": "Founder-led brands between $30M and $200M that need experienced leadership to professionalize and scale. Other operators navigating similar growth transitions who want to compare notes.",
+    "career_highlights": "",
+    "channel_expertise": [
+      "International / Global",
+      "DTC / Ecommerce"
+    ],
+    "stage_experience": [
+      "Early Growth",
+      "At-Scale Operations"
+    ]
+  },
+  {
+    "id": "BH-023",
+    "person_types": [
+      "Operator"
+    ],
+    "functions": [
+      "Finance and Strategy"
+    ],
+    "sub_sectors": [
+      "Wellness"
+    ],
+    "dispositions": [
+      "Passively Open"
+    ],
+    "region": "Portland, OR",
+    "summary": "VP Finance at a $200M footwear company. Led financial integration of 3 acquisitions. Built the FP&A team and implemented rolling forecasting that improved accuracy by 40%.",
+    "key_relationships": "Financial advisory and audit committee network",
+    "looking_for": "Founder-led brands between $30M and $200M that need experienced leadership to professionalize and scale. Other operators navigating similar growth transitions who want to compare notes.",
+    "career_highlights": "",
+    "channel_expertise": [
+      "DTC / Ecommerce",
+      "Channel / Partner"
+    ],
+    "stage_experience": [
+      "Growth and Expansion",
+      "Turnaround / Transformation"
+    ]
+  },
+  {
+    "id": "BH-024",
+    "person_types": [
+      "Operator"
+    ],
+    "functions": [
+      "People and Culture"
+    ],
+    "sub_sectors": [
+      "Technology"
+    ],
+    "dispositions": [
+      "Actively Looking"
+    ],
+    "region": "Los Angeles, CA",
+    "summary": "VP of People at a $120M performance apparel brand. Tripled the team from 80 to 240 in 18 months post-funding. Built comp frameworks, performance management systems, and an employer brand that reduced time-to-fill by 40%.",
+    "key_relationships": "Organizational design consultants",
+    "looking_for": "Founder-led brands between $30M and $200M that need experienced leadership to professionalize and scale. Other operators navigating similar growth transitions who want to compare notes.",
+    "career_highlights": "",
+    "channel_expertise": [
+      "Enterprise / Direct Sales",
+      "International / Global"
+    ],
+    "stage_experience": [
+      "At-Scale Operations",
+      "Zero-to-One Build"
+    ]
+  },
+  {
+    "id": "BH-025",
+    "person_types": [
+      "Operator"
+    ],
+    "functions": [
+      "People and Culture"
+    ],
+    "sub_sectors": [
+      "Apparel and Fashion"
+    ],
+    "dispositions": [
+      "Passively Open"
+    ],
+    "region": "Austin, TX",
+    "summary": "Head of People at a $50M fitness technology company. Designed remote-first culture that maintained 92% retention during hypergrowth. Built the L&D function from zero.",
+    "key_relationships": "Consumer brand HR leader network",
+    "looking_for": "Founder-led brands between $30M and $200M that need experienced leadership to professionalize and scale. Other operators navigating similar growth transitions who want to compare notes.",
+    "career_highlights": "",
+    "channel_expertise": [
+      "International / Global",
+      "Brand / Creative / Content"
+    ],
+    "stage_experience": [
+      "Turnaround / Transformation",
+      "Early Growth"
+    ]
+  },
+  {
+    "id": "BH-026",
+    "person_types": [
+      "Founder"
+    ],
+    "functions": [
+      "Sales and Commercial"
+    ],
+    "sub_sectors": [
+      "Footwear"
+    ],
+    "dispositions": [
+      "Seeking Capital"
+    ],
+    "region": "Nashville, TN",
+    "summary": "Founded a sales agency representing 15 outdoor and action sports brands across specialty retail. Built $40M in managed revenue across 2,000+ retail doors. Deep buyer relationships at REI, Backcountry, and Moosejaw.",
+    "key_relationships": "REI, Nordstrom, Dick's Sporting Goods, Academy Sports",
+    "looking_for": "Growth capital from investors who understand the category. Open to exploring operating roles at larger platforms. Other founders who have navigated the $10M to $100M journey.",
+    "career_highlights": "",
+    "channel_expertise": [
+      "DTC / Ecommerce",
+      "Amazon / Marketplace"
+    ],
+    "stage_experience": [
+      "Zero-to-One Build",
+      "Growth and Expansion"
+    ]
+  },
+  {
+    "id": "BH-027",
+    "person_types": [
+      "Founder"
+    ],
+    "functions": [
+      "Marketing and Brand"
+    ],
+    "sub_sectors": [
+      "Outdoor and Active Lifestyle"
+    ],
+    "dispositions": [
+      "Actively Looking"
+    ],
+    "region": "New York, NY",
+    "summary": "Founded and ran a brand strategy agency for 12 years serving outdoor, fitness, and performance apparel clients. Led repositioning engagements for 40+ consumer brands. Recently wound down the agency.",
+    "key_relationships": "Influencer and athlete partnership network",
+    "looking_for": "Growth capital from investors who understand the category. Open to exploring operating roles at larger platforms. Other founders who have navigated the $10M to $100M journey.",
+    "career_highlights": "",
+    "channel_expertise": [
+      "Amazon / Marketplace",
+      "International / Global"
+    ],
+    "stage_experience": [
+      "Early Growth",
+      "At-Scale Operations"
+    ]
+  },
+  {
+    "id": "BH-028",
+    "person_types": [
+      "Founder"
+    ],
+    "functions": [
+      "Marketing and Brand"
+    ],
+    "sub_sectors": [
+      "Fitness"
+    ],
+    "dispositions": [
+      "Passively Open",
+      "Open to Fractional / Advisory"
+    ],
+    "region": "Boston, MA",
+    "summary": "Founded a DTC wellness brand built entirely through influencer partnerships and community marketing. Reached $8M ARR with zero paid advertising. Sold to a CPG platform.",
+    "key_relationships": "Consumer insights and brand research firms",
+    "looking_for": "Growth capital from investors who understand the category. Open to exploring operating roles at larger platforms. Other founders who have navigated the $10M to $100M journey.",
+    "career_highlights": "",
+    "channel_expertise": [
+      "International / Global",
+      "Brand / Creative / Content"
+    ],
+    "stage_experience": [
+      "Growth and Expansion",
+      "Turnaround / Transformation"
+    ]
+  },
+  {
+    "id": "BH-029",
+    "person_types": [
+      "Founder"
+    ],
+    "functions": [
+      "Marketing and Brand"
+    ],
+    "sub_sectors": [
+      "Outdoor and Active Lifestyle"
+    ],
+    "dispositions": [
+      "Seeking Capital"
+    ],
+    "region": "Denver, CO",
+    "summary": "Co-founded a content studio focused on action sports brands. Built campaigns for 30+ brands over 8 years. Expertise in athlete partnerships, documentary content, and community-driven brand building.",
+    "key_relationships": "Outdoor industry media network, ambassador community",
+    "looking_for": "Growth capital from investors who understand the category. Open to exploring operating roles at larger platforms. Other founders who have navigated the $10M to $100M journey.",
+    "career_highlights": "",
+    "channel_expertise": [
+      "Brand / Creative / Content",
+      "DTC / Ecommerce"
+    ],
+    "stage_experience": [
+      "At-Scale Operations",
+      "Zero-to-One Build"
+    ]
+  },
+  {
+    "id": "BH-030",
+    "person_types": [
+      "Founder"
+    ],
+    "functions": [
+      "Product and Design"
+    ],
+    "sub_sectors": [
+      "Health and Wellness"
+    ],
+    "dispositions": [
+      "Actively Looking"
+    ],
+    "region": "Portland, OR",
+    "summary": "Founded a sustainable footwear company using recycled ocean plastics. Developed proprietary material processing technology. Reached $6M before raising Series A.",
+    "key_relationships": "Footwear OEM network, sustainable materials community",
+    "looking_for": "Growth capital from investors who understand the category. Open to exploring operating roles at larger platforms. Other founders who have navigated the $10M to $100M journey.",
+    "career_highlights": "",
+    "channel_expertise": [
+      "DTC / Ecommerce",
+      "Brand / Creative / Content"
+    ],
+    "stage_experience": [
+      "Turnaround / Transformation",
+      "Early Growth"
+    ]
+  },
+  {
+    "id": "BH-031",
+    "person_types": [
+      "Founder"
+    ],
+    "functions": [
+      "Product and Design"
+    ],
+    "sub_sectors": [
+      "Wellness"
+    ],
+    "dispositions": [
+      "Passively Open"
+    ],
+    "region": "Minneapolis, MN",
+    "summary": "Founded a wearable fitness technology company. Led product from concept through 3 hardware generations. 85K units sold. Deep expertise in connected fitness product development.",
+    "key_relationships": "Connected fitness hardware ecosystem",
+    "looking_for": "Growth capital from investors who understand the category. Open to exploring operating roles at larger platforms. Other founders who have navigated the $10M to $100M journey.",
+    "career_highlights": "",
+    "channel_expertise": [
+      "Brand / Creative / Content",
+      "Platform / Developer Ecosystem"
+    ],
+    "stage_experience": [
+      "Zero-to-One Build",
+      "Growth and Expansion"
+    ]
+  },
+  {
+    "id": "BH-032",
+    "person_types": [
+      "Founder"
+    ],
+    "functions": [
+      "Digital and Ecommerce"
+    ],
+    "sub_sectors": [
+      "Technology"
+    ],
+    "dispositions": [
+      "Seeking Capital",
+      "Open to Fractional / Advisory"
+    ],
+    "region": "Boulder, CO",
+    "summary": "Founded a DTC fitness equipment company that scaled to $18M entirely online. Built the tech stack, supply chain, and marketing engine from scratch. Exited to a PE platform.",
+    "key_relationships": "DTC brand operator community",
+    "looking_for": "Growth capital from investors who understand the category. Open to exploring operating roles at larger platforms. Other founders who have navigated the $10M to $100M journey.",
+    "career_highlights": "",
+    "channel_expertise": [
+      "AI / Machine Learning",
+      "DTC / Ecommerce"
+    ],
+    "stage_experience": [
+      "Early Growth",
+      "At-Scale Operations"
+    ]
+  },
+  {
+    "id": "BH-033",
+    "person_types": [
+      "Founder"
+    ],
+    "functions": [
+      "Digital and Ecommerce"
+    ],
+    "sub_sectors": [
+      "Apparel and Fashion"
+    ],
+    "dispositions": [
+      "Actively Looking"
+    ],
+    "region": "San Francisco, CA",
+    "summary": "Co-founded an ecommerce analytics platform used by 200+ consumer brands. Deep expertise in conversion optimization, retention marketing, and customer data platforms.",
+    "key_relationships": "Shopify Plus ecosystem, performance marketing agencies",
+    "looking_for": "Growth capital from investors who understand the category. Open to exploring operating roles at larger platforms. Other founders who have navigated the $10M to $100M journey.",
+    "career_highlights": "",
+    "channel_expertise": [
+      "DTC / Ecommerce",
+      "Amazon / Marketplace"
+    ],
+    "stage_experience": [
+      "Growth and Expansion",
+      "Turnaround / Transformation"
+    ]
+  },
+  {
+    "id": "BH-034",
+    "person_types": [
+      "Founder"
+    ],
+    "functions": [
+      "Operations and Supply Chain"
+    ],
+    "sub_sectors": [
+      "Footwear"
+    ],
+    "dispositions": [
+      "Passively Open"
+    ],
+    "region": "San Diego, CA",
+    "summary": "Founded a functional nutrition brand that reached 120+ retail doors and $4M in revenue before running into capital constraints. Deep expertise in formulation, regulatory compliance, and specialty retail distribution.",
+    "key_relationships": "Manufacturing partners across Vietnam, Cambodia, Mexico",
+    "looking_for": "Growth capital from investors who understand the category. Open to exploring operating roles at larger platforms. Other founders who have navigated the $10M to $100M journey.",
+    "career_highlights": "",
+    "channel_expertise": [
+      "International / Global",
+      "Wholesale / Retail"
+    ],
+    "stage_experience": [
+      "At-Scale Operations",
+      "Zero-to-One Build"
+    ]
+  },
+  {
+    "id": "BH-035",
+    "person_types": [
+      "Founder"
+    ],
+    "functions": [
+      "Operations and Supply Chain"
+    ],
+    "sub_sectors": [
+      "Outdoor and Active Lifestyle"
+    ],
+    "dispositions": [
+      "Seeking Capital"
+    ],
+    "region": "Los Angeles, CA",
+    "summary": "Exited a wellness brand at $180M valuation after scaling from garage to national omnichannel distribution over 9 years. Built the executive team from 3 direct reports to a full C-suite.",
+    "key_relationships": "Fulfillment and logistics technology providers",
+    "looking_for": "Growth capital from investors who understand the category. Open to exploring operating roles at larger platforms. Other founders who have navigated the $10M to $100M journey.",
+    "career_highlights": "",
+    "channel_expertise": [
+      "Wholesale / Retail",
+      "Amazon / Marketplace"
+    ],
+    "stage_experience": [
+      "Turnaround / Transformation",
+      "Early Growth"
+    ]
+  },
+  {
+    "id": "BH-036",
+    "person_types": [
+      "Founder"
+    ],
+    "functions": [
+      "Operations and Supply Chain"
+    ],
+    "sub_sectors": [
+      "Fitness"
+    ],
+    "dispositions": [
+      "Actively Looking",
+      "Open to Fractional / Advisory"
+    ],
+    "region": "Chicago, IL",
+    "summary": "Founded and sold a performance apparel company focused on military and first responder markets. Scaled to $22M revenue. Expertise in government procurement and specialty distribution.",
+    "key_relationships": "PE operating partner network",
+    "looking_for": "Growth capital from investors who understand the category. Open to exploring operating roles at larger platforms. Other founders who have navigated the $10M to $100M journey.",
+    "career_highlights": "",
+    "channel_expertise": [
+      "Amazon / Marketplace",
+      "Supply Chain / Sourcing"
+    ],
+    "stage_experience": [
+      "Zero-to-One Build",
+      "Growth and Expansion"
+    ]
+  },
+  {
+    "id": "BH-037",
+    "person_types": [
+      "Founder"
+    ],
+    "functions": [
+      "Operations and Supply Chain"
+    ],
+    "sub_sectors": [
+      "Outdoor and Active Lifestyle"
+    ],
+    "dispositions": [
+      "Passively Open"
+    ],
+    "region": "Atlanta, GA",
+    "summary": "Co-founded an outdoor gear brand that reached $35M before selling to a strategic acquirer. Deep expertise in product-market fit for technical outdoor categories.",
+    "key_relationships": "Global supply chain network, 3PL partners",
+    "looking_for": "Growth capital from investors who understand the category. Open to exploring operating roles at larger platforms. Other founders who have navigated the $10M to $100M journey.",
+    "career_highlights": "",
+    "channel_expertise": [
+      "Supply Chain / Sourcing",
+      "International / Global"
+    ],
+    "stage_experience": [
+      "Early Growth",
+      "At-Scale Operations"
+    ]
+  },
+  {
+    "id": "BH-038",
+    "person_types": [
+      "Founder"
+    ],
+    "functions": [
+      "Finance and Strategy"
+    ],
+    "sub_sectors": [
+      "Health and Wellness"
+    ],
+    "dispositions": [
+      "Seeking Capital"
+    ],
+    "region": "Miami, FL",
+    "summary": "Founded and exited two consumer brands in nutrition and wellness. Now advising early-stage founders on capital strategy, unit economics, and fundraising. Track record of capital-efficient scaling.",
+    "key_relationships": "Investment banking network (consumer sector)",
+    "looking_for": "Growth capital from investors who understand the category. Open to exploring operating roles at larger platforms. Other founders who have navigated the $10M to $100M journey.",
+    "career_highlights": "",
+    "channel_expertise": [
+      "International / Global",
+      "DTC / Ecommerce"
+    ],
+    "stage_experience": [
+      "Growth and Expansion",
+      "Turnaround / Transformation"
+    ]
+  },
+  {
+    "id": "BH-039",
+    "person_types": [
+      "Investor"
+    ],
+    "functions": [
+      "Sales and Commercial"
+    ],
+    "sub_sectors": [
+      "Wellness"
+    ],
+    "dispositions": [
+      "Seeking Board Seats"
+    ],
+    "region": "Salt Lake City, UT",
+    "summary": "Operating Partner focused on commercial acceleration at a PE firm with 5 consumer portfolio companies. Builds sales organizations post-acquisition. Former CRO at a $400M consumer goods company.",
+    "key_relationships": "Whole Foods, Sprouts, GNC, Vitamin Shoppe",
+    "looking_for": "Search firms with deep category expertise who can consistently deliver leadership talent. Founders approaching institutional capital. Co-investors with complementary consumer portfolios.",
+    "career_highlights": "",
+    "channel_expertise": [
+      "Amazon / Marketplace",
+      "Enterprise / Direct Sales"
+    ],
+    "stage_experience": [
+      "At-Scale Operations",
+      "Zero-to-One Build"
+    ]
+  },
+  {
+    "id": "BH-040",
+    "person_types": [
+      "Investor"
+    ],
+    "functions": [
+      "Marketing and Brand"
+    ],
+    "sub_sectors": [
+      "Technology"
+    ],
+    "dispositions": [
+      "Passively Open"
+    ],
+    "region": "Seattle, WA",
+    "summary": "VP at a consumer-focused PE firm responsible for brand and marketing diligence across the portfolio. Former CMO at two outdoor brands. Evaluates brand health, positioning, and marketing team capability during deals.",
+    "key_relationships": "Consumer insights and brand research firms",
+    "looking_for": "Search firms with deep category expertise who can consistently deliver leadership talent. Founders approaching institutional capital. Co-investors with complementary consumer portfolios.",
+    "career_highlights": "",
+    "channel_expertise": [
+      "International / Global",
+      "Brand / Creative / Content"
+    ],
+    "stage_experience": [
+      "Turnaround / Transformation",
+      "Early Growth"
+    ]
+  },
+  {
+    "id": "BH-041",
+    "person_types": [
+      "Investor"
+    ],
+    "functions": [
+      "Product and Design"
+    ],
+    "sub_sectors": [
+      "Apparel and Fashion"
+    ],
+    "dispositions": [
+      "Passively Open"
+    ],
+    "region": "San Francisco, CA",
+    "summary": "Operating Partner at a PE firm evaluating product-led growth at consumer portfolio companies. Former CPO at a $150M fitness brand. Expertise in product strategy, innovation pipelines, and R&D efficiency.",
+    "key_relationships": "Southeast Asia manufacturing partners, materials suppliers",
+    "looking_for": "Search firms with deep category expertise who can consistently deliver leadership talent. Founders approaching institutional capital. Co-investors with complementary consumer portfolios.",
+    "career_highlights": "",
+    "channel_expertise": [
+      "Product-Led Growth",
+      "DTC / Ecommerce"
+    ],
+    "stage_experience": [
+      "Zero-to-One Build",
+      "Growth and Expansion"
+    ]
+  },
+  {
+    "id": "BH-042",
+    "person_types": [
+      "Investor"
+    ],
+    "functions": [
+      "Digital and Ecommerce"
+    ],
+    "sub_sectors": [
+      "Footwear"
+    ],
+    "dispositions": [
+      "Seeking Board Seats"
+    ],
+    "region": "Denver, CO",
+    "summary": "Venture Partner at a consumer technology fund. Evaluates digital maturity and ecommerce capability at portfolio companies. Former VP Digital at a $500M retailer. Led 3 digital transformation initiatives.",
+    "key_relationships": "Headless commerce platform community",
+    "looking_for": "Search firms with deep category expertise who can consistently deliver leadership talent. Founders approaching institutional capital. Co-investors with complementary consumer portfolios.",
+    "career_highlights": "",
+    "channel_expertise": [
+      "Amazon / Marketplace",
+      "Product-Led Growth"
+    ],
+    "stage_experience": [
+      "Early Growth",
+      "At-Scale Operations"
+    ]
+  },
+  {
+    "id": "BH-043",
+    "person_types": [
+      "Investor"
+    ],
+    "functions": [
+      "Engineering and Technology"
+    ],
+    "sub_sectors": [
+      "Outdoor and Active Lifestyle"
+    ],
+    "dispositions": [
+      "Passively Open"
+    ],
+    "region": "Portland, OR",
+    "summary": "Partner at a deep-tech VC fund investing in climate, materials science, and connected fitness. Led investments in 6 hardware startups. PhD in materials engineering.",
+    "key_relationships": "Climate tech and materials science network",
+    "looking_for": "Search firms with deep category expertise who can consistently deliver leadership talent. Founders approaching institutional capital. Co-investors with complementary consumer portfolios.",
+    "career_highlights": "",
+    "channel_expertise": [
+      "Product-Led Growth",
+      "Enterprise / Direct Sales"
+    ],
+    "stage_experience": [
+      "Growth and Expansion",
+      "Turnaround / Transformation"
+    ]
+  },
+  {
+    "id": "BH-044",
+    "person_types": [
+      "Investor"
+    ],
+    "functions": [
+      "Operations and Supply Chain"
+    ],
+    "sub_sectors": [
+      "Fitness"
+    ],
+    "dispositions": [
+      "Passively Open"
+    ],
+    "region": "Los Angeles, CA",
+    "summary": "Operating Partner at a mid-market PE firm with 6 active consumer portfolio companies spanning outdoor, fitness, and wellness. Led value creation initiatives that collectively added $120M in incremental revenue.",
+    "key_relationships": "PE operating partner network",
+    "looking_for": "Search firms with deep category expertise who can consistently deliver leadership talent. Founders approaching institutional capital. Co-investors with complementary consumer portfolios.",
+    "career_highlights": "",
+    "channel_expertise": [
+      "Amazon / Marketplace",
+      "Supply Chain / Sourcing"
+    ],
+    "stage_experience": [
+      "At-Scale Operations",
+      "Zero-to-One Build"
+    ]
+  },
+  {
+    "id": "BH-045",
+    "person_types": [
+      "Investor"
+    ],
+    "functions": [
+      "Operations and Supply Chain"
+    ],
+    "sub_sectors": [
+      "Outdoor and Active Lifestyle"
+    ],
+    "dispositions": [
+      "Seeking Board Seats"
+    ],
+    "region": "Austin, TX",
+    "summary": "Venture Partner at a consumer-focused VC fund. Former operator (CEO of a $200M outdoor brand). Now evaluates and supports portfolio company leadership teams.",
+    "key_relationships": "Global supply chain network, 3PL partners",
+    "looking_for": "Search firms with deep category expertise who can consistently deliver leadership talent. Founders approaching institutional capital. Co-investors with complementary consumer portfolios.",
+    "career_highlights": "",
+    "channel_expertise": [
+      "Supply Chain / Sourcing",
+      "International / Global"
+    ],
+    "stage_experience": [
+      "Turnaround / Transformation",
+      "Early Growth"
+    ]
+  },
+  {
+    "id": "BH-046",
+    "person_types": [
+      "Investor"
+    ],
+    "functions": [
+      "Operations and Supply Chain"
+    ],
+    "sub_sectors": [
+      "Health and Wellness"
+    ],
+    "dispositions": [
+      "Passively Open"
+    ],
+    "region": "Nashville, TN",
+    "summary": "Operating Partner at a growth equity firm focused on consumer brands. Led operational transformations at 8 portfolio companies. Expertise in supply chain optimization and commercial team building.",
+    "key_relationships": "Manufacturing partners across Vietnam, Cambodia, Mexico",
+    "looking_for": "Search firms with deep category expertise who can consistently deliver leadership talent. Founders approaching institutional capital. Co-investors with complementary consumer portfolios.",
+    "career_highlights": "",
+    "channel_expertise": [
+      "International / Global",
+      "Wholesale / Retail"
+    ],
+    "stage_experience": [
+      "Zero-to-One Build",
+      "Growth and Expansion"
+    ]
+  },
+  {
+    "id": "BH-047",
+    "person_types": [
+      "Investor"
+    ],
+    "functions": [
+      "Finance and Strategy"
+    ],
+    "sub_sectors": [
+      "Wellness"
+    ],
+    "dispositions": [
+      "Passively Open"
+    ],
+    "region": "New York, NY",
+    "summary": "Managing Director at a growth equity firm with $3.2B under management across consumer, healthcare, and technology. Led 4 investments in human performance brands over the past decade, including two successful exits.",
+    "key_relationships": "Financial advisory and audit committee network",
+    "looking_for": "Search firms with deep category expertise who can consistently deliver leadership talent. Founders approaching institutional capital. Co-investors with complementary consumer portfolios.",
+    "career_highlights": "",
+    "channel_expertise": [
+      "DTC / Ecommerce",
+      "Channel / Partner"
+    ],
+    "stage_experience": [
+      "Early Growth",
+      "At-Scale Operations"
+    ]
+  },
+  {
+    "id": "BH-048",
+    "person_types": [
+      "Investor"
+    ],
+    "functions": [
+      "Finance and Strategy"
+    ],
+    "sub_sectors": [
+      "Technology"
+    ],
+    "dispositions": [
+      "Seeking Board Seats"
+    ],
+    "region": "Boston, MA",
+    "summary": "Principal at a PE firm with $800M focused on consumer and retail. Leads deal sourcing and diligence for fitness, wellness, and nutrition investments. Former investment banker at Goldman Sachs.",
+    "key_relationships": "Capital markets and IPO readiness community",
+    "looking_for": "Search firms with deep category expertise who can consistently deliver leadership talent. Founders approaching institutional capital. Co-investors with complementary consumer portfolios.",
+    "career_highlights": "",
+    "channel_expertise": [
+      "Channel / Partner",
+      "Enterprise / Direct Sales"
+    ],
+    "stage_experience": [
+      "Growth and Expansion",
+      "Turnaround / Transformation"
+    ]
+  },
+  {
+    "id": "BH-049",
+    "person_types": [
+      "Investor"
+    ],
+    "functions": [
+      "Finance and Strategy"
+    ],
+    "sub_sectors": [
+      "Apparel and Fashion"
+    ],
+    "dispositions": [
+      "Passively Open"
+    ],
+    "region": "Denver, CO",
+    "summary": "Partner at a family office investing in consumer brands between $10M and $100M revenue. Portfolio includes 3 active outdoor and wellness investments. Operator background in CPG.",
+    "key_relationships": "PE and growth equity investor community",
+    "looking_for": "Search firms with deep category expertise who can consistently deliver leadership talent. Founders approaching institutional capital. Co-investors with complementary consumer portfolios.",
+    "career_highlights": "",
+    "channel_expertise": [
+      "Enterprise / Direct Sales",
+      "International / Global"
+    ],
+    "stage_experience": [
+      "At-Scale Operations",
+      "Zero-to-One Build"
+    ]
+  },
+  {
+    "id": "BH-050",
+    "person_types": [
+      "Investor"
+    ],
+    "functions": [
+      "Finance and Strategy"
+    ],
+    "sub_sectors": [
+      "Footwear"
+    ],
+    "dispositions": [
+      "Passively Open"
+    ],
+    "region": "Portland, OR",
+    "summary": "Managing Director at a lower middle market PE firm. Leads consumer sector deals. 12 platform investments in outdoor, fitness, and performance categories over 15 years.",
+    "key_relationships": "Investment banking network (consumer sector)",
+    "looking_for": "Search firms with deep category expertise who can consistently deliver leadership talent. Founders approaching institutional capital. Co-investors with complementary consumer portfolios.",
+    "career_highlights": "",
+    "channel_expertise": [
+      "International / Global",
+      "DTC / Ecommerce"
+    ],
+    "stage_experience": [
+      "Turnaround / Transformation",
+      "Early Growth"
+    ]
+  },
+  {
+    "id": "BH-051",
+    "person_types": [
+      "Investor"
+    ],
+    "functions": [
+      "People and Culture"
+    ],
+    "sub_sectors": [
+      "Outdoor and Active Lifestyle"
+    ],
+    "dispositions": [
+      "Seeking Board Seats"
+    ],
+    "region": "Minneapolis, MN",
+    "summary": "Talent Partner at a consumer-focused PE firm. Assesses leadership teams during diligence and builds executive benches post-close. Former CHRO at a $300M outdoor company.",
+    "key_relationships": "Compensation benchmarking network",
+    "looking_for": "Search firms with deep category expertise who can consistently deliver leadership talent. Founders approaching institutional capital. Co-investors with complementary consumer portfolios.",
+    "career_highlights": "",
+    "channel_expertise": [
+      "Enterprise / Direct Sales",
+      "International / Global"
+    ],
+    "stage_experience": [
+      "Zero-to-One Build",
+      "Growth and Expansion"
+    ]
+  },
+  {
+    "id": "BH-052",
+    "person_types": [
+      "Board Member / Advisor"
+    ],
+    "functions": [
+      "Sales and Commercial"
+    ],
+    "sub_sectors": [
+      "Fitness"
+    ],
+    "dispositions": [
+      "Seeking Board Seats",
+      "Open to Fractional / Advisory"
+    ],
+    "region": "Boulder, CO",
+    "summary": "Former CRO of a $500M outdoor company. Advises 3 brands on commercial strategy, wholesale optimization, and DTC transition. Board member at one publicly traded outdoor retailer.",
+    "key_relationships": "Costco, Target, Walmart Sporting Goods, Amazon",
+    "looking_for": "Additional board seats at founder-led brands approaching institutional capital. Founders who want a candid sounding board from someone who has navigated the full lifecycle.",
+    "career_highlights": "",
+    "channel_expertise": [
+      "Enterprise / Direct Sales",
+      "Channel / Partner"
+    ],
+    "stage_experience": [
+      "Early Growth",
+      "At-Scale Operations"
+    ]
+  },
+  {
+    "id": "BH-053",
+    "person_types": [
+      "Board Member / Advisor"
+    ],
+    "functions": [
+      "Marketing and Brand"
+    ],
+    "sub_sectors": [
+      "Outdoor and Active Lifestyle"
+    ],
+    "dispositions": [
+      "Seeking Board Seats",
+      "Open to Fractional / Advisory"
+    ],
+    "region": "San Francisco, CA",
+    "summary": "Former Global CMO of a $2B sportswear company. Advises founder-led brands on brand architecture, repositioning, and marketing organization design. Sits on 2 advisory boards.",
+    "key_relationships": "Outdoor industry media network, ambassador community",
+    "looking_for": "Additional board seats at founder-led brands approaching institutional capital. Founders who want a candid sounding board from someone who has navigated the full lifecycle.",
+    "career_highlights": "",
+    "channel_expertise": [
+      "Brand / Creative / Content",
+      "DTC / Ecommerce"
+    ],
+    "stage_experience": [
+      "Growth and Expansion",
+      "Turnaround / Transformation"
+    ]
+  },
+  {
+    "id": "BH-054",
+    "person_types": [
+      "Board Member / Advisor"
+    ],
+    "functions": [
+      "Marketing and Brand"
+    ],
+    "sub_sectors": [
+      "Health and Wellness"
+    ],
+    "dispositions": [
+      "Open to Fractional / Advisory"
+    ],
+    "region": "San Diego, CA",
+    "summary": "Brand strategist who has advised 50+ consumer brands over 20 years. Sits on the advisory boards of 4 emerging wellness and nutrition companies. Expertise in brand positioning for PE-backed growth.",
+    "key_relationships": "Performance marketing agency ecosystem",
+    "looking_for": "Additional board seats at founder-led brands approaching institutional capital. Founders who want a candid sounding board from someone who has navigated the full lifecycle.",
+    "career_highlights": "",
+    "channel_expertise": [
+      "DTC / Ecommerce",
+      "Amazon / Marketplace"
+    ],
+    "stage_experience": [
+      "At-Scale Operations",
+      "Zero-to-One Build"
+    ]
+  },
+  {
+    "id": "BH-055",
+    "person_types": [
+      "Board Member / Advisor"
+    ],
+    "functions": [
+      "Product and Design"
+    ],
+    "sub_sectors": [
+      "Wellness"
+    ],
+    "dispositions": [
+      "Seeking Board Seats",
+      "Open to Fractional / Advisory"
+    ],
+    "region": "Los Angeles, CA",
+    "summary": "Former VP Product at a legacy footwear company. Advises 3 emerging brands on product strategy, overseas manufacturing, and materials innovation. Board member at a sustainable apparel startup.",
+    "key_relationships": "Connected fitness hardware ecosystem",
+    "looking_for": "Additional board seats at founder-led brands approaching institutional capital. Founders who want a candid sounding board from someone who has navigated the full lifecycle.",
+    "career_highlights": "",
+    "channel_expertise": [
+      "Brand / Creative / Content",
+      "Platform / Developer Ecosystem"
+    ],
+    "stage_experience": [
+      "Turnaround / Transformation",
+      "Early Growth"
+    ]
+  },
+  {
+    "id": "BH-056",
+    "person_types": [
+      "Board Member / Advisor"
+    ],
+    "functions": [
+      "Digital and Ecommerce"
+    ],
+    "sub_sectors": [
+      "Technology"
+    ],
+    "dispositions": [
+      "Seeking Board Seats",
+      "Open to Fractional / Advisory"
+    ],
+    "region": "Chicago, IL",
+    "summary": "Former CDO of a $300M retailer. Advises founder-led brands on digital transformation, ecommerce platform selection, and performance marketing strategy. Sits on 2 advisory boards.",
+    "key_relationships": "DTC brand operator community",
+    "looking_for": "Additional board seats at founder-led brands approaching institutional capital. Founders who want a candid sounding board from someone who has navigated the full lifecycle.",
+    "career_highlights": "",
+    "channel_expertise": [
+      "AI / Machine Learning",
+      "DTC / Ecommerce"
+    ],
+    "stage_experience": [
+      "Zero-to-One Build",
+      "Growth and Expansion"
+    ]
+  },
+  {
+    "id": "BH-057",
+    "person_types": [
+      "Board Member / Advisor"
+    ],
+    "functions": [
+      "Operations and Supply Chain"
+    ],
+    "sub_sectors": [
+      "Apparel and Fashion"
+    ],
+    "dispositions": [
+      "Open to Fractional / Advisory"
+    ],
+    "region": "Atlanta, GA",
+    "summary": "Retired CEO who scaled a heritage outdoor equipment company from $60M to $340M over 12 years, including a successful IPO. Currently sits on two public company boards and advises three founder-led brands.",
+    "key_relationships": "Global supply chain network, 3PL partners",
+    "looking_for": "Additional board seats at founder-led brands approaching institutional capital. Founders who want a candid sounding board from someone who has navigated the full lifecycle.",
+    "career_highlights": "",
+    "channel_expertise": [
+      "Supply Chain / Sourcing",
+      "International / Global"
+    ],
+    "stage_experience": [
+      "Early Growth",
+      "At-Scale Operations"
+    ]
+  },
+  {
+    "id": "BH-058",
+    "person_types": [
+      "Board Member / Advisor"
+    ],
+    "functions": [
+      "Operations and Supply Chain"
+    ],
+    "sub_sectors": [
+      "Footwear"
+    ],
+    "dispositions": [
+      "Seeking Board Seats",
+      "Open to Fractional / Advisory"
+    ],
+    "region": "Miami, FL",
+    "summary": "Former COO of a $1B+ performance apparel company. Now serves on 3 boards in the outdoor and fitness space. Expertise in global operations, supply chain, and organizational design at scale.",
+    "key_relationships": "Manufacturing partners across Vietnam, Cambodia, Mexico",
+    "looking_for": "Additional board seats at founder-led brands approaching institutional capital. Founders who want a candid sounding board from someone who has navigated the full lifecycle.",
+    "career_highlights": "",
+    "channel_expertise": [
+      "International / Global",
+      "Wholesale / Retail"
+    ],
+    "stage_experience": [
+      "Growth and Expansion",
+      "Turnaround / Transformation"
+    ]
+  },
+  {
+    "id": "BH-059",
+    "person_types": [
+      "Board Member / Advisor"
+    ],
+    "functions": [
+      "Operations and Supply Chain"
+    ],
+    "sub_sectors": [
+      "Outdoor and Active Lifestyle"
+    ],
+    "dispositions": [
+      "Seeking Board Seats",
+      "Open to Fractional / Advisory"
+    ],
+    "region": "Salt Lake City, UT",
+    "summary": "Retired President of a major sporting goods retailer. Advises 4 founder-led brands on retail strategy, channel expansion, and buyer relationships.",
+    "key_relationships": "Fulfillment and logistics technology providers",
+    "looking_for": "Additional board seats at founder-led brands approaching institutional capital. Founders who want a candid sounding board from someone who has navigated the full lifecycle.",
+    "career_highlights": "",
+    "channel_expertise": [
+      "Wholesale / Retail",
+      "Amazon / Marketplace"
+    ],
+    "stage_experience": [
+      "At-Scale Operations",
+      "Zero-to-One Build"
+    ]
+  },
+  {
+    "id": "BH-060",
+    "person_types": [
+      "Board Member / Advisor"
+    ],
+    "functions": [
+      "Finance and Strategy"
+    ],
+    "sub_sectors": [
+      "Fitness"
+    ],
+    "dispositions": [
+      "Open to Fractional / Advisory"
+    ],
+    "region": "Seattle, WA",
+    "summary": "Former CFO of a publicly traded outdoor company. Sits on 2 public boards and advises PE firms on consumer brand diligence. Deep expertise in IPO readiness, audit committee leadership, and capital allocation.",
+    "key_relationships": "Capital markets and IPO readiness community",
+    "looking_for": "Additional board seats at founder-led brands approaching institutional capital. Founders who want a candid sounding board from someone who has navigated the full lifecycle.",
+    "career_highlights": "",
+    "channel_expertise": [
+      "Channel / Partner",
+      "Enterprise / Direct Sales"
+    ],
+    "stage_experience": [
+      "Turnaround / Transformation",
+      "Early Growth"
+    ]
+  },
+  {
+    "id": "BH-061",
+    "person_types": [
+      "Operator",
+      "Board Member / Advisor"
+    ],
+    "functions": [
+      "General Management",
+      "Sales and Commercial",
+      "Marketing and Brand"
+    ],
+    "sub_sectors": [
+      "Outdoor and Active Lifestyle"
+    ],
+    "dispositions": [
+      "Actively Looking",
+      "Open to Fractional / Advisory"
+    ],
+    "region": "Salt Lake City, UT",
+    "summary": "Multi-brand platform operator with P&L ownership up to $500M across 17+ brands. Grew a watersports brand 369% to $75M and number one market share during category contraction. Built ecommerce from $21M to $54M at a $650M public outdoor company. 5 years leading marketing and technology for a $200M global safety and climbing equipment company across 80+ countries.",
+    "key_relationships": "Kent Outdoors, BOTE, American Outdoor Brands, Petzl, VF Corp",
+    "looking_for": "CEO, President, COO, CCO, or Operating Partner engagements at PE-backed outdoor, watersports, or action sports platforms in the $50M-$500M range. Also open to fractional and advisory through an established consulting practice.",
+    "career_highlights": "Consolidated 5 business units to 2 at a 17-brand platform ($3.5M savings). Built shared services model ($3.8M annual savings). Led SKU rationalization ($10M+ annual savings). Took a watersports brand to number one market share. Launched a new brand that reached $20M+ in 3 years.",
+    "channel_expertise": [
+      "DTC / Ecommerce",
+      "Wholesale / Retail",
+      "International / Global"
+    ],
+    "stage_experience": [
+      "Growth and Expansion",
+      "At-Scale Operations",
+      "Turnaround / Transformation"
+    ]
+  }
+];
+
+
+  /* ==============================================
+     DATA LOADING (v8: external JSON with inline fallback)
+     ============================================== */
+  function loadData() {
+    // Inline JSON block support (Squarespace dual-mode)
+    var inlineEl = document.getElementById('profile-data');
+    if (inlineEl) {
+      try {
+        var inlineData = JSON.parse(inlineEl.textContent);
+        applyData(inlineData);
+        return;
+      } catch (e) {
+        console.warn('Inline JSON parse failed, falling back to fetch:', e);
+      }
+    }
+
+    fetchAndApply(DATA_URL).catch(function() {
+      // Try legacy URL as a fallback
+      return fetchAndApply(LEGACY_DATA_URL);
+    }).catch(function(err) {
+      console.warn('JSON fetch failed, using demo profiles:', err);
+      applyData({ profiles: DUMMY_PROFILES });
+    });
+  }
+
+  function fetchAndApply(url) {
+    var profilePromise = fetch(url).then(function(res) {
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      return res.json();
+    });
+    // Globe locations fetch is fail-soft. A 404 or parse error must not
+    // block the profile load. applyData() will fall back to data.map_dots
+    // or generateFallbackDots() when globe is null.
+    var globePromise = fetch(GLOBE_URL).then(function(res) {
+      return res.ok ? res.json() : null;
+    }).catch(function() { return null; });
+    return Promise.all([profilePromise, globePromise]).then(function(arr) {
+      var data = arr[0];
+      var globe = arr[1];
+      if (Array.isArray(globe) && globe.length > 0) {
+        data.map_dots = globe;
+      }
+      applyData(data);
+    });
+  }
+
+  function applyData(data) {
+    allProfiles = (data.profiles && data.profiles.length) ? data.profiles : DUMMY_PROFILES;
+    FILTER_COUNTS = data.filter_counts || buildFilterCountsFromArray(allProfiles);
+    MAP_DOTS = data.map_dots || [];
+    if (data.state_map) window.STATE_MAP = data.state_map;
+    if (typeof data.total_network_size === 'number') TOTAL_NETWORK_SIZE = data.total_network_size;
+    initPage();
+  }
+
+  function buildFilterCountsFromArray(arr) {
+    var counts = { functions: {}, channel_expertise: {}, stage_experience: {}, person_types: {} };
+    for (var i = 0; i < arr.length; i++) {
+      var p = arr[i];
+      (p.functions || []).forEach(function(v) { counts.functions[v] = (counts.functions[v] || 0) + 1; });
+      (p.channel_expertise || []).forEach(function(v) { counts.channel_expertise[v] = (counts.channel_expertise[v] || 0) + 1; });
+      (p.stage_experience || []).forEach(function(v) { counts.stage_experience[v] = (counts.stage_experience[v] || 0) + 1; });
+      (p.person_types || []).forEach(function(v) { counts.person_types[v] = (counts.person_types[v] || 0) + 1; });
+    }
+    return counts;
+  }
+
+  function initPage() {
+    filteredProfiles = allProfiles.slice();
+    bnShuffleProfiles(filteredProfiles);
+    updateFilterDropdowns();
+    initDensityMap();
+    renderCards();
+    updateCount();
+    updateStats();
+    initStickyBar();
+    initBackToTop();
+    initScrollTracking();
+    wireEvents();
+
+    var urlParams = new URLSearchParams(window.location.search);
+    var queryParam = urlParams.get('q') || '';
+    if (queryParam) {
+      var searchInput = document.getElementById('bn-search');
+      searchInput.value = queryParam;
+      document.getElementById('bn-search-clear').style.display = 'flex';
+      applyFilters();
+      bnTrack('url_search', { query: queryParam });
+    }
+  }
+
+  /* ==============================================
+     DENSITY MAP (v8 change 2, Mapbox GL JS)
+     ============================================== */
+  var MAPBOX_TOKEN = 'pk.eyJ1IjoiazJnbG9iYWwiLCJhIjoiY21wYTdnOGE0MDR6cTJzcHRrbXF4aG96MiJ9.Em8t9tZcGsQJXvTbFDzvJA';
+
+  function initDensityMap() {
+    var container = document.getElementById('density-map');
+    if (!container || typeof mapboxgl === 'undefined') return;
+    if (densityMapInstance) {
+      densityMapInstance.remove();
+      densityMapInstance = null;
+    }
+
+    var dots = MAP_DOTS && MAP_DOTS.length ? MAP_DOTS : generateFallbackDots();
+
+    mapboxgl.accessToken = MAPBOX_TOKEN;
+
+    var map = new mapboxgl.Map({
+      container: 'density-map',
+      style: 'mapbox://styles/mapbox/streets-v12',
+      center: [-96, 39],
+      zoom: 3.1,
+      interactive: true
+    });
+
+    map.addControl(new mapboxgl.NavigationControl({ showCompass: true, visualizePitch: false }), 'top-right');
+
+    var features = new Array(dots.length);
+    for (var i = 0; i < dots.length; i++) {
+      var d = dots[i];
+      features[i] = {
+        type: 'Feature',
+        geometry: { type: 'Point', coordinates: [d.lng, d.lat] }
+      };
+    }
+
+    map.on('load', function() {
+      map.addSource('density-points', {
+        type: 'geojson',
+        data: { type: 'FeatureCollection', features: features }
+      });
+      // Standard heatmap gradient: transparent -> blue -> green -> yellow -> orange -> red.
+      // Radius held at 15px so density reads as regional clusters, not blobs.
+      map.addLayer({
+        id: 'density-heatmap',
+        type: 'heatmap',
+        source: 'density-points',
+        paint: {
+          'heatmap-weight': 1,
+          'heatmap-intensity': [
+            'interpolate', ['linear'], ['zoom'],
+            0, 0.5,
+            6, 1.4,
+            10, 2
+          ],
+          'heatmap-radius': 15,
+          'heatmap-opacity': [
+            'interpolate', ['linear'], ['zoom'],
+            0, 0.85,
+            12, 0.75
+          ],
+          'heatmap-color': [
+            'interpolate', ['linear'], ['heatmap-density'],
+            0,    'rgba(33, 102, 172, 0)',
+            0.15, 'rgb(103, 169, 207)',
+            0.35, 'rgb(102, 194, 165)',
+            0.55, 'rgb(254, 224, 139)',
+            0.75, 'rgb(252, 141, 89)',
+            1,    'rgb(215,  48,  39)'
+          ]
+        }
+      });
+    });
+
+    densityMapInstance = map;
+  }
+
+  // 21K+ GeoJSON points clustered around hub metros via Gaussian jitter.
+  // Worldwide bounding box (Agent-57) — points anywhere on Earth are valid.
+  // International contacts coming from MAP_DOTS (data JSON) render their real
+  // lat/lng directly; this fallback generator is for the empty-data case and
+  // is no longer geographically restricted.
+  function gaussian() {
+    var u = 0, v = 0;
+    while (u === 0) u = Math.random();
+    while (v === 0) v = Math.random();
+    return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+  }
+  function generateFallbackDots() {
+    var hubs = [
+      // US major metros (0.18 spread)
+      { lat: 40.7128, lng: -74.0060,  weight: 2800, spread: 0.18 }, // NYC
+      { lat: 34.0522, lng: -118.2437, weight: 2400, spread: 0.18 }, // LA
+      { lat: 37.7749, lng: -122.4194, weight: 1800, spread: 0.18 }, // SF
+      { lat: 41.8781, lng: -87.6298,  weight: 1200, spread: 0.18 }, // Chicago
+      { lat: 39.7392, lng: -104.9903, weight: 1100, spread: 0.18 }, // Denver
+      { lat: 47.6062, lng: -122.3321, weight: 900,  spread: 0.18 }, // Seattle
+      { lat: 45.5152, lng: -122.6784, weight: 800,  spread: 0.16 }, // Portland
+      { lat: 42.3601, lng: -71.0589,  weight: 800,  spread: 0.16 }, // Boston
+      { lat: 33.7490, lng: -84.3880,  weight: 700,  spread: 0.16 }, // Atlanta
+      { lat: 30.2672, lng: -97.7431,  weight: 650,  spread: 0.16 }, // Austin
+      // US mid-tier metros (0.1 spread)
+      { lat: 38.9072, lng: -77.0369,  weight: 700, spread: 0.12 }, // DC
+      { lat: 32.7767, lng: -96.7970,  weight: 600, spread: 0.12 }, // Dallas
+      { lat: 29.7604, lng: -95.3698,  weight: 550, spread: 0.12 }, // Houston
+      { lat: 39.9526, lng: -75.1652,  weight: 500, spread: 0.10 }, // Philly
+      { lat: 33.4484, lng: -112.0740, weight: 500, spread: 0.10 }, // Phoenix
+      { lat: 25.7617, lng: -80.1918,  weight: 450, spread: 0.10 }, // Miami
+      { lat: 36.1627, lng: -86.7816,  weight: 400, spread: 0.10 }, // Nashville
+      { lat: 35.2271, lng: -80.8431,  weight: 400, spread: 0.10 }, // Charlotte
+      { lat: 44.9778, lng: -93.2650,  weight: 400, spread: 0.10 }, // Minneapolis
+      { lat: 40.7608, lng: -111.8910, weight: 350, spread: 0.10 }, // SLC
+      { lat: 32.7157, lng: -117.1611, weight: 350, spread: 0.10 }, // San Diego
+      { lat: 36.1699, lng: -115.1398, weight: 300, spread: 0.10 }, // Las Vegas
+      { lat: 38.5816, lng: -121.4944, weight: 300, spread: 0.10 }, // Sacramento
+      { lat: 38.6270, lng: -90.1994,  weight: 300, spread: 0.10 }, // St Louis
+      { lat: 42.3314, lng: -83.0458,  weight: 300, spread: 0.10 }, // Detroit
+      { lat: 39.2904, lng: -76.6122,  weight: 280, spread: 0.10 }, // Baltimore
+      { lat: 27.9506, lng: -82.4572,  weight: 270, spread: 0.10 }, // Tampa
+      { lat: 29.4241, lng: -98.4936,  weight: 260, spread: 0.10 }, // San Antonio
+      { lat: 39.7684, lng: -86.1581,  weight: 250, spread: 0.10 }, // Indianapolis
+      { lat: 39.9612, lng: -82.9988,  weight: 250, spread: 0.10 }, // Columbus
+      { lat: 39.0997, lng: -94.5786,  weight: 250, spread: 0.10 }, // Kansas City
+      { lat: 35.7796, lng: -78.6382,  weight: 230, spread: 0.10 }, // Raleigh
+      { lat: 28.5383, lng: -81.3792,  weight: 220, spread: 0.10 }, // Orlando
+      { lat: 30.3322, lng: -81.6557,  weight: 210, spread: 0.10 }, // Jacksonville
+      { lat: 40.4406, lng: -79.9959,  weight: 220, spread: 0.10 }, // Pittsburgh
+      { lat: 41.4993, lng: -81.6944,  weight: 210, spread: 0.10 }, // Cleveland
+      { lat: 39.1031, lng: -84.5120,  weight: 200, spread: 0.10 }, // Cincinnati
+      { lat: 43.0389, lng: -87.9065,  weight: 200, spread: 0.10 }, // Milwaukee
+      { lat: 36.7378, lng: -119.7871, weight: 200, spread: 0.10 }, // Fresno
+      { lat: 43.6150, lng: -116.2023, weight: 200, spread: 0.10 }, // Boise
+      { lat: 37.5407, lng: -77.4360,  weight: 180, spread: 0.10 }, // Richmond
+      { lat: 38.2527, lng: -85.7585,  weight: 170, spread: 0.10 }, // Louisville
+      { lat: 33.5207, lng: -86.8025,  weight: 160, spread: 0.10 }, // Birmingham
+      { lat: 35.4676, lng: -97.5164,  weight: 160, spread: 0.10 }, // Oklahoma City
+      { lat: 29.9511, lng: -90.0715,  weight: 160, spread: 0.10 }, // New Orleans
+      { lat: 35.0853, lng: -106.6056, weight: 150, spread: 0.10 }, // Albuquerque
+      { lat: 36.1540, lng: -95.9928,  weight: 130, spread: 0.10 }, // Tulsa
+      { lat: 35.1495, lng: -90.0490,  weight: 130, spread: 0.10 }, // Memphis
+      { lat: 35.9606, lng: -83.9207,  weight: 120, spread: 0.10 }, // Knoxville
+      { lat: 32.2226, lng: -110.9747, weight: 120, spread: 0.10 }, // Tucson
+      { lat: 47.6588, lng: -117.4260, weight: 110, spread: 0.10 }, // Spokane
+      { lat: 39.5296, lng: -119.8138, weight: 110, spread: 0.10 }, // Reno
+      { lat: 43.0731, lng: -89.4012,  weight: 110, spread: 0.10 }, // Madison
+      { lat: 41.6005, lng: -93.6091,  weight: 110, spread: 0.10 }, // Des Moines
+      { lat: 41.2565, lng: -95.9345,  weight: 110, spread: 0.10 }, // Omaha
+      { lat: 42.6526, lng: -73.7562,  weight: 110, spread: 0.10 }, // Albany
+      { lat: 41.7658, lng: -72.6734,  weight: 110, spread: 0.10 }, // Hartford
+      { lat: 41.8240, lng: -71.4128,  weight: 110, spread: 0.10 }, // Providence
+      { lat: 42.8864, lng: -78.8784,  weight: 110, spread: 0.10 }, // Buffalo
+      { lat: 43.1566, lng: -77.6088,  weight: 110, spread: 0.10 }, // Rochester
+      { lat: 36.0726, lng: -79.7920,  weight: 100, spread: 0.10 }, // Greensboro
+      { lat: 32.7765, lng: -79.9311,  weight: 100, spread: 0.10 }, // Charleston
+      { lat: 37.6872, lng: -97.3301,  weight: 90,  spread: 0.10 }, // Wichita
+      { lat: 34.7465, lng: -92.2896,  weight: 90,  spread: 0.10 }, // Little Rock
+      { lat: 32.0809, lng: -81.0912,  weight: 90,  spread: 0.10 }, // Savannah
+      { lat: 38.0406, lng: -84.5037,  weight: 90,  spread: 0.10 }, // Lexington
+      { lat: 35.5951, lng: -82.5515,  weight: 90,  spread: 0.10 }, // Asheville
+      { lat: 32.2988, lng: -90.1848,  weight: 80,  spread: 0.10 }, // Jackson
+      { lat: 30.4383, lng: -84.2807,  weight: 80,  spread: 0.10 }, // Tallahassee
+      { lat: 32.3617, lng: -86.2792,  weight: 70,  spread: 0.10 }, // Montgomery
+      { lat: 44.4759, lng: -73.2121,  weight: 70,  spread: 0.10 }, // Burlington VT
+      { lat: 43.6591, lng: -70.2568,  weight: 70,  spread: 0.10 }, // Portland ME
+      { lat: 33.8361, lng: -81.1637,  weight: 70,  spread: 0.10 }, // Columbia SC
+      { lat: 40.0150, lng: -105.2705, weight: 90,  spread: 0.10 }, // Boulder
+      { lat: 30.6266, lng: -96.3344,  weight: 70,  spread: 0.10 }, // College Station
+      { lat: 35.6870, lng: -105.9378, weight: 70,  spread: 0.10 }, // Santa Fe
+      { lat: 44.0521, lng: -123.0868, weight: 80,  spread: 0.10 }, // Eugene
+      { lat: 38.0293, lng: -78.4767,  weight: 70,  spread: 0.10 }, // Charlottesville
+      { lat: 42.9634, lng: -85.6681,  weight: 90,  spread: 0.10 }, // Grand Rapids
+      { lat: 40.0583, lng: -74.4057,  weight: 100, spread: 0.10 }, // Princeton NJ
+      { lat: 41.3083, lng: -72.9279,  weight: 70,  spread: 0.10 }, // New Haven
+      { lat: 42.2808, lng: -83.7430,  weight: 80,  spread: 0.10 }, // Ann Arbor
+      // Canadian metros that sit inside the lat [25,50] / lng [-125,-66] box
+      { lat: 43.6532, lng: -79.3832,  weight: 800, spread: 0.18 }, // Toronto
+      { lat: 45.5017, lng: -73.5673,  weight: 500, spread: 0.16 }, // Montreal
+      { lat: 49.2827, lng: -123.1207, weight: 600, spread: 0.14 }, // Vancouver
+      { lat: 45.4215, lng: -75.6972,  weight: 220, spread: 0.12 }, // Ottawa
+      { lat: 46.8139, lng: -71.2080,  weight: 100, spread: 0.10 }, // Quebec City
+      { lat: 49.8951, lng: -97.1384,  weight: 100, spread: 0.10 }, // Winnipeg
+      { lat: 48.4284, lng: -123.3656, weight: 80,  spread: 0.10 }, // Victoria
+      { lat: 43.4643, lng: -80.5204,  weight: 90,  spread: 0.10 }  // Waterloo
+    ];
+
+    var dots = [];
+    // Worldwide bounding box (Agent-57). Was 25..50 / -125..-66 (North America
+    // only); opened up to full globe so international hub additions and
+    // international MAP_DOTS render without a wall. Antarctic latitudes are
+    // included for completeness but no hubs sit there so no synthetic dots
+    // are generated below -60.
+    var LAT_MIN = -90, LAT_MAX = 90, LNG_MIN = -180, LNG_MAX = 180;
+
+    for (var i = 0; i < hubs.length; i++) {
+      var h = hubs[i];
+      for (var j = 0; j < h.weight; j++) {
+        var lat, lng, attempts = 0;
+        do {
+          lat = h.lat + gaussian() * h.spread;
+          lng = h.lng + gaussian() * h.spread;
+          attempts++;
+        } while ((lat < LAT_MIN || lat > LAT_MAX || lng < LNG_MIN || lng > LNG_MAX) && attempts < 8);
+        if (lat < LAT_MIN || lat > LAT_MAX || lng < LNG_MIN || lng > LNG_MAX) continue;
+        dots.push({ lat: lat, lng: lng });
+      }
+    }
+    return dots;
+  }
+
+  /* ==============================================
+     FILTER COUNTS (v8 change 3)
+     ============================================== */
+  function updateFilterDropdowns() {
+    var filterMap = {
+      'bn-filter-type': { key: 'person_types', allLabel: 'All Types' },
+      'bn-filter-fn': { key: 'functions', allLabel: 'All Functions' },
+      'bn-filter-expertise': { key: 'channel_expertise', allLabel: 'All Expertise' },
+      'bn-filter-stage': { key: 'stage_experience', allLabel: 'All Stages' }
+    };
+    for (var selectId in filterMap) {
+      if (!Object.prototype.hasOwnProperty.call(filterMap, selectId)) continue;
+      var cfg = filterMap[selectId];
+      var select = document.getElementById(selectId);
+      if (!select) continue;
+      var counts = FILTER_COUNTS[cfg.key] || {};
+      for (var i = 0; i < select.options.length; i++) {
+        var opt = select.options[i];
+        if (!opt.dataset.original) opt.dataset.original = opt.textContent;
+        var label = opt.dataset.original;
+        var value = opt.value || opt.dataset.original;
+        if (label === cfg.allLabel || value === cfg.allLabel) {
+          opt.textContent = label;
+          continue;
+        }
+        var count = counts[value] || counts[label] || 0;
+        opt.textContent = label + ' (' + count + ')';
+      }
+    }
+  }
+
+  /* ==============================================
+     STATS (v8 change 12)
+     ============================================== */
+  function updateStats() {
+    var featured = allProfiles.length;
+    var execCountEl = document.getElementById('exec-count');
+    if (execCountEl) execCountEl.textContent = featured + ' profiles';
+  }
+
+  /* ==============================================
+     NETWORK TOGGLE (v8 change 7)
+     ============================================== */
+  window.switchNetwork = function(type) {
+    bnTrack('network_toggle', { network: type });
+    // Emerging Leaders Network is marked "Coming soon", so track the interest but do not
+    // swap the active card or fetch a non-existent dataset.
+    if (type !== 'exec') return;
+
+    var execLink = document.getElementById('toggle-exec');
+    var emergingLink = document.getElementById('toggle-emerging');
+    if (!execLink || !emergingLink) return;
+    execLink.classList.add('active');
+    emergingLink.classList.remove('active');
+
+    fetchAndApply(EXEC_URL).catch(function(err) {
+      console.warn('Network toggle fetch failed:', err);
+    });
+  };
+
+  /* ==============================================
+     CARD SHUFFLE (seeded by ISO week)
+     ============================================== */
+  function bnGetISOWeek() {
+    var d = new Date();
+    d.setHours(0, 0, 0, 0);
+    d.setDate(d.getDate() + 3 - (d.getDay() + 6) % 7);
+    var week1 = new Date(d.getFullYear(), 0, 4);
+    return 1 + Math.round(((d - week1) / 86400000 - 3 + (week1.getDay() + 6) % 7) / 7);
+  }
+
+  function bnSeededRandom(seed) {
+    var x = Math.sin(seed) * 10000;
+    return x - Math.floor(x);
+  }
+
+  function bnShuffleProfiles(arr) {
+    var seed = bnGetISOWeek() * 7919 + new Date().getFullYear() * 31;
+    for (var i = arr.length - 1; i > 0; i--) {
+      seed++;
+      var j = Math.floor(bnSeededRandom(seed) * (i + 1));
+      var temp = arr[i];
+      arr[i] = arr[j];
+      arr[j] = temp;
+    }
+  }
+
+  /* ==============================================
+     INTRO SCREENING POPUP
+     ============================================== */
+  var pendingIntroUrl = '';
+  var firstActionFired = false;
+  var pageLoadTime = Date.now();
+  var pendingIntroProfileId = '';
+  var selectedIntent = '';
+
+  window.bnOpenScreenPopup = function(url, profileId) {
+    pendingIntroUrl = url;
+    pendingIntroProfileId = profileId;
+    selectedIntent = '';
+    var options = document.querySelectorAll('.bn-screen-option');
+    for (var i = 0; i < options.length; i++) options[i].classList.remove('selected');
+    document.getElementById('bn-screen-proceed').classList.remove('active');
+    document.getElementById('bn-screen-popup').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    bnTrack('screen_popup_opened', { profile_id: profileId });
+  };
+
+  window.bnCloseScreenPopup = function() {
+    document.getElementById('bn-screen-popup').style.display = 'none';
+    document.body.style.overflow = '';
+  };
+
+  window.bnSelectIntent = function(el, intent) {
+    selectedIntent = intent;
+    var options = document.querySelectorAll('.bn-screen-option');
+    for (var i = 0; i < options.length; i++) options[i].classList.remove('selected');
+    el.classList.add('selected');
+    document.getElementById('bn-screen-proceed').classList.add('active');
+  };
+
+  window.bnProceedIntro = function() {
+    if (!selectedIntent) return;
+    bnTrack('intro_requested', { profile_id: pendingIntroProfileId, intent: selectedIntent });
+    bnCloseScreenPopup();
+    window.open(pendingIntroUrl + '&intent=' + encodeURIComponent(selectedIntent), '_blank', 'noopener,noreferrer');
+  };
+
+  /* ==============================================
+     SHARE PROFILE
+     ============================================== */
+  window.bnShareProfile = function(profileId, btn) {
+    var url = 'https://www.bearhugrecruiting.com/network?q=' + profileId;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(url).then(function() {
+        btn.classList.add('copied');
+        btn.innerHTML = '&#x2713; Copied';
+        bnTrack('share_copy', { profile_id: profileId });
+        setTimeout(function() {
+          btn.classList.remove('copied');
+          btn.innerHTML = '&#x1F517; Copy Link';
+        }, 2000);
+      });
+    } else {
+      var ta = document.createElement('textarea');
+      ta.value = url;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      btn.classList.add('copied');
+      btn.innerHTML = '&#x2713; Copied';
+      bnTrack('share_copy', { profile_id: profileId });
+      setTimeout(function() {
+        btn.classList.remove('copied');
+        btn.innerHTML = '&#x1F517; Copy Link';
+      }, 2000);
+    }
+  };
+
+  /* ==============================================
+     EVENT WIRING
+     ============================================== */
+  function wireEvents() {
+    var searchInput = document.getElementById('bn-search');
+    var clearBtn = document.getElementById('bn-search-clear');
+    searchInput.addEventListener('input', function() {
+      clearBtn.style.display = searchInput.value ? 'flex' : 'none';
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(applyFilters, 300);
+    });
+
+    document.getElementById('bn-filter-type').addEventListener('change', applyFilters);
+    document.getElementById('bn-filter-fn').addEventListener('change', applyFilters);
+    document.getElementById('bn-filter-expertise').addEventListener('change', applyFilters);
+    document.getElementById('bn-filter-stage').addEventListener('change', applyFilters);
+  }
+
+  /* ==============================================
+     INIT
+     ============================================== */
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadData);
+  } else {
+    loadData();
+  }
+
+})();
+</script>
+
+
+
+
+
+
