@@ -1799,6 +1799,17 @@ if (!window.gtag) {
         </div>
       </section>
 
+      <!--
+        Sticky-bar sentinel. The window-scroll listener in initStickyBar
+        doesn't fire reliably inside Squarespace's embedded scroll container,
+        so initStickyBar also wires an IntersectionObserver on this 1px
+        sentinel. When the sentinel leaves the viewport (user scrolled past
+        the action cards), the sticky bar shows. Placed here so the trigger
+        point lands roughly 400-500px down the page — same threshold as the
+        scroll fallback.
+      -->
+      <div id="bn-sticky-sentinel" aria-hidden="true" style="height:1px;width:1px;opacity:0;pointer-events:none;"></div>
+
       <!-- 8. Grand Slam (plain bordered white card) -->
       <section class="bn-block">
         <div class="bn-grand-slam-card">
@@ -2212,18 +2223,63 @@ if (!window.gtag) {
 
   function initStickyBar() {
     if (stickyDismissed || bnAlreadySubscribed) return;
+
+    // Helper: show the bar if and only if guards pass. Idempotent — calling
+    // it twice just no-ops the second time since classList.add ignores
+    // duplicates and the observer/scroll handlers both disconnect after
+    // firing. Shared by both triggers.
+    function showStickyIfClear() {
+      if (stickyDismissed || bnAlreadySubscribed) return false;
+      // Don't show while the subscribe popup is the active modal — the
+      // popup owns the screen. Return false so the trigger stays armed.
+      var popup = document.getElementById('bn-sub-popup');
+      if (popup && popup.style.display === 'flex') return false;
+      var bar = document.getElementById('bn-sticky-sub');
+      if (bar) bar.classList.add('visible');
+      return true;
+    }
+
+    // ── Trigger A: window scroll (works in standalone GitHub Pages context).
     window.addEventListener('scroll', function onScroll() {
       if (stickyDismissed || bnAlreadySubscribed) { window.removeEventListener('scroll', onScroll); return; }
       if (window.scrollY > 400) {
-        // Don't show the sticky bar while the subscribe popup is visible —
-        // the modal owns the screen. Keep the scroll handler bound so the
-        // sticky can show on the user's next scroll after the popup closes.
-        var popup = document.getElementById('bn-sub-popup');
-        if (popup && popup.style.display === 'flex') return;
-        document.getElementById('bn-sticky-sub').classList.add('visible');
-        window.removeEventListener('scroll', onScroll);
+        if (showStickyIfClear()) {
+          window.removeEventListener('scroll', onScroll);
+        }
+        // If showStickyIfClear returned false (popup currently open), keep
+        // the handler bound — next scroll after popup close will retry.
       }
     });
+
+    // ── Trigger B: IntersectionObserver on a sentinel below the action cards.
+    // Squarespace's embedded code-block can run inside a scroll container
+    // that doesn't bubble window-level scroll events, which silences trigger
+    // A. The observer watches a 1px sentinel rendered in the document flow
+    // and fires when it leaves the viewport — works regardless of which
+    // ancestor element is actually doing the scrolling.
+    var sentinel = document.getElementById('bn-sticky-sentinel');
+    if (sentinel && typeof IntersectionObserver !== 'undefined') {
+      var seenOnce = false;   // wait for the first intersection (the sentinel
+                              // starts above the fold on initial load) so we
+                              // only fire on the leaving-viewport transition,
+                              // not on initial layout.
+      var observer = new IntersectionObserver(function(entries) {
+        var entry = entries[0];
+        if (!entry) return;
+        if (entry.isIntersecting) {
+          seenOnce = true;
+          return;
+        }
+        // Sentinel left the viewport (user scrolled past it).
+        if (!seenOnce) return;   // never saw it enter — ignore (above-fold edge case)
+        if (showStickyIfClear()) {
+          observer.disconnect();
+        }
+        // If popup is open, stay subscribed — next intersection cycle (after
+        // popup close + a small scroll) will retry.
+      }, { threshold: 0, rootMargin: '0px' });
+      observer.observe(sentinel);
+    }
   }
 
   /* ==============================================
@@ -2523,6 +2579,38 @@ if (!window.gtag) {
 
     if (filteredProfiles.length === 0) {
       bnTrack('zero_results', { query: filters.search, filters: filters.type + '|' + filters.fn + '|' + filters.expertise + '|' + filters.stage });
+    }
+
+    // Sync the current filter / search / tier state into the URL so the page
+    // is deep-linkable and shareable. Uses history.replaceState (no
+    // navigation, no entry pushed to the back-stack). Defaults are omitted to
+    // keep URLs short — bare path means "all unfiltered, exec tier".
+    syncStateToUrl(filters);
+  }
+
+  // Build the canonical query string from current filter UI + tier and write
+  // it to the address bar. Uses RAW search value (not lowercased like
+  // getFilters does) so the user sees their input case preserved. Called from
+  // applyFilters and from switchNetwork.
+  function syncStateToUrl(filtersArg) {
+    try {
+      var parts = [];
+      var rawSearch = (document.getElementById('bn-search').value || '').trim();
+      if (rawSearch)                                   parts.push('q='     + encodeURIComponent(rawSearch));
+      if (filtersArg.fn        !== 'All Functions')    parts.push('fn='    + encodeURIComponent(filtersArg.fn));
+      if (filtersArg.expertise !== 'All Expertise')    parts.push('exp='   + encodeURIComponent(filtersArg.expertise));
+      if (filtersArg.stage     !== 'All Stages')       parts.push('stage=' + encodeURIComponent(filtersArg.stage));
+      if (filtersArg.type      !== 'All Types')        parts.push('type='  + encodeURIComponent(filtersArg.type));
+      if (currentNetwork === 'emerging')               parts.push('tier=emerging');
+      var qs = parts.length ? ('?' + parts.join('&')) : '';
+      var newUrl = window.location.pathname + qs + window.location.hash;
+      // Skip if URL is already at the target — avoid spamming history events.
+      if (window.location.search + window.location.hash !== qs + window.location.hash) {
+        history.replaceState(null, '', newUrl);
+      }
+    } catch (e) {
+      // history API may be unavailable in unusual embed contexts; not fatal.
+      console.warn('syncStateToUrl failed:', e);
     }
   }
 
@@ -4491,14 +4579,62 @@ if (!window.gtag) {
     initScrollTracking();
     wireEvents();
 
+    // Comprehensive URL state restore. Replaces the prior ?q=-only handler.
+    // Reads q / fn / exp / stage / type / tier and restores each into the UI
+    // before a final applyFilters() runs the grid through the restored state.
+    //
+    // tier=emerging is the special case: we need to swap the active dataset
+    // BEFORE restoring filters, because the emerging JSON has its own filter
+    // count distribution. We swap programmatically (not via switchNetwork,
+    // which would reset filters and clobber what we're about to restore).
     var urlParams = new URLSearchParams(window.location.search);
-    var queryParam = urlParams.get('q') || '';
-    if (queryParam) {
-      var searchInput = document.getElementById('bn-search');
-      searchInput.value = queryParam;
-      document.getElementById('bn-search-clear').style.display = 'flex';
+    var qParam     = urlParams.get('q')     || '';
+    var fnParam    = urlParams.get('fn')    || '';
+    var expParam   = urlParams.get('exp')   || '';
+    var stageParam = urlParams.get('stage') || '';
+    var typeParam  = urlParams.get('type')  || '';
+    var tierParam  = urlParams.get('tier')  || '';
+
+    function restoreFiltersFromUrl() {
+      var searchInput   = document.getElementById('bn-search');
+      var searchClearEl = document.getElementById('bn-search-clear');
+      if (qParam && searchInput) {
+        searchInput.value = qParam;
+        if (searchClearEl) searchClearEl.style.display = 'flex';
+        bnTrack('url_search', { query: qParam });
+      }
+      // Filter dropdowns. Each select.value assignment is a no-op if the
+      // value isn't a known option, so junky URL params silently fall back
+      // to the existing default — no breakage from malformed deep-links.
+      var typeEl  = document.getElementById('bn-filter-type');
+      var fnEl    = document.getElementById('bn-filter-fn');
+      var expEl   = document.getElementById('bn-filter-expertise');
+      var stageEl = document.getElementById('bn-filter-stage');
+      if (typeParam  && typeEl)  typeEl.value  = typeParam;
+      if (fnParam    && fnEl)    fnEl.value    = fnParam;
+      if (expParam   && expEl)   expEl.value   = expParam;
+      if (stageParam && stageEl) stageEl.value = stageParam;
       applyFilters();
-      bnTrack('url_search', { query: queryParam });
+    }
+
+    if (tierParam === 'emerging' && currentNetwork === 'exec') {
+      // Swap the active tier without going through switchNetwork (which
+      // would reset filters and trash the URL state we're restoring).
+      currentNetwork = 'emerging';
+      var execLink = document.getElementById('toggle-exec');
+      var emergingLink = document.getElementById('toggle-emerging');
+      if (execLink && emergingLink) {
+        execLink.classList.remove('active');
+        emergingLink.classList.add('active');
+      }
+      fetchAndApply(EMERGING_URL).then(restoreFiltersFromUrl).catch(function(err) {
+        console.warn('Emerging fetch (URL restore) failed:', err);
+        // Even on failure, attempt to restore filters against whatever data
+        // is currently loaded so the dropdowns at least reflect the URL.
+        restoreFiltersFromUrl();
+      });
+    } else {
+      restoreFiltersFromUrl();
     }
   }
 
@@ -4808,9 +4944,12 @@ if (!window.gtag) {
     if (fnEl)    fnEl.value    = 'All Functions';
     if (expEl)   expEl.value   = 'All Expertise';
     if (stageEl) stageEl.value = 'All Stages';
-    applyFilters();
 
     currentNetwork = type;
+    // applyFilters() AFTER currentNetwork is set so the URL sync inside it
+    // reflects the new tier (?tier=emerging if applicable, bare path for exec).
+    applyFilters();
+
     if (type === 'emerging') {
       emergingLink.classList.add('active');
       execLink.classList.remove('active');
