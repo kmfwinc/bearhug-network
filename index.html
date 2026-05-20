@@ -1836,12 +1836,12 @@ if (!window.gtag) {
           <a class="bn-net-card active" id="toggle-exec" href="#" onclick="switchNetwork('exec');return false;">
             <h4>Our Executive Network</h4>
             <p>Director-level and above. Proven executives who've scaled companies through the exact stage you're navigating.</p>
-            <span class="bn-net-count" id="exec-count">61 profiles</span>
+            <span class="bn-net-count" id="exec-count">—</span>
           </a>
           <a class="bn-net-card" id="toggle-emerging" href="#" onclick="switchNetwork('emerging');return false;">
             <h4>Our Emerging Leaders Network</h4>
             <p>Manager and individual contributor. The next generation of functional leaders, earlier in their career and ready to step up.</p>
-            <span class="bn-net-count" id="emerging-count">557 profiles</span>
+            <span class="bn-net-count" id="emerging-count">—</span>
           </a>
         </div>
       </section>
@@ -4555,6 +4555,20 @@ if (!window.gtag) {
     MAP_DOTS = data.map_dots || [];
     if (data.state_map) window.STATE_MAP = data.state_map;
     if (typeof data.total_network_size === 'number') TOTAL_NETWORK_SIZE = data.total_network_size;
+    // Cross-tier count populator. The active tier's count gets filled by
+    // updateStats() from allProfiles.length, but the OTHER tile sits as a
+    // placeholder ("—") until the user toggles. If the generator emits a
+    // cross-count in metadata (exec JSON → emerging_count, emerging JSON →
+    // exec_count), surface it here so both tiles show real numbers on first
+    // paint regardless of which tier the visitor is browsing.
+    if (typeof data.emerging_count === 'number') {
+      var emEl = document.getElementById('emerging-count');
+      if (emEl) emEl.textContent = data.emerging_count + ' profiles';
+    }
+    if (typeof data.exec_count === 'number') {
+      var exEl = document.getElementById('exec-count');
+      if (exEl) exEl.textContent = data.exec_count + ' profiles';
+    }
     initPage();
   }
 
