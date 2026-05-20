@@ -2094,6 +2094,15 @@ if (!window.gtag) {
     }
     emailEl.style.borderColor = '';
 
+    // Immediate visual feedback while the no-cors fetch is in flight.
+    // `formEl.querySelector('button')` finds the subscribe button inside the
+    // popup (bn-sub-popup-btn) or sticky (bn-sticky-sub-btn) container.
+    var submitBtn = formEl.querySelector('button');
+    if (submitBtn) {
+      submitBtn.textContent = 'Subscribing...';
+      submitBtn.disabled = true;
+    }
+
     fetch(SUBSCRIBE_PROXY_URL, {
       method: 'POST',
       mode: 'no-cors',
@@ -2124,7 +2133,12 @@ if (!window.gtag) {
       // the user can retry or use the fallback email.
       console.error('Beehiiv subscribe error:', err);
       var btn = formEl.querySelector('button');
-      if (btn) btn.textContent = 'Something went wrong. Try again or email hello@bearhugrecruiting.com';
+      if (btn) {
+        // Re-enable BEFORE writing the error text so the user can immediately
+        // click again to retry (the previous in-flight click set disabled=true).
+        btn.disabled = false;
+        btn.textContent = 'Something went wrong. Try again or email hello@bearhugrecruiting.com';
+      }
       // User attempted the form — count as interaction so the 45s timed
       // popup doesn't pop later. They can still retry in the visible form.
       bnSubInteracted = true;
@@ -4798,8 +4812,46 @@ if (!window.gtag) {
   var pendingIntroProfileId = '';
   var selectedIntent = '';
 
+  // Build a human-readable summary of the visitor's current page state for
+  // Kraig's Mixmax dashboard view. Only assembled for bearhug-network-inquiry
+  // ("Can't find" / browse-database / zero-results) — the intro-request flow
+  // is per-card and already encodes the specific profile via ?profile=.
+  //
+  // Example output: "exec | Marketing and Brand | searched: CFO | source: zero_results"
+  function buildScreenPopupContext(sourceArg) {
+    var parts = [];
+    // 1. Active network tier.
+    parts.push(currentNetwork || 'exec');
+    // 2. Filter selections — only include those NOT at their All-X default.
+    var typeEl     = document.getElementById('bn-filter-type');
+    var fnEl       = document.getElementById('bn-filter-fn');
+    var expEl      = document.getElementById('bn-filter-expertise');
+    var stageEl    = document.getElementById('bn-filter-stage');
+    if (typeEl  && typeEl.value  && typeEl.value  !== 'All Types')      parts.push(typeEl.value);
+    if (fnEl    && fnEl.value    && fnEl.value    !== 'All Functions')  parts.push(fnEl.value);
+    if (expEl   && expEl.value   && expEl.value   !== 'All Expertise')  parts.push(expEl.value);
+    if (stageEl && stageEl.value && stageEl.value !== 'All Stages')     parts.push(stageEl.value);
+    // 3. Search input — preserve the user's case (don't lowercase like getFilters does).
+    var searchEl = document.getElementById('bn-search');
+    var searchTerm = searchEl ? (searchEl.value || '').trim() : '';
+    if (searchTerm) parts.push('searched: ' + searchTerm);
+    // 4. Triggering CTA (passed in as the second arg by the caller).
+    if (sourceArg) parts.push('source: ' + sourceArg);
+    return parts.join(' | ');
+  }
+
   window.bnOpenScreenPopup = function(url, profileId) {
-    pendingIntroUrl = url;
+    // For Mixmax inquiry URLs (Can't-Find / browse-full-database / zero-
+    // results), enrich with &context= capturing the visitor's page state.
+    // For intro-request URLs (per-card "Request Introduction"), leave the URL
+    // alone — those already carry ?profile=<SH-id> identifying the specific
+    // contact and don't need page-state context.
+    var enrichedUrl = url;
+    if (url && url.indexOf('bearhug-network-inquiry') !== -1) {
+      var ctx = buildScreenPopupContext(profileId);
+      if (ctx) enrichedUrl = url + '&context=' + encodeURIComponent(ctx);
+    }
+    pendingIntroUrl = enrichedUrl;
     pendingIntroProfileId = profileId;
     selectedIntent = '';
     var options = document.querySelectorAll('.bn-screen-option');
