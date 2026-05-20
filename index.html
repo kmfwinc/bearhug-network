@@ -2204,8 +2204,8 @@ if (!window.gtag) {
   window.bnDismissSticky = function() {
     document.getElementById('bn-sticky-sub').classList.remove('visible');
     stickyDismissed = true;
-    // Persist the dismissal for 30 days so the bar doesn't reappear on refresh.
-    bnSetCookie('bn_sticky_dismissed', '1', 30);
+    // Persist the dismissal for 7 days so the bar doesn't reappear on refresh.
+    bnSetCookie('bn_sticky_dismissed', '1', 7);
     bnTrack('sticky_bar_dismissed', {});
   };
 
