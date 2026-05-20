@@ -1909,7 +1909,7 @@ if (!window.gtag) {
             <svg class="bn-dark-cta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M3 5v6c0 1.66 4.03 3 9 3s9-1.34 9-3V5"></path><path d="M3 11v6c0 1.66 4.03 3 9 3s9-1.34 9-3v-6"></path></svg>
             <span class="bn-dark-cta-body">
               <span>Request to browse the full network</span>
-              <span class="bn-dark-cta-sub">21,594+ and growing</span>
+              <span class="bn-dark-cta-sub">New profiles added daily</span>
             </span>
           </a>
           <a class="bn-dark-cta bn-dark-cta-muted" href="https://bearhugrecruiting.com/join-network" target="_blank" rel="noopener" onclick="bnTrack('submit_yourself_clicked',{context:'footer_dark_cta'})">
@@ -1939,7 +1939,7 @@ if (!window.gtag) {
           </div>
           <div class="bn-dark-practice">
             <div class="bn-dark-practice-head">
-              <span class="bn-dark-practice-dot" style="background-color:#1a5276;"></span>
+              <span class="bn-dark-practice-dot" style="background-color:#27ae60;"></span>
               Environmental &amp; DeepTech
             </div>
             <p class="bn-dark-practice-desc">GTM, product, and finance executive search. Early- and growth-stage environmental technology and deep-tech startups. Scale-ups doing $3M to $50M+.</p>
@@ -2261,7 +2261,106 @@ if (!window.gtag) {
     };
   }
 
-  function matchesFilter(profile, filters) {
+  // ── Search relevance scoring (v8.2) ──────────────────────────────────────
+  //
+  // Each search term is tested against the listed fields. The highest-weight
+  // field hit per term contributes to the profile's score. All terms must hit
+  // at least one field (AND semantics). For short tokens (<= 4 chars) we use
+  // word boundaries so "CFO" doesn't match "microFOOding" and "VP" doesn't
+  // match "GROUPVP". Longer tokens stay substring for partial-word fuzziness.
+
+  var SEARCH_FIELD_WEIGHTS = {
+    functions:         100,  // Function tag match → top of the list
+    summary:            60,  // Profile Headline — where titles like CFO/VP/Director live
+    looking_for:        30,
+    key_relationships:  20,
+    career_highlights:  10,
+    region:              1,
+    metroLabel:          1,
+    dispositions:        1,
+    sub_sectors:         1,
+    channel_expertise:   1,
+    stage_experience:    1,
+    person_types:        1,
+    id:                  1
+  };
+
+  function bnEscapeRegex(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+
+  // Build one tester per term. Short tokens require word boundaries; longer
+  // tokens stay substring. Built once per query, used across N profiles.
+  function bnMakeTermTester(term) {
+    if (!term) return function() { return false; };
+    if (term.length <= 4) {
+      var re = new RegExp('\\b' + bnEscapeRegex(term) + '\\b', 'i');
+      return function(text) { return !!text && re.test(text); };
+    }
+    var lower = term.toLowerCase();
+    return function(text) { return !!text && text.toLowerCase().indexOf(lower) !== -1; };
+  }
+
+  // Fallback matchers preserved from v8.1: "remote" keyword + full state name.
+  function bnTermSpecialMatch(term, profile) {
+    if (term === 'remote') {
+      var dispLow = (profile.dispositions || []).join(' ').toLowerCase();
+      var lfLow   = (profile.looking_for || '').toLowerCase();
+      if (dispLow.indexOf('remote') !== -1 || lfLow.indexOf('remote') !== -1) return true;
+    }
+    if (window.STATE_MAP) {
+      var regUpper = (profile.region || '').toUpperCase();
+      for (var abbr in window.STATE_MAP) {
+        if (!Object.prototype.hasOwnProperty.call(window.STATE_MAP, abbr)) continue;
+        var fullName = window.STATE_MAP[abbr];
+        if (term === fullName.toLowerCase() || term === abbr.toLowerCase()) {
+          if (regUpper.indexOf(abbr.toUpperCase()) !== -1) return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  // Returns { matched, score }. matched=false means at least one term hit zero
+  // fields (search excludes the profile). matched=true returns the summed
+  // best-weight per term as the relevance score.
+  function bnScoreMatch(profile, terms, testers) {
+    if (!terms.length) return { matched: true, score: 0 };
+
+    var metroLabel = getMetroLabel(profile.region || '');
+    var fields = {
+      functions:         (profile.functions || []).join(' '),
+      summary:           profile.summary || '',
+      looking_for:       profile.looking_for || '',
+      key_relationships: profile.key_relationships || '',
+      career_highlights: profile.career_highlights || '',
+      region:            profile.region || '',
+      metroLabel:        metroLabel,
+      dispositions:      (profile.dispositions || []).join(' '),
+      sub_sectors:       (profile.sub_sectors || []).join(' '),
+      channel_expertise: (profile.channel_expertise || []).join(' '),
+      stage_experience:  (profile.stage_experience || []).join(' '),
+      person_types:      (profile.person_types || []).join(' '),
+      id:                profile.id || ''
+    };
+
+    var total = 0;
+    for (var i = 0; i < terms.length; i++) {
+      var tester = testers[i];
+      var bestWeight = 0;
+      for (var fname in SEARCH_FIELD_WEIGHTS) {
+        if (!Object.prototype.hasOwnProperty.call(SEARCH_FIELD_WEIGHTS, fname)) continue;
+        if (tester(fields[fname])) {
+          var w = SEARCH_FIELD_WEIGHTS[fname];
+          if (w > bestWeight) bestWeight = w;
+        }
+      }
+      if (bestWeight === 0 && bnTermSpecialMatch(terms[i], profile)) bestWeight = 1;
+      if (bestWeight === 0) return { matched: false, score: 0 };
+      total += bestWeight;
+    }
+    return { matched: true, score: total };
+  }
+
+  function matchesFilter(profile, filters, searchTerms, searchTesters) {
     if (filters.type !== 'All Types') {
       if (!profile.person_types || profile.person_types.indexOf(filters.type) === -1) return false;
     }
@@ -2275,54 +2374,10 @@ if (!window.gtag) {
       if (!profile.stage_experience || profile.stage_experience.indexOf(filters.stage) === -1) return false;
     }
 
-    if (filters.search) {
-      var metroLabel = getMetroLabel(profile.region || '');
-      var dispositionsLower = (profile.dispositions || []).join(' ').toLowerCase();
-      var lookingForLower = (profile.looking_for || '').toLowerCase();
-      var regionUpper = (profile.region || '').toUpperCase();
-
-      var haystack = [
-        (profile.id || ''),
-        (profile.summary || ''),
-        (profile.key_relationships || ''),
-        (profile.looking_for || ''),
-        (profile.career_highlights || ''),
-        (profile.region || ''),
-        metroLabel,
-        (profile.person_types || []).join(' '),
-        (profile.functions || []).join(' '),
-        (profile.sub_sectors || []).join(' '),
-        (profile.channel_expertise || []).join(' '),
-        (profile.stage_experience || []).join(' '),
-        (profile.dispositions || []).join(' ')
-      ].join(' ').toLowerCase();
-
-      var terms = filters.search.split(/\s+/);
-      for (var i = 0; i < terms.length; i++) {
-        var term = terms[i];
-        if (!term) continue;
-        if (haystack.indexOf(term) !== -1) continue;
-
-        // "Remote" keyword (v8 change 10)
-        if (term === 'remote') {
-          if (dispositionsLower.indexOf('remote') !== -1 || lookingForLower.indexOf('remote') !== -1) continue;
-        }
-
-        // Full state name matching (v8 change 10)
-        if (window.STATE_MAP) {
-          var matched = false;
-          for (var abbr in window.STATE_MAP) {
-            if (!Object.prototype.hasOwnProperty.call(window.STATE_MAP, abbr)) continue;
-            var fullName = window.STATE_MAP[abbr];
-            if (term === fullName.toLowerCase() || term === abbr.toLowerCase()) {
-              if (regionUpper.indexOf(abbr.toUpperCase()) !== -1) { matched = true; break; }
-            }
-          }
-          if (matched) continue;
-        }
-
-        return false;
-      }
+    if (searchTerms && searchTerms.length) {
+      var sm = bnScoreMatch(profile, searchTerms, searchTesters);
+      if (!sm.matched) return false;
+      profile._searchScore = sm.score;
     }
     return true;
   }
@@ -2339,8 +2394,26 @@ if (!window.gtag) {
     var filters = getFilters();
     // Re-evaluate cap on every filter change. Filtered/searched states bypass the limit.
     showAllCards = false;
-    filteredProfiles = allProfiles.filter(function(p) { return matchesFilter(p, filters); });
-    bnShuffleProfiles(filteredProfiles);
+
+    // Build per-query term testers once, not per profile.
+    var searchTerms   = filters.search ? filters.search.split(/\s+/).filter(Boolean) : [];
+    var searchTesters = searchTerms.map(bnMakeTermTester);
+
+    filteredProfiles = allProfiles.filter(function(p) {
+      return matchesFilter(p, filters, searchTerms, searchTesters);
+    });
+
+    // Ordering: keyword searches sort by relevance score (set on profile by
+    // matchesFilter as a side effect). Facet-only and unfiltered states keep
+    // the deterministic weekly shuffle so the network feels fresh.
+    if (searchTerms.length) {
+      filteredProfiles.sort(function(a, b) {
+        return (b._searchScore || 0) - (a._searchScore || 0);
+      });
+    } else {
+      bnShuffleProfiles(filteredProfiles);
+    }
+
     renderCards();
     updateCount();
 
@@ -2461,7 +2534,7 @@ if (!window.gtag) {
     if (filteredProfiles.length === 0) {
       grid.innerHTML = '<div id="zero-results" style="grid-column:1/-1;text-align:center;padding:48px 24px;">'
         + '<h3 style="font-family:\'Playfair Display\',serif;font-size:1.5rem;color:#0E0E0E;margin-bottom:12px;">You\'ve gotten very specific.</h3>'
-        + '<p style="font-family:\'DM Sans\',sans-serif;font-size:1rem;color:#555;margin-bottom:8px;">The right person may already be in our full database of 21,594+ professionals.</p>'
+        + '<p style="font-family:\'DM Sans\',sans-serif;font-size:1rem;color:#555;margin-bottom:8px;">The right person may already be in our wider network.</p>'
         + '<p style="font-family:\'DM Sans\',sans-serif;font-size:0.95rem;color:#555;margin-bottom:24px;">You\'re browsing a curated selection from a much larger network.</p>'
         + '<a href="https://cal.mixmax.com/kraigward-722/30-min-bd-discovery" target="_blank" rel="noopener noreferrer" onclick="bnTrack(\'zero_results_cta\',{context:\'zero_results\'})" style="display:inline-block;padding:12px 28px;background:#B8963E;color:#fff;font-family:\'DM Sans\',sans-serif;font-weight:600;text-decoration:none;border-radius:4px;">Let\'s talk</a>'
         + '</div>';
