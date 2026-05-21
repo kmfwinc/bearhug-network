@@ -145,6 +145,40 @@ if (!window.gtag) {
   }
   .bn-subtitle:last-child { margin-bottom: 0; }
 
+  /* -- "How the network works" numbered list (below Grand Slam) -- */
+  .bn-howit-heading {
+    font-family: var(--ff-display);
+    font-size: 18px;
+    font-weight: 600;
+    color: #0E0E0E;
+    margin: 0 0 16px;
+  }
+  .bn-howit-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .bn-howit-item {
+    display: flex;
+    gap: 10px;
+    font-family: var(--ff-body);
+    font-size: 14px;
+    line-height: 1.7;
+    color: #444;
+  }
+  .bn-howit-num {
+    color: #B8963E;
+    font-weight: 500;
+    flex-shrink: 0;
+  }
+  .bn-howit-note {
+    font-family: var(--ff-body);
+    font-size: 12px;
+    color: #888780;
+    font-style: italic;
+    margin-top: 14px;
+  }
+
   /* -- 4. Stats cards (centered content) -- */
   .bn-stat-card {
     background-color: var(--card-bg);
@@ -487,6 +521,7 @@ if (!window.gtag) {
 
   /* -- 9. Network selector cards -- */
   .bn-net-card {
+    position: relative;
     background-color: #faf9f6;
     border: 1px solid var(--border);
     border-left: 4px solid transparent;
@@ -526,6 +561,27 @@ if (!window.gtag) {
     color: var(--gold);
   }
   .bn-net-count-soon { color: var(--muted-mid); }
+  .bn-net-icon {
+    width: 22px;
+    height: 22px;
+    color: #B8963E;
+  }
+  .bn-net-card:not(.active) .bn-net-icon { color: #888780; }
+  .bn-net-badge {
+    display: none;
+    position: absolute;
+    top: -8px;
+    right: 12px;
+    background-color: #B8963E;
+    color: #fff;
+    text-transform: uppercase;
+    font-family: var(--ff-body);
+    font-size: 9px;
+    font-weight: 600;
+    padding: 2px 10px;
+    border-radius: 10px;
+  }
+  .bn-net-card.active .bn-net-badge { display: block; }
 
   /* -- 12. Divider above repeated action cards -- */
   .bn-divider {
@@ -1325,7 +1381,7 @@ if (!window.gtag) {
   .bn-count strong { color: var(--ink); }
   .bn-filter-row {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 10px;
     margin-top: 12px;
     width: 100%;
@@ -1609,7 +1665,7 @@ if (!window.gtag) {
     .bn-grid-3 { grid-template-columns: repeat(2, 1fr); }
     .bn-grid-4 { grid-template-columns: repeat(2, 1fr); }
     .bn-grid { grid-template-columns: repeat(2, 1fr); }
-    .bn-filter-row { grid-template-columns: repeat(2, 1fr); }
+    .bn-filter-row { grid-template-columns: repeat(3, 1fr); }
   }
   @media (max-width: 768px) {
     .bn-title { font-size: 2.1rem; }
@@ -1785,20 +1841,20 @@ if (!window.gtag) {
               <span class="bn-action-link">Request access &rarr;</span>
             </div>
           </a>
-          <a class="bn-action-card bn-has-icon" href="https://bearhugrecruiting.com/join-network" target="_blank" rel="noopener noreferrer" onclick="bnTrack('submit_yourself_clicked',{context:'action_cards_top'})">
-            <div class="bn-action-icon-wrap bn-action-icon-star">&#x2B50;</div>
-            <div class="bn-action-body">
-              <h4>Want to be featured?</h4>
-              <p>Submit your profile and join the network. Takes less than 5 minutes.</p>
-              <span class="bn-action-link">Register now &rarr;</span>
-            </div>
-          </a>
           <a class="bn-action-card bn-has-icon" href="#" onclick="bnTrack('subscribe_clicked',{context:'action_cards_top'});bnScrollToSubscribe();return false;">
             <div class="bn-action-icon-wrap bn-action-icon-mail">&#x1F4E7;</div>
             <div class="bn-action-body">
               <h4>Stay in the loop</h4>
               <p>Profiles added daily. Weekly highlights delivered to your inbox.</p>
               <span class="bn-action-link">Subscribe &rarr;</span>
+            </div>
+          </a>
+          <a class="bn-action-card bn-has-icon" href="https://bearhugrecruiting.com/join-network" target="_blank" rel="noopener noreferrer" onclick="bnTrack('submit_yourself_clicked',{context:'action_cards_top'})">
+            <div class="bn-action-icon-wrap bn-action-icon-star">&#x2B50;</div>
+            <div class="bn-action-body">
+              <h4>Want to be featured?</h4>
+              <p>Submit your profile and join the network. Takes less than 5 minutes.</p>
+              <span class="bn-action-link">Register now &rarr;</span>
             </div>
           </a>
         </div>
@@ -1824,21 +1880,30 @@ if (!window.gtag) {
         </div>
       </section>
 
-      <!-- Subhead paragraphs (below Grand Slam) -->
+      <!-- How the network works (below Grand Slam) -->
       <section class="bn-block">
-        <p class="bn-subtitle">What you see below represents a small fraction of our pre-vetted executive and emerging leader network across the consumer and B2B landscape. We deliberately keep the public view curated, reserving full database access for retained clients and invited subscribers. Every person featured is either actively exploring their next move or has been in their current role long enough that the right opportunity would get their attention.</p>
-        <p class="bn-subtitle">New anonymized profiles are added to the network daily to protect their identity. Browse to learn what each person has built, the relationships and channels they bring, and what they're open to. Request an intro to anyone, and we'll handle the rest. Subscribe for weekly highlights, and book a call for private access to browse our entire database.</p>
+        <h3 class="bn-howit-heading">How the network works</h3>
+        <div class="bn-howit-list">
+          <div class="bn-howit-item"><span class="bn-howit-num">01</span><span class="bn-howit-text">What you see below represents a small fraction of our pre-vetted executive and emerging leader network across the consumer and B2B landscape. We deliberately keep the public view curated, reserving full database access for retained clients and invited subscribers.</span></div>
+          <div class="bn-howit-item"><span class="bn-howit-num">02</span><span class="bn-howit-text">Every person featured is either actively exploring their next move or has been in their current role long enough that the right opportunity would get their attention. New anonymized profiles are added to the network daily to protect their identity. Browse to learn what each person has built, the relationships and channels they bring, and what they're open to.</span></div>
+          <div class="bn-howit-item"><span class="bn-howit-num">03</span><span class="bn-howit-text">Request an intro to anyone, and we'll handle the rest. Subscribe for weekly highlights, and book a call for private access to browse our entire database.</span></div>
+        </div>
+        <p class="bn-howit-note">Note: expect the browsable network to grow substantially over the coming weeks as we finish loading our entire network into the system.</p>
       </section>
 
       <!-- 9. Network selector (equal 50/50) -->
       <section class="bn-block">
         <div class="bn-grid-2">
           <a class="bn-net-card active" id="toggle-exec" href="#" onclick="switchNetwork('exec');return false;">
+            <span class="bn-net-badge">Viewing</span>
+            <svg class="bn-net-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
             <h4>Our Executive Network</h4>
             <p>Director-level and above. Proven executives who've scaled companies through the exact stage you're navigating.</p>
             <span class="bn-net-count" id="exec-count">—</span>
           </a>
           <a class="bn-net-card" id="toggle-emerging" href="#" onclick="switchNetwork('emerging');return false;">
+            <span class="bn-net-badge">Viewing</span>
+            <svg class="bn-net-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline><polyline points="16 7 22 7 22 13"></polyline></svg>
             <h4>Our Emerging Leaders Network</h4>
             <p>Manager and individual contributor. The next generation of functional leaders, earlier in their career and ready to step up.</p>
             <span class="bn-net-count" id="emerging-count">—</span>
@@ -1858,16 +1923,6 @@ if (!window.gtag) {
             <span class="bn-count" id="bn-count"></span>
           </div>
           <div class="bn-filter-row" id="bn-filter-row">
-            <div class="bn-filter-group">
-              <label class="bn-filter-label">Person Type</label>
-              <select class="bn-filter-select" id="bn-filter-type">
-                <option>All Types</option>
-                <option>Operator</option>
-                <option>Founder</option>
-                <option>Board Member / Advisor</option>
-                <option>Investor</option>
-              </select>
-            </div>
             <div class="bn-filter-group">
               <label class="bn-filter-label">Function</label>
               <select class="bn-filter-select" id="bn-filter-fn">
@@ -1941,18 +1996,18 @@ if (!window.gtag) {
               <span class="bn-dark-cta-sub">New profiles added daily</span>
             </span>
           </a>
-          <a class="bn-dark-cta bn-dark-cta-muted" href="https://bearhugrecruiting.com/join-network" target="_blank" rel="noopener noreferrer" onclick="bnTrack('submit_yourself_clicked',{context:'footer_dark_cta'})">
-            <svg class="bn-dark-cta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><line x1="19" y1="8" x2="19" y2="14"></line><line x1="22" y1="11" x2="16" y2="11"></line></svg>
-            <span class="bn-dark-cta-body">
-              <span>Register yourself to be featured</span>
-              <span class="bn-dark-cta-sub">Takes less than 5 minutes</span>
-            </span>
-          </a>
           <a class="bn-dark-cta bn-dark-cta-muted" href="#" onclick="bnScrollToSubscribe();return false;">
             <svg class="bn-dark-cta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2" ry="2"></rect><polyline points="3 7 12 13 21 7"></polyline></svg>
             <span class="bn-dark-cta-body">
               <span>Subscribe for weekly highlights</span>
               <span class="bn-dark-cta-sub">Get first dibs on the best new profiles</span>
+            </span>
+          </a>
+          <a class="bn-dark-cta bn-dark-cta-muted" href="https://bearhugrecruiting.com/join-network" target="_blank" rel="noopener noreferrer" onclick="bnTrack('submit_yourself_clicked',{context:'footer_dark_cta'})">
+            <svg class="bn-dark-cta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><line x1="19" y1="8" x2="19" y2="14"></line><line x1="22" y1="11" x2="16" y2="11"></line></svg>
+            <span class="bn-dark-cta-body">
+              <span>Register yourself to be featured</span>
+              <span class="bn-dark-cta-sub">Takes less than 5 minutes</span>
             </span>
           </a>
         </div>
@@ -2410,7 +2465,6 @@ if (!window.gtag) {
     function getFilters() {
     return {
       search: (document.getElementById('bn-search').value || '').trim().toLowerCase(),
-      type: document.getElementById('bn-filter-type').value,
       fn: document.getElementById('bn-filter-fn').value,
       expertise: document.getElementById('bn-filter-expertise').value,
       stage: document.getElementById('bn-filter-stage').value
@@ -2521,9 +2575,6 @@ if (!window.gtag) {
   }
 
   function matchesFilter(profile, filters, searchTerms, searchTesters) {
-    if (filters.type !== 'All Types') {
-      if (!profile.person_types || profile.person_types.indexOf(filters.type) === -1) return false;
-    }
     if (filters.fn !== 'All Functions') {
       if (!profile.functions || profile.functions.indexOf(filters.fn) === -1) return false;
     }
@@ -2544,7 +2595,6 @@ if (!window.gtag) {
 
   function isUnfiltered(filters) {
     return !filters.search
-      && filters.type === 'All Types'
       && filters.fn === 'All Functions'
       && filters.expertise === 'All Expertise'
       && filters.stage === 'All Stages';
@@ -2578,13 +2628,12 @@ if (!window.gtag) {
     updateCount();
 
     if (filters.search) bnTrack('search_entered', { query: filters.search });
-    if (filters.type !== 'All Types') bnTrack('filter_applied', { filter_type: 'person_type', filter_value: filters.type });
     if (filters.fn !== 'All Functions') bnTrack('filter_applied', { filter_type: 'function', filter_value: filters.fn });
     if (filters.expertise !== 'All Expertise') bnTrack('filter_applied', { filter_type: 'key_expertise', filter_value: filters.expertise });
     if (filters.stage !== 'All Stages') bnTrack('filter_applied', { filter_type: 'stage_experience', filter_value: filters.stage });
 
     if (filteredProfiles.length === 0) {
-      bnTrack('zero_results', { query: filters.search, filters: filters.type + '|' + filters.fn + '|' + filters.expertise + '|' + filters.stage });
+      bnTrack('zero_results', { query: filters.search, filters: filters.fn + '|' + filters.expertise + '|' + filters.stage });
     }
 
     // Sync the current filter / search / tier state into the URL so the page
@@ -2606,7 +2655,6 @@ if (!window.gtag) {
       if (filtersArg.fn        !== 'All Functions')    parts.push('fn='    + encodeURIComponent(filtersArg.fn));
       if (filtersArg.expertise !== 'All Expertise')    parts.push('exp='   + encodeURIComponent(filtersArg.expertise));
       if (filtersArg.stage     !== 'All Stages')       parts.push('stage=' + encodeURIComponent(filtersArg.stage));
-      if (filtersArg.type      !== 'All Types')        parts.push('type='  + encodeURIComponent(filtersArg.type));
       if (currentNetwork === 'emerging')               parts.push('tier=emerging');
       var qs = parts.length ? ('?' + parts.join('&')) : '';
       var newUrl = window.location.pathname + qs + window.location.hash;
@@ -4612,7 +4660,6 @@ if (!window.gtag) {
     var fnParam    = urlParams.get('fn')    || '';
     var expParam   = urlParams.get('exp')   || '';
     var stageParam = urlParams.get('stage') || '';
-    var typeParam  = urlParams.get('type')  || '';
     var tierParam  = urlParams.get('tier')  || '';
 
     function restoreFiltersFromUrl() {
@@ -4626,11 +4673,9 @@ if (!window.gtag) {
       // Filter dropdowns. Each select.value assignment is a no-op if the
       // value isn't a known option, so junky URL params silently fall back
       // to the existing default — no breakage from malformed deep-links.
-      var typeEl  = document.getElementById('bn-filter-type');
       var fnEl    = document.getElementById('bn-filter-fn');
       var expEl   = document.getElementById('bn-filter-expertise');
       var stageEl = document.getElementById('bn-filter-stage');
-      if (typeParam  && typeEl)  typeEl.value  = typeParam;
       if (fnParam    && fnEl)    fnEl.value    = fnParam;
       if (expParam   && expEl)   expEl.value   = expParam;
       if (stageParam && stageEl) stageEl.value = stageParam;
@@ -4872,7 +4917,6 @@ if (!window.gtag) {
      ============================================== */
   function updateFilterDropdowns() {
     var filterMap = {
-      'bn-filter-type': { key: 'person_types', allLabel: 'All Types' },
       'bn-filter-fn': { key: 'functions', allLabel: 'All Functions' },
       'bn-filter-expertise': { key: 'channel_expertise', allLabel: 'All Expertise' },
       'bn-filter-stage': { key: 'stage_experience', allLabel: 'All Stages' }
@@ -4882,7 +4926,6 @@ if (!window.gtag) {
       var cfg = filterMap[selectId];
       var select = document.getElementById(selectId);
       if (!select) continue;
-      var counts = FILTER_COUNTS[cfg.key] || {};
       for (var i = 0; i < select.options.length; i++) {
         var opt = select.options[i];
         if (!opt.dataset.original) opt.dataset.original = opt.textContent;
@@ -4899,24 +4942,14 @@ if (!window.gtag) {
           opt.textContent = label;
           continue;
         }
-        var count = counts[value] || counts[label] || 0;
-        // FIX: pin the option's value to the canonical original BEFORE
-        // mutating textContent. Without this, <option> tags that lack an
-        // explicit value= attribute (Type / Function / Expertise dropdowns)
-        // end up with <select>.value === "Sales and Commercial (147)" instead
-        // of "Sales and Commercial", and matchesFilter() rejects every
-        // profile → "Not finding the right person?" zero-result state.
-        //
-        // Two branches:
-        //   - origValue === origLabel → no explicit value= attr → safe to
-        //     use the label (canonical = display text)
-        //   - origValue !== origLabel → explicit value= attr (Stage) → must
-        //     restore the canonical value so JSON match works; setting
-        //     opt.value to the label would clobber Stage's "Zero-to-One
-        //     Build" with the display "Ground-up build".
+        // Pin the option's value to the canonical original. Stage has an
+        // explicit value= ("Zero-to-One Build") distinct from its display
+        // label ("Ground-up build"); other dropdowns use the label itself
+        // as the value. matchesFilter() compares against the canonical
+        // value, so origValue wins for value= options.
         if (opt.dataset.origValue === opt.dataset.original) opt.value = label;
         else opt.value = opt.dataset.origValue;
-        opt.textContent = label + ' (' + count + ')';
+        opt.textContent = label;
       }
     }
   }
@@ -4954,13 +4987,11 @@ if (!window.gtag) {
     // arrives, then fetchAndApply swaps in the new dataset.
     var searchEl = document.getElementById('bn-search');
     var searchClearEl = document.getElementById('bn-search-clear');
-    var typeEl  = document.getElementById('bn-filter-type');
     var fnEl    = document.getElementById('bn-filter-fn');
     var expEl   = document.getElementById('bn-filter-expertise');
     var stageEl = document.getElementById('bn-filter-stage');
     if (searchEl)      searchEl.value = '';
     if (searchClearEl) searchClearEl.style.display = 'none';
-    if (typeEl)  typeEl.value  = 'All Types';
     if (fnEl)    fnEl.value    = 'All Functions';
     if (expEl)   expEl.value   = 'All Expertise';
     if (stageEl) stageEl.value = 'All Stages';
@@ -5032,11 +5063,9 @@ if (!window.gtag) {
     // 1. Active network tier.
     parts.push(currentNetwork || 'exec');
     // 2. Filter selections — only include those NOT at their All-X default.
-    var typeEl     = document.getElementById('bn-filter-type');
     var fnEl       = document.getElementById('bn-filter-fn');
     var expEl      = document.getElementById('bn-filter-expertise');
     var stageEl    = document.getElementById('bn-filter-stage');
-    if (typeEl  && typeEl.value  && typeEl.value  !== 'All Types')      parts.push(typeEl.value);
     if (fnEl    && fnEl.value    && fnEl.value    !== 'All Functions')  parts.push(fnEl.value);
     if (expEl   && expEl.value   && expEl.value   !== 'All Expertise')  parts.push(expEl.value);
     if (stageEl && stageEl.value && stageEl.value !== 'All Stages')     parts.push(stageEl.value);
@@ -5139,7 +5168,6 @@ if (!window.gtag) {
       searchTimeout = setTimeout(applyFilters, 300);
     });
 
-    document.getElementById('bn-filter-type').addEventListener('change', applyFilters);
     document.getElementById('bn-filter-fn').addEventListener('change', applyFilters);
     document.getElementById('bn-filter-expertise').addEventListener('change', applyFilters);
     document.getElementById('bn-filter-stage').addEventListener('change', applyFilters);
