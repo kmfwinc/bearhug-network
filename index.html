@@ -2438,7 +2438,8 @@ if (!window.gtag) {
     channel_expertise:   1,
     stage_experience:    1,
     person_types:        1,
-    id:                  1
+    id:                  1,  // SH-XXXXX internal share id
+    profile_id:          1   // BHRN-#### / EMN-#### public id — without this, deep-links like ?q=BHRN-1438 silently match nothing
   };
 
   function bnEscapeRegex(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
