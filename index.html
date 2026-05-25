@@ -1939,6 +1939,38 @@ if (!window.gtag) {
         </div>
       </section>
 
+      <!-- 7. Three action cards (header, v7 emoji icon style) — moved 2026-05-25
+           from below the how-it-works section to here, immediately under the
+           HIRING / GETTING HIRED journey cards and above the map. -->
+      <section class="bn-block">
+        <div class="bn-grid-3">
+          <a class="bn-action-card bn-has-icon" href="#" onclick="event.preventDefault();bnTrack('cant_find_clicked',{context:'action_cards_top'});bnOpenScreenPopup('https://cal.mixmax.com/kraigward-722/bearhug-network-inquiry?source=cant_find','cant_find_action')">
+            <div class="bn-action-icon-wrap bn-action-icon-search">&#x1F50D;</div>
+            <div class="bn-action-body">
+              <h4>Can't find the right person?</h4>
+              <p>Request private access to our full database of 21,594+ professionals.</p>
+              <span class="bn-action-link">Request access &rarr;</span>
+            </div>
+          </a>
+          <a class="bn-action-card bn-has-icon" href="#" onclick="bnTrack('subscribe_clicked',{context:'action_cards_top'});bnScrollToSubscribe();return false;">
+            <div class="bn-action-icon-wrap bn-action-icon-mail">&#x1F4E7;</div>
+            <div class="bn-action-body">
+              <h4>Stay in the loop</h4>
+              <p>Profiles added daily. Weekly highlights delivered to your inbox.</p>
+              <span class="bn-action-link">Subscribe &rarr;</span>
+            </div>
+          </a>
+          <a class="bn-action-card bn-has-icon" href="https://bearhugrecruiting.com/join-network" target="_blank" rel="noopener noreferrer" onclick="bnTrack('submit_yourself_clicked',{context:'action_cards_top'})">
+            <div class="bn-action-icon-wrap bn-action-icon-star">&#x2B50;</div>
+            <div class="bn-action-body">
+              <h4>Want to be featured?</h4>
+              <p>Submit your profile and join the network. Takes less than 5 minutes.</p>
+              <span class="bn-action-link">Register now &rarr;</span>
+            </div>
+          </a>
+        </div>
+      </section>
+
       <!-- 5. Mapbox heatmap -->
       <section class="bn-block">
         <div id="density-map" class="bn-map-wrap"></div>
@@ -2068,36 +2100,6 @@ if (!window.gtag) {
         <p class="bn-howit-note">Note: expect the browsable network to grow substantially over the coming weeks as we finish loading our entire network into the system.</p>
       </section>
 
-
-      <!-- 7. Three action cards (header, v7 emoji icon style) -->
-      <section class="bn-block">
-        <div class="bn-grid-3">
-          <a class="bn-action-card bn-has-icon" href="#" onclick="event.preventDefault();bnTrack('cant_find_clicked',{context:'action_cards_top'});bnOpenScreenPopup('https://cal.mixmax.com/kraigward-722/bearhug-network-inquiry?source=cant_find','cant_find_action')">
-            <div class="bn-action-icon-wrap bn-action-icon-search">&#x1F50D;</div>
-            <div class="bn-action-body">
-              <h4>Can't find the right person?</h4>
-              <p>Request private access to our full database of 21,594+ professionals.</p>
-              <span class="bn-action-link">Request access &rarr;</span>
-            </div>
-          </a>
-          <a class="bn-action-card bn-has-icon" href="#" onclick="bnTrack('subscribe_clicked',{context:'action_cards_top'});bnScrollToSubscribe();return false;">
-            <div class="bn-action-icon-wrap bn-action-icon-mail">&#x1F4E7;</div>
-            <div class="bn-action-body">
-              <h4>Stay in the loop</h4>
-              <p>Profiles added daily. Weekly highlights delivered to your inbox.</p>
-              <span class="bn-action-link">Subscribe &rarr;</span>
-            </div>
-          </a>
-          <a class="bn-action-card bn-has-icon" href="https://bearhugrecruiting.com/join-network" target="_blank" rel="noopener noreferrer" onclick="bnTrack('submit_yourself_clicked',{context:'action_cards_top'})">
-            <div class="bn-action-icon-wrap bn-action-icon-star">&#x2B50;</div>
-            <div class="bn-action-body">
-              <h4>Want to be featured?</h4>
-              <p>Submit your profile and join the network. Takes less than 5 minutes.</p>
-              <span class="bn-action-link">Register now &rarr;</span>
-            </div>
-          </a>
-        </div>
-      </section>
 
       <!-- 8. Grand Slam (plain bordered white card) -->
       <section class="bn-block">
