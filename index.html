@@ -1868,6 +1868,30 @@ if (!window.gtag) {
         <p style="font-family:var(--ff-body);font-size:15px;line-height:1.7;color:var(--ink);margin:0 0 20px;opacity:0.85;">Below is a curated cross-section of our deeply vetted network. Executives and emerging leaders across consumer and B2B, each profiled by what they've built, the value they bring, and the relationships they carry. Every person is either actively looking or open to a conversation should the right opportunity come along. Names stay protected until both sides want to connect. Interact with the clusters on the map or use the search bar and dropdown filters to sort the cards that display.</p>
       </section>
 
+      <!-- 3. Journey cards (HIRING / GETTING HIRED) — moved 2026-05-25 to sit
+           above the stats so the two persona stories are the first thing visitors
+           see after the headline. Stats row drops to position 4. -->
+      <section class="bn-block">
+        <div class="bn-grid-2">
+          <div class="bn-journey-card">
+            <div class="bn-journey-meta">
+              <span class="bn-badge bn-badge-hiring">HIRING</span>
+              <span class="bn-journey-persona">CEO of a Series B ClimateTech startup needing a CRO</span>
+            </div>
+            <h4>Intro booked in less than 48 hours. Found their CRO.</h4>
+            <p>Four profiles matched. One had the exact enterprise experience they needed. Requested an intro. On the phone within two days.</p>
+          </div>
+          <div class="bn-journey-card">
+            <div class="bn-journey-meta">
+              <span class="bn-badge bn-badge-hired">GETTING HIRED</span>
+              <span class="bn-journey-persona">COO with 20 years in technical consumer brands</span>
+            </div>
+            <h4>Registered on a Tuesday. Met their new CEO by Thursday.</h4>
+            <p>Five-minute signup. Profile live within 24 hours. Hiring CEO found new COO using the network. Fireworks conversation within 36 hours.</p>
+          </div>
+        </div>
+      </section>
+
       <!-- 2. Stats cards (under headline) -->
       <section class="bn-block">
         <div class="bn-grid-3">
@@ -1916,28 +1940,6 @@ if (!window.gtag) {
         if (elContacts) elContacts.textContent = fmt(contacts);
       })();
       </script>
-
-      <!-- 3. Journey cards (between stats and subhead) -->
-      <section class="bn-block">
-        <div class="bn-grid-2">
-          <div class="bn-journey-card">
-            <div class="bn-journey-meta">
-              <span class="bn-badge bn-badge-hiring">HIRING</span>
-              <span class="bn-journey-persona">CEO of a Series B ClimateTech startup needing a CRO</span>
-            </div>
-            <h4>Intro booked in less than 48 hours. Found their CRO.</h4>
-            <p>Four profiles matched. One had the exact enterprise experience they needed. Requested an intro. On the phone within two days.</p>
-          </div>
-          <div class="bn-journey-card">
-            <div class="bn-journey-meta">
-              <span class="bn-badge bn-badge-hired">GETTING HIRED</span>
-              <span class="bn-journey-persona">COO with 20 years in technical consumer brands</span>
-            </div>
-            <h4>Registered on a Tuesday. Met their new CEO by Thursday.</h4>
-            <p>Five-minute signup. Profile live within 24 hours. Hiring CEO found new COO using the network. Fireworks conversation within 36 hours.</p>
-          </div>
-        </div>
-      </section>
 
       <!-- 7. Three action cards (header, v7 emoji icon style) — moved 2026-05-25
            from below the how-it-works section to here, immediately under the
