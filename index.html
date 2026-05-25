@@ -5139,6 +5139,12 @@ if (!window.gtag) {
         }
       });
 
+      // 2026-05-25: map click-to-filter behavior DISABLED. Zoom/pan stays
+      // interactive (Mapbox defaults); clicking clusters/dots no longer
+      // filters the cards below. Cursor-pointer hover hints also removed so
+      // users don't expect clicks to do anything. The handlers are preserved
+      // here commented for easy revert if we re-enable.
+      /*
       // Click a cluster to zoom in AND filter cards by location
       map.on('click', 'clusters', function(e) {
         var clusterId = e.features[0].properties.cluster_id;
@@ -5200,6 +5206,7 @@ if (!window.gtag) {
       map.on('mouseleave', 'clusters', function() { map.getCanvas().style.cursor = ''; });
       map.on('mouseenter', 'unclustered-point', function() { map.getCanvas().style.cursor = 'pointer'; });
       map.on('mouseleave', 'unclustered-point', function() { map.getCanvas().style.cursor = ''; });
+      */
     });
 
     densityMapInstance = map;
