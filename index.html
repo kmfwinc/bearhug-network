@@ -1978,7 +1978,26 @@ if (!window.gtag) {
         <!-- bn-last-refreshed — moved 2026-05-25 from under the stats row to
              sit directly below the map; the timestamp is about the underlying
              network data, which the map visualizes. -->
-        <p id="bn-last-refreshed" style="display:none;text-align:center;font-size:12px;color:var(--muted);margin:12px 0 0;font-family:var(--ff-body);"></p>
+        <p id="bn-last-refreshed" style="text-align:center;font-size:12px;color:var(--muted);margin:12px 0 0;font-family:var(--ff-body);"></p>
+        <script>
+        // bn-last-refreshed — pure client-side. "Latest Network Update: Month DD, YYYY".
+        // Cutoff: 3pm America/New_York. At/after 3pm NY → today's NY date. Before
+        // → yesterday's NY date. No JSON or deploy dependency.
+        (function () {
+          var el = document.getElementById('bn-last-refreshed');
+          if (!el) return;
+          var now = new Date();
+          var hourFmt = new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', hour: 'numeric', hour12: false });
+          var nyHour = parseInt(hourFmt.format(now), 10);
+          // If "now" in NY is before 15:00, target is 24 hours earlier (yields yesterday's NY date).
+          var target = nyHour < 15 ? new Date(now.getTime() - 24 * 60 * 60 * 1000) : now;
+          var dateFmt = new Intl.DateTimeFormat('en-US', {
+            timeZone: 'America/New_York',
+            month: 'long', day: 'numeric', year: 'numeric'
+          });
+          el.textContent = 'Latest Network Update: ' + dateFmt.format(target);
+        })();
+        </script>
       </section>
 
       <!--
@@ -4828,18 +4847,9 @@ if (!window.gtag) {
       var exEl = document.getElementById('exec-count');
       if (exEl) exEl.textContent = data.exec_count + ' profiles';
     }
-    // "Network data refreshed [date]" — populated only when the generator
-    // wrote a lastRefreshed field. Hidden otherwise (no stale placeholder).
-    var refreshEl = document.getElementById('bn-last-refreshed');
-    if (refreshEl && data.lastRefreshed) {
-      var refreshD = new Date(data.lastRefreshed);
-      if (!isNaN(refreshD.getTime())) {
-        refreshEl.textContent = 'Network data refreshed ' + refreshD.toLocaleDateString('en-US', {
-          month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC'
-        });
-        refreshEl.style.display = 'block';
-      }
-    }
+    // bn-last-refreshed is now populated by an inline script next to the
+    // element itself (3pm America/New_York rollover, no JSON dependency).
+    // Nothing to do here.
     initPage();
   }
 
