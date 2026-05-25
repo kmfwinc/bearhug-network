@@ -18,6 +18,51 @@
 <meta name="twitter:description" content="Browse anonymized profiles of senior executives and emerging leaders across every function and industry. Filter by role, search by keyword, and request an introduction to anyone in the network. New profiles added daily. Weekly highlights in your inbox." />
 <meta name="twitter:image" content="https://images.squarespace-cdn.com/content/v1/6617fdf695e57356285dfdbc/8b691bc5-9fb7-4ae9-a3ed-e6a78d4ed530/BR-horizontal-white.png" />
 
+<!-- Canonical URL -->
+<link rel="canonical" href="https://bearhugrecruiting.com/network" />
+
+<!-- JSON-LD Structured Data (SEO) -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Bearhug Recruiting",
+  "url": "https://bearhugrecruiting.com",
+  "logo": "https://images.squarespace-cdn.com/content/v1/6617fdf695e57356285dfdbc/8b691bc5-9fb7-4ae9-a3ed-e6a78d4ed530/BR-horizontal-white.png",
+  "description": "Retained executive search firm specializing in Human Performance Brands and Environmental Tech. VP and C-suite placements at founder-led brands navigating consequential growth transitions.",
+  "email": "hello@bearhugrecruiting.com",
+  "telephone": "+1-858-324-6480",
+  "address": {
+    "@type": "PostalAddress",
+    "addressCountry": "US"
+  },
+  "founder": [
+    { "@type": "Person", "name": "Kraig Ward" },
+    { "@type": "Person", "name": "Mike Martin" }
+  ],
+  "knowsAbout": ["executive search", "retained search", "leadership hiring", "consumer brands", "human performance brands", "performance apparel", "footwear", "outdoor gear", "fitness", "nutrition", "wellness", "action sports", "environmental technology"]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "The Bearhug Network - Browse Vetted Executive and Emerging Leadership Profiles",
+  "url": "https://bearhugrecruiting.com/network",
+  "description": "Browse anonymized profiles of senior executives and emerging leaders across every function and industry. Filter by role, search by keyword, and request an introduction to anyone in the network.",
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "Bearhug Recruiting",
+    "url": "https://bearhugrecruiting.com"
+  },
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": "https://bearhugrecruiting.com/network?q={search_term_string}",
+    "query-input": "required name=search_term_string"
+  }
+}
+</script>
+
 <!-- GA4 (loads only if not already present from Squarespace site settings) -->
 <script>
 if (!window.gtag) {
@@ -101,6 +146,10 @@ if (!window.gtag) {
      sections. With +, the sentinel broke adjacency and Grand Slam lost its
      margin-top, creating an uneven seam visible only at that one boundary. */
   .bn-block ~ .bn-block { margin-top: 16px; }
+  /* 2026-05-25 fix: extra breathing room between the Mapbox container and the
+     tier cards — the "Viewing" badge sits at top:-8px on the active card and
+     was overlapping the map's bottom edge with only ~8px clearance. */
+  .bn-block.bn-net-selector { margin-top: 40px; }
   .bn-grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; width: 100%; }
   .bn-grid-2-55-45 { display: grid; grid-template-columns: 55fr 45fr; gap: 10px; width: 100%; }
   .bn-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 100%; }
@@ -177,6 +226,7 @@ if (!window.gtag) {
     color: #888780;
     font-style: italic;
     margin-top: 14px;
+    margin-bottom: 32px;
   }
 
   /* -- 4. Stats cards (centered content) -- */
@@ -560,7 +610,15 @@ if (!window.gtag) {
     font-weight: 600;
     color: var(--gold);
   }
+  /* 2026-05-25 fix: count number greys-out when its tier card is deselected,
+     matching the existing :not(.active) treatment of h4 and the icon. */
+  .bn-net-card:not(.active) .bn-net-count { color: var(--muted-mid); }
   .bn-net-count-soon { color: var(--muted-mid); }
+  .bn-net-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
   .bn-net-icon {
     width: 22px;
     height: 22px;
@@ -1379,6 +1437,25 @@ if (!window.gtag) {
     white-space: nowrap;
   }
   .bn-count strong { color: var(--ink); }
+  .bn-count-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    flex-shrink: 0;
+    gap: 3px;
+  }
+  .bn-reset-filters {
+    font-family: var(--ff-body);
+    font-size: 11px;
+    color: var(--gold);
+    text-decoration: none;
+    font-weight: 600;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    transition: text-decoration 0.15s;
+  }
+  .bn-reset-filters:hover { text-decoration: underline; }
   .bn-filter-row {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -1432,11 +1509,14 @@ if (!window.gtag) {
   .bn-grid-cap {
     text-align: center;
     margin: 24px 0 0;
+    padding: 16px 0;
+    border-top: 1px solid var(--border);
   }
   .bn-grid-cap-msg {
     font-family: var(--ff-body);
-    font-size: 0.9rem;
-    color: var(--muted);
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--ink);
     margin: 0;
     line-height: 1.5;
   }
@@ -1783,25 +1863,59 @@ if (!window.gtag) {
       <!-- 1. Headline -->
       <section class="bn-block">
         <h1 class="bn-title">The Bearhug Network</h1>
+        <h2 style="font-family:var(--ff-display);font-size:1.65rem;font-weight:600;color:var(--gold);margin:4px 0 14px;line-height:1.3;letter-spacing:-0.01em;">The answer to <em>"who do you know"</em> you'll wish you'd had years ago. For yourself, and for the people right now who are hiring and are counting on you.</h2>
+        <p style="font-family:var(--ff-body);font-size:15px;line-height:1.7;color:var(--ink);margin:0 0 10px;opacity:0.85;">Someone asked you who you know for a critical role. Or maybe you're the one asking. Either way, you're weighing the lift, the risk, and whether the right person is even out there. We built this so you don't have to figure that out alone.</p>
+        <p style="font-family:var(--ff-body);font-size:15px;line-height:1.7;color:var(--ink);margin:0 0 20px;opacity:0.85;">Below is a curated cross-section of our deeply vetted network. Executives and emerging leaders across consumer and B2B, each profiled by what they've built, the value they bring, and the relationships they carry. Every person is either actively looking or open to a conversation should the right opportunity come along. Names stay protected until both sides want to connect. Interact with the clusters on the map or use the search bar and dropdown filters to sort the cards that display.</p>
       </section>
 
       <!-- 2. Stats cards (under headline) -->
       <section class="bn-block">
         <div class="bn-grid-3">
           <div class="bn-stat-card">
-            <p class="bn-stat-number">7,857+</p>
-            <p class="bn-stat-label">introductions facilitated so far...</p>
+            <p class="bn-stat-number" id="bn-stat-intros">7,857+</p>
+            <p class="bn-stat-label">network intros facilitated so far</p>
           </div>
           <div class="bn-stat-card">
             <p class="bn-stat-number">$7Bn+</p>
             <p class="bn-stat-label">in growth behind leaders we've placed</p>
           </div>
           <div class="bn-stat-card">
-            <p class="bn-stat-number">21,594+</p>
+            <p class="bn-stat-number" id="bn-stat-contacts">21,594+</p>
             <p class="bn-stat-label">vetted professionals available</p>
           </div>
         </div>
+        <p id="bn-last-refreshed" style="display:none;text-align:center;font-size:12px;color:var(--muted);margin:12px 0 0;font-family:var(--ff-body);"></p>
       </section>
+      <script>
+      // Auto-incrementing stats. Base date 2026-05-28 (Wednesday). Every
+      // visitor in the same week sees the same totals because each weekly
+      // increment is seeded by its week number. The $7Bn+ tile is static.
+      (function () {
+        var BASE_UTC = Date.UTC(2026, 4, 28);
+        var MS_PER_WEEK = 7 * 24 * 60 * 60 * 1000;
+        var weeks = Math.max(0, Math.floor((Date.now() - BASE_UTC) / MS_PER_WEEK));
+        function mulberry32(seed) {
+          return function () {
+            seed = (seed + 0x6D2B79F5) | 0;
+            var t = seed;
+            t = Math.imul(t ^ (t >>> 15), t | 1);
+            t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+            return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+          };
+        }
+        var contacts = 21594;
+        for (var w = 0; w < weeks; w++) {
+          var rng = mulberry32(w);
+          contacts += 50 + Math.floor(rng() * 26); // 50..75 inclusive
+        }
+        var intros = 7857 + weeks * 20;
+        function fmt(n) { return n.toLocaleString('en-US') + '+'; }
+        var elIntros = document.getElementById('bn-stat-intros');
+        var elContacts = document.getElementById('bn-stat-contacts');
+        if (elIntros) elIntros.textContent = fmt(intros);
+        if (elContacts) elContacts.textContent = fmt(contacts);
+      })();
+      </script>
 
       <!-- 3. Journey cards (between stats and subhead) -->
       <section class="bn-block">
@@ -1830,36 +1944,6 @@ if (!window.gtag) {
         <div id="density-map" class="bn-map-wrap"></div>
       </section>
 
-      <!-- 7. Three action cards (header, v7 emoji icon style) -->
-      <section class="bn-block">
-        <div class="bn-grid-3">
-          <a class="bn-action-card bn-has-icon" href="#" onclick="event.preventDefault();bnTrack('cant_find_clicked',{context:'action_cards_top'});bnOpenScreenPopup('https://cal.mixmax.com/kraigward-722/bearhug-network-inquiry?source=cant_find','cant_find_action')">
-            <div class="bn-action-icon-wrap bn-action-icon-search">&#x1F50D;</div>
-            <div class="bn-action-body">
-              <h4>Can't find the right person?</h4>
-              <p>Request private access to our full database of 21,594+ professionals.</p>
-              <span class="bn-action-link">Request access &rarr;</span>
-            </div>
-          </a>
-          <a class="bn-action-card bn-has-icon" href="#" onclick="bnTrack('subscribe_clicked',{context:'action_cards_top'});bnScrollToSubscribe();return false;">
-            <div class="bn-action-icon-wrap bn-action-icon-mail">&#x1F4E7;</div>
-            <div class="bn-action-body">
-              <h4>Stay in the loop</h4>
-              <p>Profiles added daily. Weekly highlights delivered to your inbox.</p>
-              <span class="bn-action-link">Subscribe &rarr;</span>
-            </div>
-          </a>
-          <a class="bn-action-card bn-has-icon" href="https://bearhugrecruiting.com/join-network" target="_blank" rel="noopener noreferrer" onclick="bnTrack('submit_yourself_clicked',{context:'action_cards_top'})">
-            <div class="bn-action-icon-wrap bn-action-icon-star">&#x2B50;</div>
-            <div class="bn-action-body">
-              <h4>Want to be featured?</h4>
-              <p>Submit your profile and join the network. Takes less than 5 minutes.</p>
-              <span class="bn-action-link">Register now &rarr;</span>
-            </div>
-          </a>
-        </div>
-      </section>
-
       <!--
         Sticky-bar sentinel. The window-scroll listener in initStickyBar
         doesn't fire reliably inside Squarespace's embedded scroll container,
@@ -1871,40 +1955,24 @@ if (!window.gtag) {
       -->
       <div id="bn-sticky-sentinel" aria-hidden="true" style="height:1px;width:1px;opacity:0;pointer-events:none;"></div>
 
-      <!-- 8. Grand Slam (plain bordered white card) -->
-      <section class="bn-block">
-        <div class="bn-grand-slam-card">
-          <h3>When browsing turns into a full search process</h3>
-          <p class="bn-gs-body">While 1-off intros may get the job done, often times a full search process is required. Every Bearhug search engagement includes a complimentary Structural Growth Review where we'll map your leadership team against the leadership benchmark we've developed over 30 years of category-specific searches. You'll walk away with a concrete 90-day Topgrading and sequencing recommendation whether you engage us for a formal search or not. When you do, every search includes a comp benchmarking deck for the role and a qualified shortlist delivered in 21 days.</p>
-          <p class="bn-gs-guarantee">If we can't present a candidate worth interviewing in 30 days, we will cut you a check for $5,000 and keep working until we do.</p>
-        </div>
-      </section>
-
-      <!-- How the network works (below Grand Slam) -->
-      <section class="bn-block">
-        <h3 class="bn-howit-heading">How the network works</h3>
-        <div class="bn-howit-list">
-          <div class="bn-howit-item"><span class="bn-howit-num">01</span><span class="bn-howit-text">What you see below represents a small fraction of our pre-vetted executive and emerging leader network across the consumer and B2B landscape. We deliberately keep the public view curated, reserving full database access for retained clients and invited subscribers.</span></div>
-          <div class="bn-howit-item"><span class="bn-howit-num">02</span><span class="bn-howit-text">Every person featured is either actively exploring their next move or has been in their current role long enough that the right opportunity would get their attention. New anonymized profiles are added to the network daily to protect their identity. Browse to learn what each person has built, the relationships and channels they bring, and what they're open to.</span></div>
-          <div class="bn-howit-item"><span class="bn-howit-num">03</span><span class="bn-howit-text">Request an intro to anyone, and we'll handle the rest. Subscribe for weekly highlights, and book a call for private access to browse our entire database.</span></div>
-        </div>
-        <p class="bn-howit-note">Note: expect the browsable network to grow substantially over the coming weeks as we finish loading our entire network into the system.</p>
-      </section>
-
       <!-- 9. Network selector (equal 50/50) -->
-      <section class="bn-block">
+      <section class="bn-block bn-net-selector">
         <div class="bn-grid-2">
           <a class="bn-net-card active" id="toggle-exec" href="#" onclick="switchNetwork('exec');return false;">
             <span class="bn-net-badge">Viewing</span>
-            <svg class="bn-net-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
-            <h4>Our Executive Network</h4>
+            <div class="bn-net-row">
+              <svg class="bn-net-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line></svg>
+              <h4>Our Executive Network</h4>
+            </div>
             <p>Director-level and above. Proven executives who've scaled companies through the exact stage you're navigating.</p>
             <span class="bn-net-count" id="exec-count">—</span>
           </a>
           <a class="bn-net-card" id="toggle-emerging" href="#" onclick="switchNetwork('emerging');return false;">
             <span class="bn-net-badge">Viewing</span>
-            <svg class="bn-net-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline><polyline points="16 7 22 7 22 13"></polyline></svg>
-            <h4>Our Emerging Leaders Network</h4>
+            <div class="bn-net-row">
+              <svg class="bn-net-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline><polyline points="16 7 22 7 22 13"></polyline></svg>
+              <h4>Our Emerging Leaders Network</h4>
+            </div>
             <p>Manager and individual contributor. The next generation of functional leaders, earlier in their career and ready to step up.</p>
             <span class="bn-net-count" id="emerging-count">—</span>
           </a>
@@ -1916,11 +1984,14 @@ if (!window.gtag) {
         <div class="bn-filters">
           <div class="bn-search-row">
             <div class="bn-search-wrap">
-              <input type="text" class="bn-search-input" id="bn-search" placeholder="City, state, or keyword (Denver, California, VP Sales, REI, Remote...)" />
+              <input type="text" class="bn-search-input" id="bn-search" placeholder="Search by title, skill, channel, comp, or location..." />
               <button class="bn-search-clear" id="bn-search-clear" type="button" onclick="bnClearSearch()" aria-label="Clear search">&times;</button>
             </div>
             <button class="bn-filter-toggle open" id="bn-filter-btn" onclick="bnToggleFilters()">Filters</button>
-            <span class="bn-count" id="bn-count"></span>
+            <div class="bn-count-wrap">
+              <a href="javascript:void(0)" class="bn-reset-filters" id="bn-reset-filters" onclick="bnResetFilters()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;margin-right:3px"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>Reset filters</a>
+              <span class="bn-count" id="bn-count"></span>
+            </div>
           </div>
           <div class="bn-filter-row" id="bn-filter-row">
             <div class="bn-filter-group">
@@ -1980,11 +2051,62 @@ if (!window.gtag) {
           <div class="bn-skeleton-card"><div class="bn-skeleton-bar"></div><div class="bn-skeleton-line long"></div><div class="bn-skeleton-line med"></div><div class="bn-skeleton-line long"></div><div class="bn-skeleton-line short"></div></div>
           <div class="bn-skeleton-card"><div class="bn-skeleton-bar"></div><div class="bn-skeleton-line long"></div><div class="bn-skeleton-line med"></div><div class="bn-skeleton-line long"></div><div class="bn-skeleton-line short"></div></div>
         </div>
-        <div class="bn-grid-cap" id="bn-grid-cap" style="display:none;">
-          <span class="bn-grid-cap-msg" id="bn-grid-cap-msg"></span>
+        <div class="bn-grid-cap" id="bn-grid-cap" style="display:none;text-align:center;margin:24px 0 0;padding:16px 0;border-top:1px solid #ddd;">
+          <span class="bn-grid-cap-msg" id="bn-grid-cap-msg" style="font-size:15px;font-weight:500;color:#0E0E0E;line-height:1.5;"></span>
           <a class="bn-grid-cap-link" href="#" onclick="bnShowAllCards();return false;">Show all &rarr;</a>
         </div>
       </main>
+
+      <!-- How the flywheel works (right below show-all) -->
+      <section class="bn-block">
+        <h3 class="bn-howit-heading">How the <em>flywheel</em> benefits you and the people counting on you</h3>
+            <div class="bn-howit-list">
+          <div class="bn-howit-item"><span class="bn-howit-num">01</span><span class="bn-howit-text">What you see above is the freshest slice of our full database. We deliberately keep the public view curated, reserving full database access for our retained clients and privately invited subscribers.</span></div>
+          <div class="bn-howit-item"><span class="bn-howit-num">02</span><span class="bn-howit-text">Use the search bar and filters to narrow by function, expertise, or stage experience. Found the right profile? Request an intro or copy the link. Better yet, send your filtered results to the person who asked you "who do you know." You become the one with the answer, without spending an hour digging through LinkedIn or risking your reputation on a blind intro. Let our network fill the gaps in yours.</span></div>
+          <div class="bn-howit-item"><span class="bn-howit-num">03</span><span class="bn-howit-text">The more people you point here, the stronger the flywheel gets. Subscribe for a weekly highlights reel so the best profiles come to you. And when browsing isn't enough and you need us to go deeper, book a call. We'll open the full database and do the matching personally. <strong>That's the whole point. Let us do the heavy lifting so you don't have to.</strong></span></div>
+        </div>
+        <p class="bn-howit-note">Note: expect the browsable network to grow substantially over the coming weeks as we finish loading our entire network into the system.</p>
+      </section>
+
+
+      <!-- 7. Three action cards (header, v7 emoji icon style) -->
+      <section class="bn-block">
+        <div class="bn-grid-3">
+          <a class="bn-action-card bn-has-icon" href="#" onclick="event.preventDefault();bnTrack('cant_find_clicked',{context:'action_cards_top'});bnOpenScreenPopup('https://cal.mixmax.com/kraigward-722/bearhug-network-inquiry?source=cant_find','cant_find_action')">
+            <div class="bn-action-icon-wrap bn-action-icon-search">&#x1F50D;</div>
+            <div class="bn-action-body">
+              <h4>Can't find the right person?</h4>
+              <p>Request private access to our full database of 21,594+ professionals.</p>
+              <span class="bn-action-link">Request access &rarr;</span>
+            </div>
+          </a>
+          <a class="bn-action-card bn-has-icon" href="#" onclick="bnTrack('subscribe_clicked',{context:'action_cards_top'});bnScrollToSubscribe();return false;">
+            <div class="bn-action-icon-wrap bn-action-icon-mail">&#x1F4E7;</div>
+            <div class="bn-action-body">
+              <h4>Stay in the loop</h4>
+              <p>Profiles added daily. Weekly highlights delivered to your inbox.</p>
+              <span class="bn-action-link">Subscribe &rarr;</span>
+            </div>
+          </a>
+          <a class="bn-action-card bn-has-icon" href="https://bearhugrecruiting.com/join-network" target="_blank" rel="noopener noreferrer" onclick="bnTrack('submit_yourself_clicked',{context:'action_cards_top'})">
+            <div class="bn-action-icon-wrap bn-action-icon-star">&#x2B50;</div>
+            <div class="bn-action-body">
+              <h4>Want to be featured?</h4>
+              <p>Submit your profile and join the network. Takes less than 5 minutes.</p>
+              <span class="bn-action-link">Register now &rarr;</span>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <!-- 8. Grand Slam (plain bordered white card) -->
+      <section class="bn-block">
+        <div class="bn-grand-slam-card">
+          <h3>When browsing turns into a full search process</h3>
+          <p class="bn-gs-body">While 1-off intros may get the job done, often times a full search process is required. Every Bearhug search engagement includes a complimentary Structural Growth Review where we'll map your leadership team against the leadership benchmark we've developed over 30 years of category-specific searches. You'll walk away with a concrete 90-day Topgrading and sequencing recommendation whether you engage us for a formal search or not. When you do, every search includes a comp benchmarking deck for the role and a qualified shortlist delivered in 21 days.</p>
+          <p class="bn-gs-guarantee">If we can't present a candidate worth interviewing in 30 days, we will cut you a check for $5,000 and keep working until we do.</p>
+        </div>
+      </section>
 
       <!-- 13/14/15/16. Dark rounded footer (CTAs + practices + brand row) -->
       <footer class="bn-block bn-dark-footer">
@@ -2085,6 +2207,8 @@ if (!window.gtag) {
      CONSTANTS
      ============================================== */
   var PERSON_TYPE_COLORS = {
+    'Executive': '#2C5F7C',
+    'Emerging Leader': '#2C5F7C',
     'Operator': '#2C5F7C',
     'Founder': '#8B5E3C',
     'Investor': '#5F4B8B',
@@ -2135,6 +2259,23 @@ if (!window.gtag) {
       }
     }
   };
+
+  // Page load performance tracking (GA4)
+  window.addEventListener('load', function() {
+    setTimeout(function() {
+      if (typeof gtag !== 'function' || isInternal) return;
+      var perf = window.performance;
+      if (perf && perf.timing) {
+        var loadTime = perf.timing.loadEventEnd - perf.timing.navigationStart;
+        var domReady = perf.timing.domContentLoadedEventEnd - perf.timing.navigationStart;
+        gtag('event', 'page_performance', {
+          load_time_ms: loadTime,
+          dom_ready_ms: domReady,
+          page: '/network'
+        });
+      }
+    }, 100);
+  });
 
   /* ==============================================
      BEEHIIV SUBSCRIBE
@@ -2454,6 +2595,14 @@ if (!window.gtag) {
     return METRO_MAP[city] || region;
   }
 
+  window.bnResetFilters = function() {
+    document.getElementById('bn-search').value = '';
+    document.getElementById('bn-search-clear').style.display = 'none';
+    document.getElementById('bn-filter-fn').selectedIndex = 0;
+    document.getElementById('bn-filter-expertise').selectedIndex = 0;
+    document.getElementById('bn-filter-stage').selectedIndex = 0;
+    applyFilters();
+  };
   window.bnClearSearch = function() {
     var input = document.getElementById('bn-search');
     input.value = '';
@@ -2480,6 +2629,7 @@ if (!window.gtag) {
   // match "GROUPVP". Longer tokens stay substring for partial-word fuzziness.
 
   var SEARCH_FIELD_WEIGHTS = {
+    search_keywords:    80,  // Hidden brain-sourced: title, level, comp band, work arrangement, relocation
     functions:         100,  // Function tag match → top of the list
     summary:            60,  // Profile Headline — where titles like CFO/VP/Director live
     looking_for:        30,
@@ -2538,6 +2688,7 @@ if (!window.gtag) {
 
     var metroLabel = getMetroLabel(profile.region || '');
     var fields = {
+      search_keywords:   profile.search_keywords || '',
       functions:         (profile.functions || []).join(' '),
       summary:           profile.summary || '',
       looking_for:       profile.looking_for || '',
@@ -2687,7 +2838,7 @@ if (!window.gtag) {
   }
 
   function renderCard(profile, index) {
-    var pt = (profile.person_types || ['Operator']);
+    var pt = (profile.person_types || ['Executive']);
     var primaryColor = PERSON_TYPE_COLORS[pt[0]] || '#2C5F7C';
     var fns = (profile.functions || []).join(', ');
     var expertise = (profile.channel_expertise || []);
@@ -2717,23 +2868,39 @@ if (!window.gtag) {
     html += '<span class="bn-card-id">' + (profile.profile_id || profile.id) + '</span>';
     html += typePills + expertisePills;
     html += '</div>';
-    var displayRegion = getMetroLabel(profile.region || '');
+    var rawRegion = getMetroLabel(profile.region || '').replace(/\s*\([^)]*\)/g, '').trim();
+    var displayRegion = rawRegion;
+    if (window.STATE_MAP && rawRegion) {
+      var rParts = rawRegion.split(',').map(function(p){return p.trim();});
+      if (rParts.length === 2) {
+        var maybeAbbr = rParts[1].toUpperCase();
+        if (window.STATE_MAP[maybeAbbr]) { displayRegion = window.STATE_MAP[maybeAbbr] + ', US'; }
+        var CA2 = {AB:'Alberta',BC:'British Columbia',MB:'Manitoba',NB:'New Brunswick',NL:'Newfoundland and Labrador',NS:'Nova Scotia',NT:'Northwest Territories',NU:'Nunavut',ON:'Ontario',PE:'Prince Edward Island',QC:'Quebec',SK:'Saskatchewan',YT:'Yukon'};
+        if (!window.STATE_MAP[maybeAbbr] && CA2[maybeAbbr]) { displayRegion = CA2[maybeAbbr] + ', Canada'; }
+      } else if (rParts.length === 1) {
+        var single = rParts[0].trim();
+        var singleUpper = single.toUpperCase();
+        if (window.STATE_MAP[singleUpper]) { displayRegion = window.STATE_MAP[singleUpper] + ', US'; }
+        var CA_PROVS = {AB:'Alberta',BC:'British Columbia',MB:'Manitoba',NB:'New Brunswick',NL:'Newfoundland and Labrador',NS:'Nova Scotia',NT:'Northwest Territories',NU:'Nunavut',ON:'Ontario',PE:'Prince Edward Island',QC:'Quebec',SK:'Saskatchewan',YT:'Yukon'};
+        if (CA_PROVS[singleUpper]) { displayRegion = CA_PROVS[singleUpper] + ', Canada'; }
+        for (var sk in window.STATE_MAP) { if (window.STATE_MAP[sk].toLowerCase() === single.toLowerCase()) { displayRegion = window.STATE_MAP[sk] + ', US'; break; } }
+        for (var ck in CA_PROVS) { if (CA_PROVS[ck].toLowerCase() === single.toLowerCase()) { displayRegion = CA_PROVS[ck] + ', Canada'; break; } }
+        if (single.toLowerCase().indexOf('bay area') !== -1) { displayRegion = 'California, US'; }
+      }
+    }
     html += '<div class="bn-card-meta">' + fns + (displayRegion ? ' &middot; ' + displayRegion : '') + '</div>';
+    html += '<p class="bn-card-expanded-label">The Hook</p>';
     html += '<p class="bn-card-summary clamped" id="summary-' + profile.id + '">' + (profile.summary || '') + '</p>';
 
     // Expanded content (hidden by default)
     html += '<div class="bn-card-expanded" id="expanded-' + profile.id + '" style="display:none;">';
-    if (profile.looking_for) {
-      html += '<p class="bn-card-expanded-label">Looking to Connect With</p>';
-      html += '<p class="bn-card-expanded-text">' + profile.looking_for + '</p>';
+    if (profile.career_highlights) {
+      html += '<p class="bn-card-expanded-label">Career Highlights</p>';
+      html += '<p class="bn-card-expanded-text">' + profile.career_highlights + '</p>';
     }
     if (profile.key_relationships) {
       html += '<p class="bn-card-expanded-label" style="margin-top:12px;">Key Relationships</p>';
       html += '<p class="bn-card-expanded-text">' + profile.key_relationships + '</p>';
-    }
-    if (profile.career_highlights) {
-      html += '<p class="bn-card-expanded-label" style="margin-top:12px;">Career Highlights</p>';
-      html += '<p class="bn-card-expanded-text">' + profile.career_highlights + '</p>';
     }
     html += '</div>';
 
@@ -2755,22 +2922,46 @@ if (!window.gtag) {
     return html;
   }
 
+  // Expand every card in the clicked card's grid row at once. Cards in the same
+  // row share the same offsetTop, so we group by that. Works for 3-col desktop,
+  // 2-col tablet, and 1-col mobile without breakpoint detection.
   window.bnToggleCard = function(id) {
-    var summary = document.getElementById('summary-' + id);
-    var expanded = document.getElementById('expanded-' + id);
-    var toggle = document.getElementById('toggle-' + id);
-    var isExpanded = expanded.style.display !== 'none';
+    var clickedToggle = document.getElementById('toggle-' + id);
+    var clickedCard = clickedToggle && clickedToggle.closest('.bn-card');
+    var clickedExpanded = document.getElementById('expanded-' + id);
+    if (!clickedCard || !clickedExpanded) return;
 
-    if (isExpanded) {
-      summary.classList.add('clamped');
-      expanded.style.display = 'none';
-      toggle.innerHTML = 'Read full profile &#x2193;';
-    } else {
-      summary.classList.remove('clamped');
-      expanded.style.display = 'block';
-      toggle.innerHTML = 'Show less &#x2191;';
-      bnTrack('profile_expanded', { profile_id: id });
+    var willExpand = clickedExpanded.style.display === 'none';
+
+    var grid = document.getElementById('bn-grid');
+    if (!grid) return;
+    var rowTop = clickedCard.offsetTop;
+    var allCards = grid.querySelectorAll('.bn-card');
+    var rowCards = [];
+    for (var i = 0; i < allCards.length; i++) {
+      if (allCards[i].offsetTop === rowTop) rowCards.push(allCards[i]);
     }
+
+    for (var j = 0; j < rowCards.length; j++) {
+      var card = rowCards[j];
+      var expandedEl = card.querySelector('[id^="expanded-"]');
+      if (!expandedEl) continue;
+      var cardId = expandedEl.id.replace(/^expanded-/, '');
+      var summary = document.getElementById('summary-' + cardId);
+      var toggle = document.getElementById('toggle-' + cardId);
+      if (!summary || !toggle) continue;
+      if (willExpand) {
+        summary.classList.remove('clamped');
+        expandedEl.style.display = 'block';
+        toggle.innerHTML = 'Show less &#x2191;';
+      } else {
+        summary.classList.add('clamped');
+        expandedEl.style.display = 'none';
+        toggle.innerHTML = 'Read full profile &#x2193;';
+      }
+    }
+
+    if (willExpand) bnTrack('profile_expanded', { profile_id: id, row_size: rowCards.length });
   };
 
   function renderCards() {
@@ -2786,14 +2977,26 @@ if (!window.gtag) {
       if (capEl) capEl.style.display = 'none';
       return;
     }
-    // Cap to DEFAULT_CARD_LIMIT only when no filter or search is active.
-    var shouldCap = isUnfiltered(getFilters()) && !showAllCards && filteredProfiles.length > DEFAULT_CARD_LIMIT;
+    // ALWAYS cap to 9 cards (3 rows). Show all is the only way past.
+    // This keeps the flywheel, action cards, and Grand Slam visible.
+    var shouldCap = !showAllCards && filteredProfiles.length > DEFAULT_CARD_LIMIT;
     var visible = shouldCap ? filteredProfiles.slice(0, DEFAULT_CARD_LIMIT) : filteredProfiles;
     grid.innerHTML = visible.map(function(p, i) { return renderCard(p, i); }).join('');
     if (capEl) {
       if (shouldCap) {
-        capMsgEl.textContent = 'Showing ' + DEFAULT_CARD_LIMIT + ' of ' + filteredProfiles.length + ' profiles. Use the filters above to find exactly who you\'re looking for.';
+        var isFiltered = !isUnfiltered(getFilters());
+        var msg = isFiltered
+          ? 'Showing ' + DEFAULT_CARD_LIMIT + ' of ' + filteredProfiles.length + ' matching profiles.'
+          : 'Showing ' + DEFAULT_CARD_LIMIT + ' of ' + filteredProfiles.length + ' profiles. Use the filters above to find exactly who you\'re looking for.';
+        capMsgEl.textContent = msg;
+        capMsgEl.style.fontSize = '15px';
+        capMsgEl.style.fontWeight = '500';
+        capMsgEl.style.color = '#0E0E0E';
+        capMsgEl.style.lineHeight = '1.5';
         capEl.style.display = '';
+        capEl.style.textAlign = 'center';
+        capEl.style.padding = '16px 0';
+        capEl.style.borderTop = '1px solid #ddd';
       } else {
         capEl.style.display = 'none';
       }
@@ -4618,6 +4821,18 @@ if (!window.gtag) {
       var exEl = document.getElementById('exec-count');
       if (exEl) exEl.textContent = data.exec_count + ' profiles';
     }
+    // "Network data refreshed [date]" — populated only when the generator
+    // wrote a lastRefreshed field. Hidden otherwise (no stale placeholder).
+    var refreshEl = document.getElementById('bn-last-refreshed');
+    if (refreshEl && data.lastRefreshed) {
+      var refreshD = new Date(data.lastRefreshed);
+      if (!isNaN(refreshD.getTime())) {
+        refreshEl.textContent = 'Network data refreshed ' + refreshD.toLocaleDateString('en-US', {
+          month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC'
+        });
+        refreshEl.style.display = 'block';
+      }
+    }
     initPage();
   }
 
@@ -4682,7 +4897,15 @@ if (!window.gtag) {
       applyFilters();
     }
 
-    if (tierParam === 'emerging' && currentNetwork === 'exec') {
+    // Auto-detect tier from profile ID prefix in ?q= param.
+    // EMN-xxx = emerging, BHRN-xxx = exec. This makes shared profile links
+    // work regardless of which tab the page defaults to.
+    var inferredTier = tierParam;
+    if (!inferredTier && qParam) {
+      if (/^EMN-/i.test(qParam)) inferredTier = 'emerging';
+      else if (/^BHRN-/i.test(qParam)) inferredTier = 'exec';
+    }
+    if ((inferredTier === 'emerging') && currentNetwork === 'exec') {
       // Swap the active tier without going through switchNetwork (which
       // would reset filters and trash the URL state we're restoring).
       currentNetwork = 'emerging';
@@ -4707,6 +4930,90 @@ if (!window.gtag) {
      DENSITY MAP (v8 change 2, Mapbox GL JS)
      ============================================== */
   var MAPBOX_TOKEN = 'pk.eyJ1IjoiazJnbG9iYWwiLCJhIjoiY21wYTdnOGE0MDR6cTJzcHRrbXF4aG96MiJ9.Em8t9tZcGsQJXvTbFDzvJA';
+
+  var METRO_LOCATIONS = [
+    { lat: 40.71, lng: -74.01, term: 'New York' },
+    { lat: 34.05, lng: -118.24, term: 'California' },
+    { lat: 37.77, lng: -122.42, term: 'California' },
+    { lat: 41.88, lng: -87.63, term: 'Illinois' },
+    { lat: 39.74, lng: -104.99, term: 'Colorado' },
+    { lat: 47.61, lng: -122.33, term: 'Washington' },
+    { lat: 45.52, lng: -122.68, term: 'Oregon' },
+    { lat: 42.36, lng: -71.06, term: 'Massachusetts' },
+    { lat: 33.75, lng: -84.39, term: 'Georgia' },
+    { lat: 30.27, lng: -97.74, term: 'Texas' },
+    { lat: 29.76, lng: -95.37, term: 'Texas' },
+    { lat: 32.78, lng: -96.80, term: 'Texas' },
+    { lat: 25.76, lng: -80.19, term: 'Florida' },
+    { lat: 38.91, lng: -77.04, term: 'Washington DC' },
+    { lat: 36.16, lng: -86.78, term: 'Tennessee' },
+    { lat: 35.23, lng: -80.84, term: 'North Carolina' },
+    { lat: 35.96, lng: -83.92, term: 'Tennessee' },
+    { lat: 33.45, lng: -112.07, term: 'Arizona' },
+    { lat: 40.76, lng: -111.89, term: 'Utah' },
+    { lat: 44.98, lng: -93.27, term: 'Minnesota' },
+    { lat: 39.96, lng: -83.00, term: 'Ohio' },
+    { lat: 32.72, lng: -117.16, term: 'California' },
+    { lat: 43.65, lng: -79.38, term: 'Ontario' },
+    { lat: 49.28, lng: -123.12, term: 'British Columbia' },
+    { lat: 51.51, lng: -0.13, term: 'United Kingdom' },
+    { lat: 48.86, lng: 2.35, term: 'France' },
+    { lat: 52.52, lng: 13.41, term: 'Germany' },
+    { lat: -33.87, lng: 151.21, term: 'Australia' },
+    { lat: 35.68, lng: 139.69, term: 'Japan' },
+    { lat: 1.35, lng: 103.82, term: 'Singapore' }
+  ];
+
+  function bnFindNearestLocation(lng, lat) {
+    var best = null, bestDist = Infinity;
+    for (var i = 0; i < METRO_LOCATIONS.length; i++) {
+      var m = METRO_LOCATIONS[i];
+      var dx = lng - m.lng, dy = lat - m.lat;
+      var d = dx * dx + dy * dy;
+      if (d < bestDist) { bestDist = d; best = m; }
+    }
+    return best ? best.term : null;
+  }
+
+  function bnMapFilter(searchTerm) {
+    var input = document.getElementById('bn-search');
+    var clearBtn = document.getElementById('bn-search-clear');
+    if (!input) return;
+    input.value = searchTerm;
+    if (clearBtn) clearBtn.style.display = 'flex';
+    applyFilters();
+    var mapSection = document.getElementById('density-map');
+    if (mapSection) {
+      setTimeout(function() {
+        mapSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 150);
+    }
+  }
+
+  var METRO_TO_STATE = {
+    'NYC metro': 'New York', 'LA metro': 'California', 'SF Bay Area': 'California',
+    'Chicago': 'Illinois', 'Denver/Boulder': 'Colorado', 'Seattle': 'Washington',
+    'Portland': 'Oregon', 'Boston': 'Massachusetts', 'Atlanta': 'Georgia',
+    'Austin': 'Texas', 'Dallas': 'Texas', 'Miami': 'Florida', 'DC': 'Washington DC',
+    'Nashville': 'Tennessee', 'Charlotte': 'North Carolina', 'Minneapolis': 'Minnesota',
+    'Philadelphia': 'Pennsylvania', 'Houston': 'Texas', 'San Diego': 'California',
+    'Salt Lake City/Park City': 'Utah', 'Boulder': 'Colorado', 'Bend': 'Oregon',
+    'Boise': 'Idaho', 'Asheville': 'North Carolina', 'Park City': 'Utah',
+    'Charleston': 'South Carolina', 'Raleigh': 'North Carolina', 'Richmond': 'Virginia',
+    'Jackson': 'Wyoming', 'Missoula': 'Montana', 'Bozeman': 'Montana',
+    'Detroit': 'Michigan', 'Tampa': 'Florida', 'Phoenix': 'Arizona',
+    'San Jose': 'California', 'Orlando': 'Florida', 'Pittsburgh': 'Pennsylvania',
+    'Louisville': 'Kentucky', 'Cincinnati': 'Ohio', 'New Orleans': 'Louisiana',
+    'Las Vegas': 'Nevada'
+  };
+
+  function bnExtractState(regionStr) {
+    if (!regionStr) return null;
+    if (METRO_TO_STATE[regionStr]) return METRO_TO_STATE[regionStr];
+    var parts = regionStr.split(',');
+    if (parts.length >= 2) return parts[1].trim();
+    return regionStr;
+  }
 
   function initDensityMap() {
     var container = document.getElementById('density-map');
@@ -4735,46 +5042,147 @@ if (!window.gtag) {
       var d = dots[i];
       features[i] = {
         type: 'Feature',
-        geometry: { type: 'Point', coordinates: [d.lng, d.lat] }
+        geometry: { type: 'Point', coordinates: [d.lng, d.lat] },
+        properties: { region: d.region || '', profile_id: d.profile_id || '' }
       };
     }
 
     map.on('load', function() {
       map.addSource('density-points', {
         type: 'geojson',
-        data: { type: 'FeatureCollection', features: features }
+        data: { type: 'FeatureCollection', features: features },
+        cluster: true,
+        clusterMaxZoom: 12,
+        clusterRadius: 45
       });
-      // Standard heatmap gradient: transparent -> blue -> green -> yellow -> orange -> red.
-      // Radius held at 15px so density reads as regional clusters, not blobs.
+
+      // Cluster circles — sized by point count, Bearhug ink color
       map.addLayer({
-        id: 'density-heatmap',
-        type: 'heatmap',
+        id: 'clusters',
+        type: 'circle',
         source: 'density-points',
+        filter: ['has', 'point_count'],
         paint: {
-          'heatmap-weight': 1,
-          'heatmap-intensity': [
-            'interpolate', ['linear'], ['zoom'],
-            0, 0.5,
-            6, 1.4,
-            10, 2
+          'circle-color': '#0E0E0E',
+          'circle-radius': [
+            'step', ['get', 'point_count'],
+            14,     // default radius
+            10, 16, // 10+ points
+            50, 20, // 50+ points
+            200, 24, // 200+ points
+            500, 28, // 500+ points
+            1000, 32 // 1000+ points
           ],
-          'heatmap-radius': 15,
-          'heatmap-opacity': [
-            'interpolate', ['linear'], ['zoom'],
-            0, 0.85,
-            12, 0.75
-          ],
-          'heatmap-color': [
-            'interpolate', ['linear'], ['heatmap-density'],
-            0,    'rgba(33, 102, 172, 0)',
-            0.15, 'rgb(103, 169, 207)',
-            0.35, 'rgb(102, 194, 165)',
-            0.55, 'rgb(254, 224, 139)',
-            0.75, 'rgb(252, 141, 89)',
-            1,    'rgb(215,  48,  39)'
-          ]
+          'circle-opacity': 0.88,
+          'circle-stroke-width': 1.5,
+          'circle-stroke-color': '#B8963E'
         }
       });
+
+      // Cluster count labels — gold text on ink circles
+      map.addLayer({
+        id: 'cluster-count',
+        type: 'symbol',
+        source: 'density-points',
+        filter: ['has', 'point_count'],
+        layout: {
+          'text-field': [
+            'case',
+            ['>=', ['get', 'point_count'], 1000],
+            ['concat', ['to-string', ['/', ['round', ['/', ['get', 'point_count'], 100]], 10]], 'k'],
+            ['to-string', ['get', 'point_count']]
+          ],
+          'text-font': ['DIN Pro Medium', 'Arial Unicode MS Bold'],
+          'text-size': [
+            'step', ['get', 'point_count'],
+            11,
+            50, 12,
+            200, 13,
+            1000, 14
+          ],
+          'text-allow-overlap': true
+        },
+        paint: {
+          'text-color': '#B8963E'
+        }
+      });
+
+      // Individual unclustered points — small gold dots
+      map.addLayer({
+        id: 'unclustered-point',
+        type: 'circle',
+        source: 'density-points',
+        filter: ['!', ['has', 'point_count']],
+        paint: {
+          'circle-color': '#B8963E',
+          'circle-radius': 5,
+          'circle-opacity': 0.8,
+          'circle-stroke-width': 1,
+          'circle-stroke-color': '#0E0E0E'
+        }
+      });
+
+      // Click a cluster to zoom in AND filter cards by location
+      map.on('click', 'clusters', function(e) {
+        var clusterId = e.features[0].properties.cluster_id;
+        var pointCount = e.features[0].properties.point_count;
+        var coords = e.features[0].geometry.coordinates;
+        bnTrack('map_cluster_clicked', { cluster_id: clusterId, point_count: pointCount });
+        map.getSource('density-points').getClusterExpansionZoom(clusterId, function(err, zoom) {
+          if (err) return;
+          map.easeTo({ center: coords, zoom: zoom });
+        });
+        // Always filter by nearest metro as immediate feedback
+        var nearestTerm = bnFindNearestLocation(coords[0], coords[1]);
+        if (nearestTerm) bnMapFilter(nearestTerm);
+        // Then try to refine from cluster leaves if region data exists
+        try {
+          map.getSource('density-points').getClusterLeaves(clusterId, 200, 0, function(err, leaves) {
+            if (err || !leaves || !leaves.length) return;
+            var regionSet = {};
+            for (var j = 0; j < leaves.length; j++) {
+              var r = leaves[j].properties && leaves[j].properties.region;
+              if (r && r !== 'US scatter') regionSet[r] = true;
+            }
+            var regions = Object.keys(regionSet);
+            if (regions.length === 1) {
+              bnMapFilter(regions[0]);
+            } else if (regions.length > 1) {
+              var stateCounts = {};
+              for (var k = 0; k < regions.length; k++) {
+                var state = bnExtractState(regions[k]);
+                if (state) stateCounts[state] = (stateCounts[state] || 0) + 1;
+              }
+              var bestState = '', bestCount = 0;
+              for (var s in stateCounts) {
+                if (stateCounts[s] > bestCount) { bestCount = stateCounts[s]; bestState = s; }
+              }
+              if (bestState) bnMapFilter(bestState);
+            }
+          });
+        } catch(_) {}
+      });
+
+      // Click an individual unclustered dot to filter cards
+      map.on('click', 'unclustered-point', function(e) {
+        var props = e.features[0].properties || {};
+        var coords = e.features[0].geometry.coordinates;
+        bnTrack('map_dot_clicked', { profile_id: props.profile_id || '', region: props.region || '' });
+        // Profile ID = show that exact card. Region = search by location. Neither = nearest metro.
+        if (props.profile_id) {
+          bnMapFilter(props.profile_id);
+        } else if (props.region && props.region !== 'US scatter' && props.region !== '') {
+          bnMapFilter(bnExtractState(props.region) || props.region);
+        } else {
+          bnMapFilter(bnFindNearestLocation(coords[0], coords[1]) || 'Colorado');
+        }
+      });
+
+      // Cursor pointer on clusters and dots
+      map.on('mouseenter', 'clusters', function() { map.getCanvas().style.cursor = 'pointer'; });
+      map.on('mouseleave', 'clusters', function() { map.getCanvas().style.cursor = ''; });
+      map.on('mouseenter', 'unclustered-point', function() { map.getCanvas().style.cursor = 'pointer'; });
+      map.on('mouseleave', 'unclustered-point', function() { map.getCanvas().style.cursor = ''; });
     });
 
     densityMapInstance = map;
