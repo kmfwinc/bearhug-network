@@ -1940,6 +1940,82 @@ if (!window.gtag) {
       })();
       </script>
 
+      <!-- 6b. Social proof trust strip (15 headshots, left ~50%, text right) -->
+      <style>
+      .bn-social-proof { padding: 16px 0; }
+      .bn-social-proof-strip {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        align-items: center;
+        gap: 22px;
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 0 16px;
+      }
+      .bn-social-proof-avatars { display: flex; justify-content: space-between; width: 100%; padding-left: 14px; }
+      .bn-social-proof-avatar {
+        width: 38px; height: 38px;
+        border-radius: 50%;
+        border: 2.5px solid #F5F1EA;
+        margin-left: -14px;
+        object-fit: cover;
+        background-color: #ddd;
+        position: relative;
+        z-index: 1;
+        transition: transform 0.18s ease;
+      }
+      .bn-social-proof-avatar:hover { transform: scale(1.12); z-index: 10; }
+      .bn-social-proof-divider {
+        width: 1px;
+        height: 32px;
+        background-color: rgba(184,150,62,0.35);
+        flex-shrink: 0;
+      }
+      .bn-social-proof-text {
+        font-family: 'DM Sans', sans-serif;
+        font-size: 14px;
+        color: #0E0E0E;
+        line-height: 1.5;
+        margin: 0;
+        text-align: left;
+      }
+      .bn-social-proof-text .bn-sp-accent { color: #B8963E; font-weight: 700; }
+      @media (max-width: 760px) {
+        .bn-social-proof-strip { grid-template-columns: 1fr; gap: 14px; }
+        .bn-social-proof-avatars { justify-content: center; }
+        .bn-social-proof-divider { width: 32px; height: 1px; justify-self: center; }
+      }
+      @media (max-width: 480px) {
+        .bn-social-proof-avatar { width: 32px; height: 32px; margin-left: -12px; border-width: 2px; }
+        .bn-social-proof-avatars { padding-left: 12px; }
+      }
+      </style>
+      <section class="bn-block bn-social-proof">
+        <div class="bn-social-proof-strip">
+          <div class="bn-social-proof-avatars" aria-hidden="true">
+            <img class="bn-social-proof-avatar" src="https://images.squarespace-cdn.com/content/v1/6617fdf695e57356285dfdbc/15f6891b-4060-40eb-ace1-35f6ab2de215/1517507756845+%281%29.jpg?format=100w" alt="" loading="lazy" />
+            <img class="bn-social-proof-avatar" src="https://images.squarespace-cdn.com/content/v1/6617fdf695e57356285dfdbc/c2a20745-f374-45b0-959e-6875cb012053/1631590127397.jpg?format=100w" alt="" loading="lazy" />
+            <img class="bn-social-proof-avatar" src="https://images.squarespace-cdn.com/content/v1/6617fdf695e57356285dfdbc/a3642de8-d94b-4c1a-97ba-9cde78601507/Bearhug+Himanshu+Gupta+ClimateAI.jpg?format=100w" alt="" loading="lazy" />
+            <img class="bn-social-proof-avatar" src="https://images.squarespace-cdn.com/content/v1/6617fdf695e57356285dfdbc/997b848e-aa5d-4808-8ee8-573032a6a584/1673045651000.jpg?format=100w" alt="" loading="lazy" />
+            <img class="bn-social-proof-avatar" src="https://images.squarespace-cdn.com/content/v1/6617fdf695e57356285dfdbc/849aede2-0119-4daf-a6ed-003e94713772/Samantha+Burns.jpeg?format=100w" alt="" loading="lazy" />
+            <img class="bn-social-proof-avatar" src="https://images.squarespace-cdn.com/content/v1/6617fdf695e57356285dfdbc/abf228f5-9e73-4511-8d7a-3b0519295626/Nick+Ezzo.jpeg?format=100w" alt="" loading="lazy" />
+            <img class="bn-social-proof-avatar" src="https://images.squarespace-cdn.com/content/v1/6617fdf695e57356285dfdbc/ed09b135-9939-446d-8d33-ef712e853d89/Colin+Parker.jpeg?format=100w" alt="" loading="lazy" />
+            <img class="bn-social-proof-avatar" src="https://images.squarespace-cdn.com/content/v1/6617fdf695e57356285dfdbc/f9a527d2-ed43-44c4-90d7-a82dbf43a032/Chris+Callen.jpeg?format=100w" alt="" loading="lazy" />
+            <img class="bn-social-proof-avatar" src="https://images.squarespace-cdn.com/content/v1/6617fdf695e57356285dfdbc/a727d141-12f3-460a-af4a-b4d3f9a72868/ExWGkTEx_400x400.jpg?format=100w" alt="" loading="lazy" />
+            <img class="bn-social-proof-avatar" src="https://images.squarespace-cdn.com/content/v1/6617fdf695e57356285dfdbc/39dffd18-8f3b-49db-9259-d9ccb332b028/Lindsey+Lonergan.jpeg?format=100w" alt="" loading="lazy" />
+            <img class="bn-social-proof-avatar" src="https://images.squarespace-cdn.com/content/v1/6617fdf695e57356285dfdbc/7bfc9a25-e4c5-4e21-b618-e9ad2152a7e9/1605418133382.jpg?format=100w" alt="" loading="lazy" />
+            <img class="bn-social-proof-avatar" src="https://images.squarespace-cdn.com/content/v1/6617fdf695e57356285dfdbc/536ba815-2295-4878-a37c-50b5585718fd/1517464214078.jpeg?format=100w" alt="" loading="lazy" />
+            <img class="bn-social-proof-avatar" src="https://images.squarespace-cdn.com/content/v1/6617fdf695e57356285dfdbc/25303f97-3baf-466d-bb15-f2fd0451a090/Amit+Shrivastava.jpeg?format=100w" alt="" loading="lazy" />
+            <img class="bn-social-proof-avatar" src="https://images.squarespace-cdn.com/content/v1/6617fdf695e57356285dfdbc/7bfd17bd-5655-471d-b989-3c3814ee20d8/Gaurav+Manglik.jpeg?format=100w" alt="" loading="lazy" />
+            <img class="bn-social-proof-avatar" src="https://images.squarespace-cdn.com/content/v1/6617fdf695e57356285dfdbc/9c80703d-7cd2-4070-9636-2596deb18c0a/Phil+Dur.png?format=100w" alt="" loading="lazy" />
+            <img class="bn-social-proof-avatar" src="https://images.squarespace-cdn.com/content/v1/6617fdf695e57356285dfdbc/461a26fb-a3ef-4579-94a4-89cd44bae9ad/brett+carleson.jpeg?format=100w" alt="" loading="lazy" />
+            <img class="bn-social-proof-avatar" src="https://images.squarespace-cdn.com/content/v1/6617fdf695e57356285dfdbc/caa12e16-cf2d-4e07-bb21-761037ed94ad/Somya-Kapoor.png?format=100w" alt="" loading="lazy" />
+          </div>
+          <div class="bn-social-proof-divider" aria-hidden="true"></div>
+          <p class="bn-social-proof-text">Trusted by <span class="bn-sp-accent">1,000+</span> investors and CEOs from startups to scaleups to public companies to find and connect with proven leaders across consumer &amp; B2B</p>
+        </div>
+      </section>
+
       <!-- 7. Three action cards (header, v7 emoji icon style) — moved 2026-05-25
            from below the how-it-works section to here, immediately under the
            HIRING / GETTING HIRED journey cards and above the map. -->
@@ -2113,23 +2189,23 @@ if (!window.gtag) {
         </div>
       </main>
 
-      <!-- How the flywheel works (right below show-all) -->
+      <!-- 8. Grand Slam (plain bordered white card) -->
+      <section class="bn-block">
+        <div class="bn-grand-slam-card">
+          <h3>When browsing turns into a full search process</h3>
+          <p class="bn-gs-body">While 1-off intros may get the job done, often times a full search process is required. Every Bearhug search engagement includes a complimentary Structural Growth Review where we'll map your leadership team against the leadership benchmark we've developed over 30 years of category-specific searches. You'll walk away with a concrete 90-day Topgrading and sequencing recommendation whether you engage us for a formal search or not. When you do, every search includes a comp benchmarking deck for the role and a qualified shortlist delivered in 21 days.</p>
+          <p class="bn-gs-guarantee">If we can't present a candidate worth interviewing in 30 days, we will cut you a check for $10,000 and keep working until we do.</p>
+        </div>
+      </section>
+
+
+      <!-- How the flywheel works (below Grand Slam) -->
       <section class="bn-block">
         <h3 class="bn-howit-heading">How the <em>flywheel</em> benefits you and the people counting on you</h3>
             <div class="bn-howit-list">
           <div class="bn-howit-item"><span class="bn-howit-num">01</span><span class="bn-howit-text">What you see above is the freshest slice of our full database. We deliberately keep the public view curated, reserving full database access for our retained clients and privately invited subscribers.</span></div>
           <div class="bn-howit-item"><span class="bn-howit-num">02</span><span class="bn-howit-text">Use the search bar and filters to narrow by function, expertise, or stage experience. Found the right profile? Request an intro or copy the link. Better yet, send your filtered results to the person who asked you "who do you know." You become the one with the answer, without spending an hour digging through LinkedIn or risking your reputation on a blind intro. Let our network fill the gaps in yours.</span></div>
           <div class="bn-howit-item"><span class="bn-howit-num">03</span><span class="bn-howit-text">The more people you point here, the stronger the flywheel gets. Subscribe for a weekly highlights reel so the best profiles come to you. And when browsing isn't enough and you need us to go deeper, book a call. We'll open the full database and do the matching personally. <strong>That's the whole point. Let us do the heavy lifting so you don't have to.</strong></span></div>
-        </div>
-      </section>
-
-
-      <!-- 8. Grand Slam (plain bordered white card) -->
-      <section class="bn-block">
-        <div class="bn-grand-slam-card">
-          <h3>When browsing turns into a full search process</h3>
-          <p class="bn-gs-body">While 1-off intros may get the job done, often times a full search process is required. Every Bearhug search engagement includes a complimentary Structural Growth Review where we'll map your leadership team against the leadership benchmark we've developed over 30 years of category-specific searches. You'll walk away with a concrete 90-day Topgrading and sequencing recommendation whether you engage us for a formal search or not. When you do, every search includes a comp benchmarking deck for the role and a qualified shortlist delivered in 21 days.</p>
-          <p class="bn-gs-guarantee">If we can't present a candidate worth interviewing in 30 days, we will cut you a check for $5,000 and keep working until we do.</p>
         </div>
       </section>
 
@@ -2199,6 +2275,7 @@ if (!window.gtag) {
 
     </div>
   </div>
+</div>
 
 <script>
 (function() {
@@ -2258,6 +2335,11 @@ if (!window.gtag) {
   var filtersOpen = true;
   var searchTimeout = null;
   var isInternal = (window.location.search.indexOf('internal=true') > -1);
+
+  /* ==============================================
+     HELPERS
+     ============================================== */
+  function fmtNum(n) { return Number(n).toLocaleString(); }
 
   /* ==============================================
      GA4 TRACKING
@@ -2845,7 +2927,7 @@ if (!window.gtag) {
   }
 
   function updateCount() {
-    document.getElementById('bn-count').innerHTML = '<strong>' + filteredProfiles.length + '</strong>/' + allProfiles.length;
+    document.getElementById('bn-count').innerHTML = '<strong>' + fmtNum(filteredProfiles.length) + '</strong>/' + fmtNum(allProfiles.length);
   }
 
   /* ==============================================
@@ -3011,8 +3093,8 @@ if (!window.gtag) {
       if (shouldCap) {
         var isFiltered = !isUnfiltered(getFilters());
         var msg = isFiltered
-          ? 'Showing ' + DEFAULT_CARD_LIMIT + ' of ' + filteredProfiles.length + ' matching profiles.'
-          : 'Showing ' + DEFAULT_CARD_LIMIT + ' of ' + filteredProfiles.length + ' profiles. Use the filters above to find exactly who you\'re looking for.';
+          ? 'Showing ' + DEFAULT_CARD_LIMIT + ' of ' + fmtNum(filteredProfiles.length) + ' matching profiles.'
+          : 'Showing ' + DEFAULT_CARD_LIMIT + ' of ' + fmtNum(filteredProfiles.length) + ' profiles. Use the filters above to find exactly who you\'re looking for.';
         capMsgEl.textContent = msg;
         capMsgEl.style.fontSize = '15px';
         capMsgEl.style.fontWeight = '500';
@@ -4840,11 +4922,11 @@ if (!window.gtag) {
     // paint regardless of which tier the visitor is browsing.
     if (typeof data.emerging_count === 'number') {
       var emEl = document.getElementById('emerging-count');
-      if (emEl) emEl.textContent = data.emerging_count + ' profiles';
+      if (emEl) emEl.textContent = fmtNum(data.emerging_count) + ' profiles';
     }
     if (typeof data.exec_count === 'number') {
       var exEl = document.getElementById('exec-count');
-      if (exEl) exEl.textContent = data.exec_count + ' profiles';
+      if (exEl) exEl.textContent = fmtNum(data.exec_count) + ' profiles';
     }
     // bn-last-refreshed is now populated by an inline script next to the
     // element itself (3pm America/New_York rollover, no JSON dependency).
@@ -5395,7 +5477,7 @@ if (!window.gtag) {
     var featured = allProfiles.length;
     var elId = (currentNetwork === 'emerging') ? 'emerging-count' : 'exec-count';
     var el = document.getElementById(elId);
-    if (el) el.textContent = featured + ' profiles';
+    if (el) el.textContent = fmtNum(featured) + ' profiles';
   }
 
   /* ==============================================
