@@ -2213,16 +2213,18 @@ if (!window.gtag) {
            verbatim from /join-network so styling stays identical on both pages. -->
       <section class="bn-block">
         <style>
+        /* Width + spacing inherit from the enclosing .bn-container and
+           .bn-block ~ .bn-block sibling rule. Do NOT re-apply max-width or
+           padding here — that double-wraps the section and shrinks the
+           cards to ~95% of the flywheel section above. */
         .bn-intake-testimonial {
-          max-width: 1100px;
-          margin: 24px auto 28px;
-          padding: 0 24px;
           width: 100%;
+          margin: 0;
         }
         .bn-intake-testimonial-grid {
           display: grid;
           grid-template-columns: 1fr 1fr;
-          gap: 18px;
+          gap: 16px;
         }
         .bn-intake-testimonial-card {
           display: flex;
@@ -2258,7 +2260,7 @@ if (!window.gtag) {
           margin: 0;
         }
         @media (max-width: 600px) {
-          .bn-intake-testimonial { padding: 0 16px; }
+          /* Container already provides side padding on mobile. */
           .bn-intake-testimonial-grid { grid-template-columns: 1fr; }
           .bn-intake-testimonial-card { flex-direction: column; align-items: center; text-align: center; }
         }
