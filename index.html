@@ -2029,7 +2029,7 @@ if (!window.gtag) {
               <span class="bn-action-link">Request access &rarr;</span>
             </div>
           </a>
-          <a class="bn-action-card bn-has-icon" href="#" onclick="bnTrack('subscribe_clicked',{context:'action_cards_top'});bnScrollToSubscribe();return false;">
+          <a class="bn-action-card bn-has-icon" href="#" onclick="bnTrack('subscribe_clicked',{page_location:'action_cards_top'});bnScrollToSubscribe();return false;">
             <div class="bn-action-icon-wrap bn-action-icon-mail">&#x1F4E7;</div>
             <div class="bn-action-body">
               <h4>Stay in the loop</h4>
@@ -2037,7 +2037,7 @@ if (!window.gtag) {
               <span class="bn-action-link">Subscribe &rarr;</span>
             </div>
           </a>
-          <a class="bn-action-card bn-has-icon" href="https://bearhugrecruiting.com/join-network" target="_blank" rel="noopener noreferrer" onclick="bnTrack('submit_yourself_clicked',{context:'action_cards_top'})">
+          <a class="bn-action-card bn-has-icon" href="https://bearhugrecruiting.com/join-network" target="_blank" rel="noopener noreferrer" onclick="bnTrack('submit_yourself_clicked',{page_section:'action_cards_top'})">
             <div class="bn-action-icon-wrap bn-action-icon-star">&#x2B50;</div>
             <div class="bn-action-body">
               <h4>Want to be featured?</h4>
@@ -2219,14 +2219,14 @@ if (!window.gtag) {
               <span class="bn-dark-cta-sub">New profiles added daily</span>
             </span>
           </a>
-          <a class="bn-dark-cta bn-dark-cta-muted" href="#" onclick="bnScrollToSubscribe();return false;">
+          <a class="bn-dark-cta bn-dark-cta-muted" href="#" onclick="bnTrack('subscribe_clicked',{page_location:'footer_dark_cta'});bnScrollToSubscribe();return false;">
             <svg class="bn-dark-cta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2" ry="2"></rect><polyline points="3 7 12 13 21 7"></polyline></svg>
             <span class="bn-dark-cta-body">
               <span>Subscribe for weekly highlights</span>
               <span class="bn-dark-cta-sub">Get first dibs on the best new profiles</span>
             </span>
           </a>
-          <a class="bn-dark-cta bn-dark-cta-muted" href="https://bearhugrecruiting.com/join-network" target="_blank" rel="noopener noreferrer" onclick="bnTrack('submit_yourself_clicked',{context:'footer_dark_cta'})">
+          <a class="bn-dark-cta bn-dark-cta-muted" href="https://bearhugrecruiting.com/join-network" target="_blank" rel="noopener noreferrer" onclick="bnTrack('submit_yourself_clicked',{page_section:'footer_dark_cta'})">
             <svg class="bn-dark-cta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><line x1="19" y1="8" x2="19" y2="14"></line><line x1="22" y1="11" x2="16" y2="11"></line></svg>
             <span class="bn-dark-cta-body">
               <span>Register yourself to be featured</span>
@@ -2368,20 +2368,39 @@ if (!window.gtag) {
   };
 
   // Pull function / expertise / person_type / region off a card so GA4 events
-  // carry card context. profileId can be a real profile id (resolves to a card
-  // via the toggle button id) or a sentinel string like 'cant_find_action' /
-  // 'browse_full_database' from the action cards (no card, returns empties).
-  window.bnCardContext = function(profileId) {
-    var ctx = { card_function: '', card_expertise: '', card_person_type: '', card_region: '' };
-    if (!profileId) return ctx;
-    var toggle = document.getElementById('toggle-' + profileId);
-    var card = toggle && toggle.closest && toggle.closest('.bn-card');
-    if (!card) return ctx;
-    ctx.card_function = card.dataset.function || '';
-    ctx.card_expertise = card.dataset.expertise || '';
-    ctx.card_person_type = card.dataset.personType || '';
-    ctx.card_region = card.dataset.region || '';
-    return ctx;
+  // carry card context. Accepts either a profile id (resolves to a card via
+  // the toggle button id) or a DOM element inside a .bn-card (uses closest).
+  // Returns all-empty for sentinel strings like 'cant_find_action' or for
+  // elements with no enclosing card.
+  function bnReadCardDataset(card) {
+    if (!card) return { card_function: '', card_expertise: '', card_person_type: '', card_region: '' };
+    return {
+      card_function: card.dataset.function || '',
+      card_expertise: card.dataset.expertise || '',
+      card_person_type: card.dataset.personType || '',
+      card_region: card.dataset.region || ''
+    };
+  }
+  window.bnCardContext = function(profileIdOrEl) {
+    if (!profileIdOrEl) return bnReadCardDataset(null);
+    if (profileIdOrEl.nodeType === 1) {
+      return bnReadCardDataset(profileIdOrEl.closest && profileIdOrEl.closest('.bn-card'));
+    }
+    var toggle = document.getElementById('toggle-' + profileIdOrEl);
+    return bnReadCardDataset(toggle && toggle.closest && toggle.closest('.bn-card'));
+  };
+
+  // Convenience wrapper for inline onclick handlers: merges card_* into extra
+  // and fires bnTrack. Pass `this` as elOrId from inline contexts; pass a
+  // profile id string from JS contexts.
+  window.bnTrackCard = function(eventName, elOrId, extra) {
+    var ctx = bnCardContext(elOrId);
+    var p = extra || {};
+    p.card_function = ctx.card_function;
+    p.card_expertise = ctx.card_expertise;
+    p.card_person_type = ctx.card_person_type;
+    p.card_region = ctx.card_region;
+    bnTrack(eventName, p);
   };
 
   // Page load performance tracking (GA4)
@@ -2472,7 +2491,10 @@ if (!window.gtag) {
       bnSetCookie('bn_subscribed', '1', 365);
       bnAlreadySubscribed = true;
       bnSubInteracted = true;
-      bnTrack('subscribe_completed', { capture_point: source });
+      bnTrack('subscribe_completed', {
+        page_location: source,
+        trigger: window.bnLastSubscribeTrigger || ''
+      });
       // Sticky bar hide rules:
       //   - source === 'sticky' → user subscribed from the bottom bar itself.
       //     The form is now hidden and the success message is showing inside
@@ -2526,12 +2548,16 @@ if (!window.gtag) {
     stickyDismissed = true;
     // Persist the dismissal for 7 days so the bar doesn't reappear on refresh.
     bnSetCookie('bn_sticky_dismissed', '1', 7);
-    bnTrack('sticky_bar_dismissed', {});
+    var visibleSeconds = window.bnStickyShownAt
+      ? Math.round((Date.now() - window.bnStickyShownAt) / 1000)
+      : 0;
+    bnTrack('sticky_bar_dismissed', { visible_seconds: visibleSeconds });
   };
 
   window.bnScrollToSubscribe = function() {
     document.getElementById('bn-sub-popup').style.display = 'flex';
-    bnTrack('subscribe_popup_opened', {});
+    window.bnLastSubscribeTrigger = 'click';
+    bnTrack('subscribe_popup_opened', { trigger: 'click' });
     // User actively opened the subscribe popup — count as interaction so the
     // 45s timed trigger doesn't fire on top of their own action.
     bnSubInteracted = true;
@@ -2561,6 +2587,11 @@ if (!window.gtag) {
       if (popup && popup.style.display === 'flex') return false;
       var bar = document.getElementById('bn-sticky-sub');
       if (bar) bar.classList.add('visible');
+      if (!window.bnStickyShownAt) {
+        window.bnStickyShownAt = Date.now();
+        window.bnLastSubscribeTrigger = 'scroll';
+        bnTrack('subscribe_popup_opened', { trigger: 'scroll' });
+      }
       return true;
     }
 
@@ -2623,7 +2654,9 @@ if (!window.gtag) {
       if (!popup || popup.style.display === 'flex') return;
       popup.style.display = 'flex';
       bnSubInteracted = true;
+      window.bnLastSubscribeTrigger = 'timed';
       bnTrack('timed_popup_shown', {});
+      bnTrack('subscribe_popup_opened', { trigger: 'timed' });
       // Mirror bnScrollToSubscribe's autofocus so the email field is ready.
       setTimeout(function() {
         var emailEl = document.getElementById('bn-sub-popup-email');
@@ -2899,16 +2932,37 @@ if (!window.gtag) {
       bnShuffleProfiles(filteredProfiles);
     }
 
+    // Snapshot the current search/filter state so deferred inline handlers
+    // (zero_results_cta, etc.) can read the values that produced the result.
+    window.bnLastSearchState = {
+      search_query: filters.search || '',
+      filters_combo: filters.fn + '|' + filters.expertise + '|' + filters.stage
+    };
+
     renderCards();
     updateCount();
 
-    if (filters.search) bnTrack('search_entered', { query: filters.search });
+    if (filters.search) bnTrack('search_entered', { search_query: filters.search });
     if (filters.fn !== 'All Functions') bnTrack('filter_applied', { filter_type: 'function', filter_value: filters.fn });
     if (filters.expertise !== 'All Expertise') bnTrack('filter_applied', { filter_type: 'key_expertise', filter_value: filters.expertise });
     if (filters.stage !== 'All Stages') bnTrack('filter_applied', { filter_type: 'stage_experience', filter_value: filters.stage });
 
+    var anyFilterActive = filters.search
+      || filters.fn !== 'All Functions'
+      || filters.expertise !== 'All Expertise'
+      || filters.stage !== 'All Stages';
+
     if (filteredProfiles.length === 0) {
-      bnTrack('zero_results', { query: filters.search, filters: filters.fn + '|' + filters.expertise + '|' + filters.stage });
+      bnTrack('zero_results', {
+        search_query: filters.search || '',
+        filters_combo: filters.fn + '|' + filters.expertise + '|' + filters.stage
+      });
+    } else if (anyFilterActive) {
+      bnTrack('view_search_results', {
+        search_query: filters.search || '',
+        filters_combo: filters.fn + '|' + filters.expertise + '|' + filters.stage,
+        results_count: filteredProfiles.length
+      });
     }
 
     // Sync the current filter / search / tier state into the URL so the page
@@ -3044,8 +3098,8 @@ if (!window.gtag) {
     // internal SH share_id so existing dashboards keep working.
     var publicId = profile.profile_id || profile.id;
     html += '<button class="bn-share-btn" onclick="bnShareProfile(\'' + profile.id + '\', \'' + publicId + '\', this)">&#x1F517; Copy Link</button>';
-    html += '<a class="bn-share-btn" href="https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent('https://www.bearhugrecruiting.com/network?q=' + publicId) + '" target="_blank" rel="noopener noreferrer" onclick="bnTrack(\'share_linkedin\',{profile_id:\'' + profile.id + '\'})"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg> LinkedIn</a>';
-    html += '<a class="bn-share-btn" href="https://x.com/intent/tweet?url=' + encodeURIComponent('https://www.bearhugrecruiting.com/network?q=' + publicId) + '&text=' + encodeURIComponent('Check out this leadership profile on the Bearhug Network') + '" target="_blank" rel="noopener noreferrer" onclick="bnTrack(\'share_x\',{profile_id:\'' + profile.id + '\'})"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg> Share</a>';
+    html += '<a class="bn-share-btn" href="https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent('https://www.bearhugrecruiting.com/network?q=' + publicId) + '" target="_blank" rel="noopener noreferrer" onclick="bnTrackCard(\'share_linkedin\',this,{profile_id:\'' + profile.id + '\'})"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg> LinkedIn</a>';
+    html += '<a class="bn-share-btn" href="https://x.com/intent/tweet?url=' + encodeURIComponent('https://www.bearhugrecruiting.com/network?q=' + publicId) + '&text=' + encodeURIComponent('Check out this leadership profile on the Bearhug Network') + '" target="_blank" rel="noopener noreferrer" onclick="bnTrackCard(\'share_x\',this,{profile_id:\'' + profile.id + '\'})"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg> Share</a>';
     html += '</div>';
     html += '</div>';
     html += '</div>';
@@ -3109,7 +3163,7 @@ if (!window.gtag) {
       grid.innerHTML = '<div id="zero-results" style="grid-column:1/-1;text-align:center;padding:48px 24px;">'
         + '<h3 style="font-family:\'Playfair Display\',serif;font-size:1.5rem;color:#0E0E0E;margin-bottom:12px;">Not finding the right person?</h3>'
         + '<p style="font-family:\'DM Sans\',sans-serif;font-size:1rem;color:#555;margin-bottom:24px;">This is a slice of a much larger network. Book a call to browse the full database, or have us build you a custom slate.</p>'
-        + '<a href="#" onclick="event.preventDefault();bnTrack(\'zero_results_cta\',{context:\'zero_results\'});bnOpenScreenPopup(\'https://cal.mixmax.com/kraigward-722/bearhug-network-inquiry?source=zero_results\',\'zero_results_cta\')" style="display:inline-block;padding:12px 28px;background:#B8963E;color:#fff;font-family:\'DM Sans\',sans-serif;font-weight:600;text-decoration:none;border-radius:4px;">Let\'s talk</a>'
+        + '<a href="#" onclick="event.preventDefault();bnTrack(\'zero_results_cta\',{cta_id:\'lets_talk\',context:\'zero_results\',search_query:(window.bnLastSearchState&&window.bnLastSearchState.search_query)||\'\',filters_combo:(window.bnLastSearchState&&window.bnLastSearchState.filters_combo)||\'\'});bnOpenScreenPopup(\'https://cal.mixmax.com/kraigward-722/bearhug-network-inquiry?source=zero_results\',\'zero_results_cta\')" style="display:inline-block;padding:12px 28px;background:#B8963E;color:#fff;font-family:\'DM Sans\',sans-serif;font-weight:600;text-decoration:none;border-radius:4px;">Let\'s talk</a>'
         + '</div>';
       if (capEl) capEl.style.display = 'none';
       return;
@@ -3141,8 +3195,13 @@ if (!window.gtag) {
   }
 
   window.bnShowAllCards = function() {
+    var cardsBefore = Math.min(DEFAULT_CARD_LIMIT, filteredProfiles.length);
     showAllCards = true;
-    bnTrack('show_all_cards', { total: filteredProfiles.length });
+    bnTrack('show_all_cards', {
+      total: filteredProfiles.length,
+      cards_before: cardsBefore,
+      cards_after: filteredProfiles.length
+    });
     renderCards();
   };
 
@@ -5514,7 +5573,11 @@ if (!window.gtag) {
      NETWORK TOGGLE (v8 change 7)
      ============================================== */
   window.switchNetwork = function(type) {
-    bnTrack('network_toggle', { network: type });
+    bnTrack('network_toggle', {
+      network: type,
+      previous_state: currentNetwork || '',
+      new_state: type
+    });
     if (type !== 'exec' && type !== 'emerging') return;
 
     var execLink = document.getElementById('toggle-exec');
@@ -5661,6 +5724,15 @@ if (!window.gtag) {
     for (var i = 0; i < options.length; i++) options[i].classList.remove('selected');
     el.classList.add('selected');
     document.getElementById('bn-screen-proceed').classList.add('active');
+    var _siCtx = bnCardContext(pendingIntroProfileId);
+    bnTrack('screen_popup_intent_selected', {
+      profile_id: pendingIntroProfileId,
+      intent_type: intent,
+      card_function: _siCtx.card_function,
+      card_expertise: _siCtx.card_expertise,
+      card_person_type: _siCtx.card_person_type,
+      card_region: _siCtx.card_region
+    });
   };
 
   window.bnProceedIntro = function() {
@@ -5669,6 +5741,14 @@ if (!window.gtag) {
     bnTrack('intro_requested', {
       profile_id: pendingIntroProfileId,
       intent: selectedIntent,
+      card_function: _irCtx.card_function,
+      card_expertise: _irCtx.card_expertise,
+      card_person_type: _irCtx.card_person_type,
+      card_region: _irCtx.card_region
+    });
+    bnTrack('screen_popup_completed', {
+      profile_id: pendingIntroProfileId,
+      intent_type: selectedIntent,
       card_function: _irCtx.card_function,
       card_expertise: _irCtx.card_expertise,
       card_person_type: _irCtx.card_person_type,
@@ -5689,7 +5769,7 @@ if (!window.gtag) {
       navigator.clipboard.writeText(url).then(function() {
         btn.classList.add('copied');
         btn.innerHTML = '&#x2713; Copied';
-        bnTrack('share_copy', { profile_id: shareId });
+        bnTrackCard('share_copy', btn, { profile_id: shareId });
         setTimeout(function() {
           btn.classList.remove('copied');
           btn.innerHTML = '&#x1F517; Copy Link';
@@ -5706,7 +5786,7 @@ if (!window.gtag) {
       document.body.removeChild(ta);
       btn.classList.add('copied');
       btn.innerHTML = '&#x2713; Copied';
-      bnTrack('share_copy', { profile_id: shareId });
+      bnTrackCard('share_copy', btn, { profile_id: shareId });
       setTimeout(function() {
         btn.classList.remove('copied');
         btn.innerHTML = '&#x1F517; Copy Link';
