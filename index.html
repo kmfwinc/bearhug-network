@@ -2209,6 +2209,80 @@ if (!window.gtag) {
         </div>
       </section>
 
+      <!-- Social proof testimonial cards (Maria + Ryan, side by side) — copied
+           verbatim from /join-network so styling stays identical on both pages. -->
+      <section class="bn-block">
+        <style>
+        .bn-intake-testimonial {
+          max-width: 1100px;
+          margin: 24px auto 28px;
+          padding: 0 24px;
+          width: 100%;
+        }
+        .bn-intake-testimonial-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 18px;
+        }
+        .bn-intake-testimonial-card {
+          display: flex;
+          align-items: flex-start;
+          gap: 16px;
+          padding: 22px 24px;
+          background-color: rgba(184,150,62,0.06);
+          border: 1px solid rgba(184,150,62,0.18);
+          border-radius: 12px;
+        }
+        .bn-intake-testimonial-avatar {
+          width: 52px; height: 52px;
+          border-radius: 50%;
+          border: 2px solid #B8963E;
+          object-fit: cover;
+          flex-shrink: 0;
+          background-color: #ddd;
+        }
+        .bn-intake-testimonial-body { flex: 1; min-width: 0; }
+        .bn-intake-testimonial-quote {
+          font-family: 'DM Sans', sans-serif;
+          font-style: italic;
+          font-size: 15px;
+          color: #0E0E0E;
+          line-height: 1.55;
+          margin: 0 0 10px;
+        }
+        .bn-intake-testimonial-attr {
+          font-family: 'DM Sans', sans-serif;
+          font-size: 13px;
+          font-weight: 600;
+          color: #B8963E;
+          margin: 0;
+        }
+        @media (max-width: 600px) {
+          .bn-intake-testimonial { padding: 0 16px; }
+          .bn-intake-testimonial-grid { grid-template-columns: 1fr; }
+          .bn-intake-testimonial-card { flex-direction: column; align-items: center; text-align: center; }
+        }
+        </style>
+        <div class="bn-intake-testimonial">
+          <div class="bn-intake-testimonial-grid">
+            <div class="bn-intake-testimonial-card">
+              <img class="bn-intake-testimonial-avatar" src="https://images.squarespace-cdn.com/content/v1/6617fdf695e57356285dfdbc/15f6891b-4060-40eb-ace1-35f6ab2de215/1517507756845+%281%29.jpg?format=100w" alt="Maria Khokhlova" loading="lazy" />
+              <div class="bn-intake-testimonial-body">
+                <p class="bn-intake-testimonial-quote">"Bearhug helped us hire damn great department heads who've all built strong teams. We're growing 10% MoM and have expanded into 30 states!"</p>
+                <p class="bn-intake-testimonial-attr">Maria Khokhlova, Co-founder of TraceAir</p>
+              </div>
+            </div>
+            <div class="bn-intake-testimonial-card">
+              <img class="bn-intake-testimonial-avatar" src="https://images.squarespace-cdn.com/content/v1/6617fdf695e57356285dfdbc/04744f26-09dd-4b50-8742-2c8f18e08436/1675709069868.jpg?format=100w" alt="Ryan Alshak" loading="lazy" />
+              <div class="bn-intake-testimonial-body">
+                <p class="bn-intake-testimonial-quote">"Bearhug's a N of 1 at what they do. Any early or growth-stage startup with go-to-market hiring would be very lucky to work with them."</p>
+                <p class="bn-intake-testimonial-attr">Ryan Alshak, CEO of Laurel</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- 13/14/15/16. Dark rounded footer (CTAs + practices + brand row) -->
       <footer class="bn-block bn-dark-footer">
         <div class="bn-dark-cta-row">
