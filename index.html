@@ -2021,7 +2021,7 @@ if (!window.gtag) {
            HIRING / GETTING HIRED journey cards and above the map. -->
       <section class="bn-block">
         <div class="bn-grid-3">
-          <a class="bn-action-card bn-has-icon" href="#" onclick="event.preventDefault();bnTrack('cant_find_clicked',{context:'action_cards_top'});bnOpenScreenPopup('https://cal.mixmax.com/kraigward-722/bearhug-network-inquiry?source=cant_find','cant_find_action')">
+          <a class="bn-action-card bn-has-icon" href="#" onclick="event.preventDefault();bnTrack('cant_find_clicked',{context:'action_cards_top',card_function:'',card_expertise:'',card_person_type:'',card_region:''});bnOpenScreenPopup('https://cal.mixmax.com/kraigward-722/bearhug-network-inquiry?source=cant_find','cant_find_action')">
             <div class="bn-action-icon-wrap bn-action-icon-search">&#x1F50D;</div>
             <div class="bn-action-body">
               <h4>Can't find the right person?</h4>
@@ -2212,7 +2212,7 @@ if (!window.gtag) {
       <!-- 13/14/15/16. Dark rounded footer (CTAs + practices + brand row) -->
       <footer class="bn-block bn-dark-footer">
         <div class="bn-dark-cta-row">
-          <a class="bn-dark-cta bn-dark-cta-gold" href="#" onclick="event.preventDefault();bnTrack('cant_find_clicked',{context:'footer_dark_cta'});bnOpenScreenPopup('https://cal.mixmax.com/kraigward-722/bearhug-network-inquiry?source=browse_database','browse_full_database')">
+          <a class="bn-dark-cta bn-dark-cta-gold" href="#" onclick="event.preventDefault();bnTrack('cant_find_clicked',{context:'footer_dark_cta',card_function:'',card_expertise:'',card_person_type:'',card_region:''});bnOpenScreenPopup('https://cal.mixmax.com/kraigward-722/bearhug-network-inquiry?source=browse_database','browse_full_database')">
             <svg class="bn-dark-cta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M3 5v6c0 1.66 4.03 3 9 3s9-1.34 9-3V5"></path><path d="M3 11v6c0 1.66 4.03 3 9 3s9-1.34 9-3v-6"></path></svg>
             <span class="bn-dark-cta-body">
               <span>Request to browse the full network</span>
@@ -2365,6 +2365,23 @@ if (!window.gtag) {
         });
       }
     }
+  };
+
+  // Pull function / expertise / person_type / region off a card so GA4 events
+  // carry card context. profileId can be a real profile id (resolves to a card
+  // via the toggle button id) or a sentinel string like 'cant_find_action' /
+  // 'browse_full_database' from the action cards (no card, returns empties).
+  window.bnCardContext = function(profileId) {
+    var ctx = { card_function: '', card_expertise: '', card_person_type: '', card_region: '' };
+    if (!profileId) return ctx;
+    var toggle = document.getElementById('toggle-' + profileId);
+    var card = toggle && toggle.closest && toggle.closest('.bn-card');
+    if (!card) return ctx;
+    ctx.card_function = card.dataset.function || '';
+    ctx.card_expertise = card.dataset.expertise || '';
+    ctx.card_person_type = card.dataset.personType || '';
+    ctx.card_region = card.dataset.region || '';
+    return ctx;
   };
 
   // Page load performance tracking (GA4)
@@ -2968,7 +2985,13 @@ if (!window.gtag) {
     var introUrl = buildIntroUrl(profile);
     var cardId = 'card-' + profile.id;
 
-    var html = '<div class="bn-card" style="animation:fadeUp 0.4s ease ' + (index * 0.04) + 's both;">';
+    var _attrEsc = function(s) { return String(s == null ? '' : s).replace(/"/g, '&quot;'); };
+    var html = '<div class="bn-card"'
+      + ' data-function="' + _attrEsc((profile.functions || []).join('|')) + '"'
+      + ' data-expertise="' + _attrEsc((profile.channel_expertise || []).join('|')) + '"'
+      + ' data-person-type="' + _attrEsc((profile.person_types || []).join('|')) + '"'
+      + ' data-region="' + _attrEsc(profile.region || '') + '"'
+      + ' style="animation:fadeUp 0.4s ease ' + (index * 0.04) + 's both;">';
     html += '<div class="bn-card-bar" style="background-color:' + primaryColor + ';"></div>';
     html += '<div class="bn-card-body">';
     html += '<div class="bn-card-tags">';
@@ -3068,7 +3091,14 @@ if (!window.gtag) {
       }
     }
 
-    if (willExpand) bnTrack('profile_expanded', { profile_id: id, row_size: rowCards.length });
+    if (willExpand) bnTrack('profile_expanded', {
+      profile_id: id,
+      row_size: rowCards.length,
+      card_function: clickedCard.dataset.function || '',
+      card_expertise: clickedCard.dataset.expertise || '',
+      card_person_type: clickedCard.dataset.personType || '',
+      card_region: clickedCard.dataset.region || ''
+    });
   };
 
   function renderCards() {
@@ -5610,7 +5640,14 @@ if (!window.gtag) {
     document.getElementById('bn-screen-proceed').classList.remove('active');
     document.getElementById('bn-screen-popup').style.display = 'flex';
     document.body.style.overflow = 'hidden';
-    bnTrack('screen_popup_opened', { profile_id: profileId });
+    var _spCtx = bnCardContext(profileId);
+    bnTrack('screen_popup_opened', {
+      profile_id: profileId,
+      card_function: _spCtx.card_function,
+      card_expertise: _spCtx.card_expertise,
+      card_person_type: _spCtx.card_person_type,
+      card_region: _spCtx.card_region
+    });
   };
 
   window.bnCloseScreenPopup = function() {
@@ -5628,7 +5665,15 @@ if (!window.gtag) {
 
   window.bnProceedIntro = function() {
     if (!selectedIntent) return;
-    bnTrack('intro_requested', { profile_id: pendingIntroProfileId, intent: selectedIntent });
+    var _irCtx = bnCardContext(pendingIntroProfileId);
+    bnTrack('intro_requested', {
+      profile_id: pendingIntroProfileId,
+      intent: selectedIntent,
+      card_function: _irCtx.card_function,
+      card_expertise: _irCtx.card_expertise,
+      card_person_type: _irCtx.card_person_type,
+      card_region: _irCtx.card_region
+    });
     bnCloseScreenPopup();
     window.open(pendingIntroUrl + '&intent=' + encodeURIComponent(selectedIntent), '_blank', 'noopener,noreferrer');
   };
