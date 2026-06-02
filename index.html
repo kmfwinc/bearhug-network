@@ -1644,6 +1644,8 @@ if (!window.gtag) {
     background-position: right 10px center;
   }
 
+  .bn-filter-row.bn-hidden { display: none; }
+
   /* -- Cards (inside .bn-container, width 100%) -- */
   .bn-main {
     width: 100%;
@@ -2928,7 +2930,11 @@ if (!window.gtag) {
     filtersOpen = !filtersOpen;
     var row = document.getElementById('bn-filter-row');
     var btn = document.getElementById('bn-filter-btn');
-    row.style.display = filtersOpen ? 'grid' : 'none';
+    if (filtersOpen) {
+      row.classList.remove('bn-hidden');
+    } else {
+      row.classList.add('bn-hidden');
+    }
     btn.className = 'bn-filter-toggle ' + (filtersOpen ? 'open' : 'closed');
     btn.innerHTML = 'Filters';
   };
