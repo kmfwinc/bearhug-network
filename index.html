@@ -2928,7 +2928,7 @@ if (!window.gtag) {
     filtersOpen = !filtersOpen;
     var row = document.getElementById('bn-filter-row');
     var btn = document.getElementById('bn-filter-btn');
-    row.style.display = filtersOpen ? 'flex' : 'none';
+    row.style.display = filtersOpen ? 'grid' : 'none';
     btn.className = 'bn-filter-toggle ' + (filtersOpen ? 'open' : 'closed');
     btn.innerHTML = 'Filters';
   };
