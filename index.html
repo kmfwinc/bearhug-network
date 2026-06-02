@@ -1,4 +1,4 @@
-<!-- Bearhug Network / Production Build v8 / Agent-Sweep / May 17, 2026 -->
+<!-- Bearhug Network / Production Build v8 / Agent-63 / June 2, 2026 -->
 <!-- v8 changes. External JSON architecture, Mapbox GL density map (21K+ dots), filter counts, conversion zero-result, exec/emerging toggle, Grand Slam section, user journey mockups -->
 <!-- Squarespace: paste into a single Code Block on /network page -->
 
@@ -2932,7 +2932,12 @@ if (!window.gtag) {
     var btn = document.getElementById('bn-filter-btn');
     if (filtersOpen) {
       row.classList.remove('bn-hidden');
+      row.style.display = 'grid';
+      row.style.gridTemplateColumns = 'repeat(3, 1fr)';
+      row.style.gap = '10px';
+      row.style.width = '100%';
     } else {
+      row.style.display = 'none';
       row.classList.add('bn-hidden');
     }
     btn.className = 'bn-filter-toggle ' + (filtersOpen ? 'open' : 'closed');
