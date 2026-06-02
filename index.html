@@ -260,7 +260,7 @@ if (!window.gtag) {
     height: 280px;
     border-radius: 12px;
     overflow: hidden;
-    background: #F0EDE5;
+    background: #0A1628;
     box-shadow: 0 2px 12px rgba(0,0,0,0.08);
     position: relative;
   }
@@ -1409,6 +1409,153 @@ if (!window.gtag) {
   }
   .bn-search-clear:hover { background: var(--border-strong); color: var(--ink); }
 
+  /* -- AI Search -- */
+  @keyframes bnPulse {
+    0%, 100% { opacity: 1; transform: translateY(-50%) scale(1); }
+    50%       { opacity: 0.55; transform: translateY(-50%) scale(1.18); }
+  }
+  .bn-ai-row {
+    margin-top: 10px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .bn-ai-wrap {
+    position: relative;
+    flex: 1;
+    min-width: 0;
+  }
+  .bn-ai-input {
+    width: 100%;
+    padding: 12px 68px 12px 34px;
+    font-family: var(--ff-body);
+    font-size: 14px;
+    border: 1px solid var(--border-strong);
+    border-radius: 6px;
+    background-color: var(--card-bg);
+    color: var(--ink);
+    outline: none;
+    box-sizing: border-box;
+    transition: border-color 0.15s;
+  }
+  .bn-ai-input::placeholder { color: var(--muted-mid); }
+  .bn-ai-input:focus { border-color: var(--gold); }
+  .bn-ai-input.bn-ai-loading {
+    background: linear-gradient(90deg, var(--card-bg) 25%, #eee9de 50%, var(--card-bg) 75%);
+    background-size: 400px 100%;
+    animation: shimmer 1.2s ease infinite;
+    color: var(--muted-mid);
+    pointer-events: none;
+  }
+  .bn-ai-sparkle {
+    position: absolute;
+    left: 11px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 14px;
+    height: 14px;
+    color: var(--gold);
+    pointer-events: none;
+    flex-shrink: 0;
+  }
+  .bn-ai-mic-btn {
+    position: absolute;
+    right: 36px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 22px;
+    height: 22px;
+    border: none;
+    background: transparent;
+    color: var(--muted-mid);
+    font-size: 13px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: color 0.15s;
+  }
+  .bn-ai-mic-btn:hover { color: var(--ink); }
+  .bn-ai-mic-btn.bn-mic-active {
+    color: #c0392b;
+    animation: bnPulse 1s ease infinite;
+  }
+  .bn-ai-clear-btn {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 22px;
+    height: 22px;
+    border: none;
+    background: var(--border);
+    color: var(--muted);
+    border-radius: 50%;
+    font-size: 13px;
+    font-family: var(--ff-body);
+    font-weight: 600;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    padding: 0;
+    transition: background 0.15s;
+  }
+  .bn-ai-clear-btn:hover { background: var(--border-strong); color: var(--ink); }
+  .bn-ai-submit-btn {
+    padding: 12px 16px;
+    font-family: var(--ff-body);
+    font-size: 12px;
+    font-weight: 600;
+    border: 1px solid var(--gold);
+    border-radius: 6px;
+    background: var(--gold);
+    color: #fff;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .bn-ai-submit-btn:hover { background: #9f7b2e; border-color: #9f7b2e; }
+  .bn-ai-submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .bn-ai-status-row {
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--ff-body);
+    font-size: 12px;
+    color: var(--muted-mid);
+    flex-wrap: wrap;
+  }
+  .bn-ai-clear-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    padding: 3px 10px;
+    background: var(--border);
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--ink);
+    text-decoration: none;
+    transition: background 0.15s;
+    margin-left: 4px;
+  }
+  .bn-ai-clear-pill:hover { background: var(--border-strong); }
+  .bn-ai-rationale {
+    font-family: var(--ff-body);
+    font-size: 11px;
+    color: #2a7a3a;
+    background: #edf7f0;
+    border-left: 2px solid #4caf6e;
+    padding: 5px 10px;
+    margin: 8px 0 0;
+    border-radius: 0 4px 4px 0;
+    line-height: 1.45;
+  }
+
   .bn-filter-toggle {
     padding: 12px 16px;
     font-family: var(--ff-body);
@@ -1863,9 +2010,8 @@ if (!window.gtag) {
       <!-- 1. Headline -->
       <section class="bn-block">
         <h1 class="bn-title">The Bearhug Network</h1>
-        <h2 style="font-family:var(--ff-display);font-size:1.65rem;font-weight:600;color:var(--gold);margin:4px 0 14px;line-height:1.3;letter-spacing:-0.01em;">The answer to <em>"who do you know"</em> you've needed for years. For yourself, and for the people right now who are hiring and are counting on you.</h2>
+        <h2 style="font-family:var(--ff-display);font-size:1.65rem;font-weight:600;color:var(--gold);margin:4px 0 14px;line-height:1.3;letter-spacing:-0.01em;">The answer to <em>"who do you know"</em> you've needed for years. Thousands of vetted leaders, searchable in seconds. No blind intros. No hours lost on LinkedIn. No more awkward silence when someone asks. Browse, click, request an intro, and we handle the rest. For yourself, and for the people right now who are hiring and are counting on you.</h2>
         <p style="font-family:var(--ff-body);font-size:15px;line-height:1.7;color:var(--ink);margin:0 0 10px;opacity:0.85;">Someone asked you who you know for a critical role. Or maybe you're the one asking. Either way, you're weighing the lift, the risk, and whether the right person is even out there. We built this so you don't have to figure that out alone.</p>
-        <p style="font-family:var(--ff-body);font-size:15px;line-height:1.7;color:var(--ink);margin:0 0 20px;opacity:0.85;">Below is a curated cross-section of our deeply vetted network. Executives and emerging leaders across consumer and B2B, each profiled by what they've built, the value they bring, and the relationships they carry. Every person is either actively looking or open to the right conversation. Names stay protected until both sides want to connect. Interact with the clusters on the map or use the search bar and filters to sort profiles.</p>
       </section>
 
       <!-- 3. Journey cards (HIRING / GETTING HIRED) — moved 2026-05-25 to sit
@@ -2055,6 +2201,7 @@ if (!window.gtag) {
              sit directly below the map; the timestamp is about the underlying
              network data, which the map visualizes. -->
         <p id="bn-last-refreshed" style="text-align:center;font-size:12px;color:var(--muted);margin:12px 0 0;font-family:var(--ff-body);"></p>
+        <p style="font-family:var(--ff-body);font-size:15px;line-height:1.7;color:var(--ink);margin:16px 0 0;opacity:0.85;">Below is a curated cross-section of our deeply vetted network. Executives and emerging leaders across consumer and B2B, each profiled by what they've built, the value they bring, and the relationships they carry. Every person is either actively looking or open to the right conversation. Names stay protected until both sides want to connect. Interact with the clusters on the map or use the search bar and filters to sort profiles.</p>
         <script>
         // bn-last-refreshed — pure client-side. "Latest Network Update: Month DD, YYYY".
         // Cutoff: 3pm America/New_York. At/after 3pm NY → today's NY date. Before
@@ -2173,6 +2320,19 @@ if (!window.gtag) {
               </select>
             </div>
           </div>
+          <!-- AI Natural Language Search -->
+          <div class="bn-ai-row" id="bn-ai-row">
+            <div class="bn-ai-wrap">
+              <svg class="bn-ai-sparkle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2l2.09 6.43L21 10l-6.91 1.57L12 18l-2.09-6.43L3 10l6.91-1.57L12 2z"/><path d="M19 14l1.09 2.91L23 18l-2.91 1.09L19 22l-1.09-2.91L15 18l2.91-1.09L19 14z"/><path d="M5 3L5.8 5.2 8 6l-2.2.8L5 9l-.8-2.2L2 6l2.2-.8L5 3z"/></svg>
+              <input type="text" class="bn-ai-input" id="bn-ai-search" placeholder='Ask anything. "Sales VP in outdoor with DTC experience and $200K+ comp..."' autocomplete="off" />
+              <button class="bn-ai-mic-btn" id="bn-ai-mic" type="button" aria-label="Voice search" onclick="bnAiMic()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg></button>
+              <button class="bn-ai-clear-btn" id="bn-ai-input-clear" type="button" aria-label="Clear AI search" onclick="bnAiInputClear()">&times;</button>
+            </div>
+            <button class="bn-ai-submit-btn" id="bn-ai-submit" type="button" onclick="bnAiSearch()">Ask AI</button>
+          </div>
+          <div class="bn-ai-status-row" id="bn-ai-status-row" style="display:none;">
+            <span id="bn-ai-status-text"></span>
+          </div>
         </div>
       </section>
 
@@ -2193,7 +2353,7 @@ if (!window.gtag) {
       <section class="bn-block">
         <div class="bn-grand-slam-card">
           <h3>When browsing turns into a full search process</h3>
-          <p class="bn-gs-body">While 1-off intros may get the job done, often times a full search process is required. Every Bearhug search engagement includes a complimentary Structural Growth Review where we'll map your leadership team against the leadership benchmark we've developed over 30 years of category-specific searches. You'll walk away with a concrete 90-day Topgrading and sequencing recommendation whether you engage us for a formal search or not. When you do, every search includes a comp benchmarking deck for the role and a qualified shortlist delivered in 21 days.</p>
+          <p class="bn-gs-body">While 1-off intros may get the job done, often times a full search process is required. Every Bearhug search engagement includes a complimentary Structural Growth Review where we'll map your leadership team against the leadership benchmark we've developed over 30 years of category-specific searches. You'll walk away with a concrete 90-day Topgrading and sequencing recommendation whether you engage us for a formal search or not. When you do, every search includes a comp benchmarking deck for the role and a qualified shortlist delivered in 21 days, along with the following guarantee that should give you total certainty we can help you get the job done:</p>
           <p class="bn-gs-guarantee">If we can't present a candidate worth interviewing in 30 days, we will cut you a check for $10,000 and keep working until we do.</p>
         </div>
       </section>
@@ -2204,8 +2364,8 @@ if (!window.gtag) {
         <h3 class="bn-howit-heading">How the <em>flywheel</em> benefits you and the people counting on you</h3>
             <div class="bn-howit-list">
           <div class="bn-howit-item"><span class="bn-howit-num">01</span><span class="bn-howit-text">What you see above is the freshest slice of our full database. We deliberately keep the public preview curated, reserving full database access for our retained clients and privately invited subscribers.</span></div>
-          <div class="bn-howit-item"><span class="bn-howit-num">02</span><span class="bn-howit-text">Use the search bar and filters to narrow by function, expertise, or stage experience. Found the right profile? Request an intro with anyone. You can even send your filtered results URL to the person who asked you "who do you know." You become the one with the answer, without having to spend an hour digging through LinkedIn or risking your reputation on a blind intro. Let our network fill the gaps in yours.</span></div>
-          <div class="bn-howit-item"><span class="bn-howit-num">03</span><span class="bn-howit-text">The more people you point here, the stronger the flywheel gets. Subscribe for a weekly highlights reel so the best profiles come to you. And when browsing isn't enough and you need extra support, book a call. We'll open the full database and do the matching for you personally. Let us do the heavy lifting so you don't have to.</span></div>
+          <div class="bn-howit-item"><span class="bn-howit-num">02</span><span class="bn-howit-text">Use the search bar and filters above to narrow profiles by function, expertise, or stage experience. Layer on keywords to further narrow your results. Found the right profile? Copy/Share the link to a single profile, or send your filtered results URL to the person who asked you "who do you know." You become the one with the answer, without having to spend an hour digging through LinkedIn or risking your reputation on a blind intro. Request an intro with anyone. We'll do the rest. Let our network fill the gaps in yours.</span></div>
+          <div class="bn-howit-item"><span class="bn-howit-num">03</span><span class="bn-howit-text">The more people you point here, the stronger the flywheel gets. <a href="#" onclick="event.preventDefault();bnTrack('subscribe_clicked',{page_location:'flywheel_step_03'});bnScrollToSubscribe();" style="color:var(--gold);text-decoration:underline;">Subscribe</a> for a weekly highlights reel or even better, <a href="https://www.linkedin.com/in/kraigward/" target="_blank" style="color:var(--gold);text-decoration:underline;">follow us on LinkedIn</a> so the best profiles come to you. And when browsing isn't enough and you need extra support, <a href="#" onclick="event.preventDefault();bnTrack('cant_find_clicked',{context:'flywheel_step_03'});bnOpenScreenPopup('https://cal.mixmax.com/kraigward-722/bearhug-network-inquiry?source=flywheel','flywheel_book_call');" style="color:var(--gold);text-decoration:underline;">book a call</a>. We'll open the full database and give you the white glove treatment where we'll do the matching for you personally. Let us do the heavy lifting so you don't have to.</span></div>
         </div>
       </section>
 
@@ -2410,6 +2570,9 @@ if (!window.gtag) {
   var showAllCards = false;
   var filtersOpen = true;
   var searchTimeout = null;
+  var bnAiActive = false;
+  var bnAiMatchedIds = null;
+  var bnAiRationales = null;
   var isInternal = (window.location.search.indexOf('internal=true') > -1);
 
   /* ==============================================
@@ -3268,6 +3431,7 @@ if (!window.gtag) {
         capEl.style.display = 'none';
       }
     }
+    applyAiHighlights();
   }
 
   window.bnShowAllCards = function() {
@@ -5318,6 +5482,14 @@ if (!window.gtag) {
     }
 
     map.on('load', function() {
+      map.setFog({
+        color: 'rgb(10, 22, 40)',
+        'high-color': 'rgb(20, 40, 80)',
+        'horizon-blend': 0.04,
+        'space-color': 'rgb(10, 22, 40)',
+        'star-intensity': 0.2
+      });
+
       map.addSource('density-points', {
         type: 'geojson',
         data: { type: 'FeatureCollection', features: features },
@@ -5878,6 +6050,226 @@ if (!window.gtag) {
   };
 
   /* ==============================================
+     AI SEARCH
+     ============================================== */
+  var AI_WORKER_URL = 'https://bearhug-ai-search.kraigward.workers.dev';
+  var AI_PREFILTER_LIMIT = 150;
+  var AI_PLACEHOLDER = 'Ask anything. "Sales VP in outdoor with DTC experience..."';
+
+  function bnAiPreFilter(query) {
+    var terms = query.toLowerCase().split(/\s+/).filter(Boolean);
+    var scored = allProfiles.map(function(p) {
+      var score = 0;
+      var text = [
+        p.summary || '',
+        p.search_keywords || '',
+        (p.functions || []).join(' '),
+        (p.channel_expertise || []).join(' '),
+        (p.stage_experience || []).join(' '),
+        p.region || '',
+        p.comp_band || ''
+      ].join(' ').toLowerCase();
+      terms.forEach(function(t) {
+        if (text.indexOf(t) !== -1) score += 1;
+        if ((p.search_keywords || '').toLowerCase().indexOf(t) !== -1) score += 2;
+      });
+      return { profile: p, score: score };
+    });
+    scored.sort(function(a, b) { return b.score - a.score; });
+    return scored.slice(0, AI_PREFILTER_LIMIT).map(function(item) {
+      var p = item.profile;
+      return {
+        id: p.profile_id || p.id,
+        summary: p.summary || '',
+        functions: p.functions || [],
+        channel_expertise: p.channel_expertise || [],
+        stage_experience: p.stage_experience || [],
+        region: p.region || '',
+        comp_band: p.comp_band || '',
+        search_keywords: p.search_keywords || ''
+      };
+    });
+  }
+
+  function applyAiHighlights() {
+    if (!bnAiActive || !bnAiMatchedIds) return;
+    var cards = document.querySelectorAll('#bn-grid .bn-card');
+    for (var i = 0; i < cards.length; i++) {
+      var card = cards[i];
+      var idEl = card.querySelector('.bn-card-id');
+      var profileId = idEl ? idEl.textContent.trim() : '';
+      if (bnAiMatchedIds[profileId]) {
+        card.style.opacity = '1';
+        if (!card.querySelector('.bn-ai-rationale')) {
+          var rationale = bnAiRationales[profileId] || '';
+          if (rationale) {
+            var rEl = document.createElement('div');
+            rEl.className = 'bn-ai-rationale';
+            rEl.textContent = rationale;
+            var bodyEl = card.querySelector('.bn-card-body');
+            if (bodyEl) bodyEl.insertBefore(rEl, bodyEl.firstChild);
+          }
+        }
+      } else {
+        card.style.opacity = '0.4';
+      }
+    }
+  }
+
+  window.bnAiSearch = function() {
+    var input = document.getElementById('bn-ai-search');
+    var query = (input ? input.value : '').trim();
+    if (!query) return;
+
+    var submitBtn = document.getElementById('bn-ai-submit');
+    var statusRow = document.getElementById('bn-ai-status-row');
+    var statusText = document.getElementById('bn-ai-status-text');
+    var micBtn = document.getElementById('bn-ai-mic');
+
+    input.classList.add('bn-ai-loading');
+    submitBtn.disabled = true;
+    if (micBtn) micBtn.disabled = true;
+    statusRow.style.display = 'flex';
+    statusText.textContent = 'Matching profiles...';
+
+    var profiles = bnAiPreFilter(query);
+    var timedOut = false;
+    var timer = setTimeout(function() {
+      timedOut = true;
+      bnAiSearchError('Search unavailable — try the filters above.');
+    }, 10000);
+
+    fetch(AI_WORKER_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query: query, profiles: profiles })
+    })
+    .then(function(res) {
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      return res.json();
+    })
+    .then(function(data) {
+      if (timedOut) return;
+      clearTimeout(timer);
+      bnAiSearchDone(data.matches || [], query);
+    })
+    .catch(function(err) {
+      if (timedOut) return;
+      clearTimeout(timer);
+      console.warn('AI search:', err.message);
+      bnAiSearchError('Search unavailable — try the filters above.');
+    });
+  };
+
+  function bnAiSearchDone(matches, query) {
+    var input = document.getElementById('bn-ai-search');
+    var submitBtn = document.getElementById('bn-ai-submit');
+    var micBtn = document.getElementById('bn-ai-mic');
+    var statusRow = document.getElementById('bn-ai-status-row');
+    var statusText = document.getElementById('bn-ai-status-text');
+    var clearBtn = document.getElementById('bn-ai-input-clear');
+
+    input.classList.remove('bn-ai-loading');
+    submitBtn.disabled = false;
+    if (micBtn) micBtn.disabled = false;
+    clearBtn.style.display = 'flex';
+
+    if (!matches.length) {
+      bnAiActive = false;
+      bnAiMatchedIds = null;
+      bnAiRationales = null;
+      statusText.textContent = 'No profiles matched your query. Try rephrasing or use the filters above.';
+      renderCards();
+      return;
+    }
+
+    bnAiMatchedIds = {};
+    bnAiRationales = {};
+    matches.forEach(function(m) {
+      bnAiMatchedIds[m.bhrn] = true;
+      bnAiRationales[m.bhrn] = m.rationale || '';
+    });
+    bnAiActive = true;
+
+    var clearLink = '<a href="javascript:void(0)" class="bn-ai-clear-pill" onclick="bnAiClear()">&#x2715; Clear AI search</a>';
+    statusText.innerHTML = '<strong>' + matches.length + '</strong> AI match' + (matches.length !== 1 ? 'es' : '') + ' found' + clearLink;
+
+    showAllCards = true;
+    renderCards();
+    bnTrack('ai_search', { query: query, results_count: matches.length });
+  }
+
+  function bnAiSearchError(msg) {
+    var input = document.getElementById('bn-ai-search');
+    var submitBtn = document.getElementById('bn-ai-submit');
+    var micBtn = document.getElementById('bn-ai-mic');
+    var statusRow = document.getElementById('bn-ai-status-row');
+    var statusText = document.getElementById('bn-ai-status-text');
+
+    input.classList.remove('bn-ai-loading');
+    submitBtn.disabled = false;
+    if (micBtn) micBtn.disabled = false;
+    statusRow.style.display = 'flex';
+    statusText.textContent = msg;
+  }
+
+  window.bnAiClear = function() {
+    bnAiActive = false;
+    bnAiMatchedIds = null;
+    bnAiRationales = null;
+    showAllCards = false;
+
+    var input = document.getElementById('bn-ai-search');
+    var clearBtn = document.getElementById('bn-ai-input-clear');
+    var statusRow = document.getElementById('bn-ai-status-row');
+
+    if (input) { input.value = ''; input.placeholder = AI_PLACEHOLDER; }
+    if (clearBtn) clearBtn.style.display = 'none';
+    if (statusRow) statusRow.style.display = 'none';
+
+    renderCards();
+  };
+
+  window.bnAiInputClear = function() {
+    var input = document.getElementById('bn-ai-search');
+    var clearBtn = document.getElementById('bn-ai-input-clear');
+    if (input) input.value = '';
+    if (clearBtn) clearBtn.style.display = 'none';
+    if (bnAiActive) window.bnAiClear();
+  };
+
+  window.bnAiMic = function() {
+    var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    var micBtn = document.getElementById('bn-ai-mic');
+    if (!SpeechRecognition) {
+      var inp = document.getElementById('bn-ai-search');
+      if (inp) inp.focus();
+      return;
+    }
+    if (micBtn && micBtn.classList.contains('bn-mic-active')) return;
+
+    var recognition = new SpeechRecognition();
+    recognition.lang = 'en-US';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    if (micBtn) micBtn.classList.add('bn-mic-active');
+
+    recognition.onresult = function(event) {
+      if (micBtn) micBtn.classList.remove('bn-mic-active');
+      var transcript = event.results[0][0].transcript.trim();
+      var input = document.getElementById('bn-ai-search');
+      var clearBtn = document.getElementById('bn-ai-input-clear');
+      if (input) input.value = transcript;
+      if (clearBtn) clearBtn.style.display = 'flex';
+      window.bnAiSearch();
+    };
+    recognition.onerror = function() { if (micBtn) micBtn.classList.remove('bn-mic-active'); };
+    recognition.onend   = function() { if (micBtn) micBtn.classList.remove('bn-mic-active'); };
+    recognition.start();
+  };
+
+  /* ==============================================
      EVENT WIRING
      ============================================== */
   function wireEvents() {
@@ -5892,6 +6284,17 @@ if (!window.gtag) {
     document.getElementById('bn-filter-fn').addEventListener('change', applyFilters);
     document.getElementById('bn-filter-expertise').addEventListener('change', applyFilters);
     document.getElementById('bn-filter-stage').addEventListener('change', applyFilters);
+
+    var aiInput = document.getElementById('bn-ai-search');
+    var aiClearBtn = document.getElementById('bn-ai-input-clear');
+    if (aiInput) {
+      aiInput.addEventListener('input', function() {
+        if (aiClearBtn) aiClearBtn.style.display = aiInput.value ? 'flex' : 'none';
+      });
+      aiInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') { e.preventDefault(); window.bnAiSearch(); }
+      });
+    }
   }
 
   /* ==============================================
