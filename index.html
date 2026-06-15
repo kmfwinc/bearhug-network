@@ -1,4 +1,4 @@
-<!-- Bearhug Network / Production Build v8 / Agent-63 / June 2, 2026 -->
+<!-- Bearhug Network / Production Build v8 / Agent-64 / June 3, 2026 -->
 <!-- v8 changes. External JSON architecture, Mapbox GL density map (21K+ dots), filter counts, conversion zero-result, exec/emerging toggle, Grand Slam section, user journey mockups -->
 <!-- Squarespace: paste into a single Code Block on /network page -->
 
@@ -277,12 +277,43 @@ if (!window.gtag) {
   }
 
   /* -- 6. Journey cards (full visual weight) -- */
+  .bn-journey-video-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    width: 100%;
+  }
+  .bn-journey-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .bn-journey-video-col {
+    align-self: start;
+  }
+  .bn-journey-video {
+    position: relative;
+    width: 100%;
+    padding-bottom: 56.25%;
+    height: 0;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .bn-journey-video iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
   .bn-journey-card {
     background-color: var(--card-bg);
     border: 1px solid var(--border);
     border-radius: 10px;
     padding: 20px 18px;
     display: flex; flex-direction: column; gap: 8px;
+    flex: 1;
   }
   .bn-badge {
     font-family: var(--ff-body);
@@ -965,7 +996,7 @@ if (!window.gtag) {
   .bn-sub-popup-close:hover { color: var(--ink); }
   .bn-sub-popup-kicker {
     font-family: var(--ff-body);
-    font-size: 30px;
+    font-size: 15px;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 2px;
@@ -1042,13 +1073,12 @@ if (!window.gtag) {
   .bn-screen-popup-close:hover { color: var(--ink); }
   .bn-screen-kicker {
     font-family: var(--ff-body);
-    font-size: 30px;
+    font-size: 15px;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 1.5px;
+    letter-spacing: 2px;
     color: var(--gold);
     margin-bottom: 10px;
-    white-space: nowrap;
   }
   .bn-screen-title {
     font-family: var(--ff-display);
@@ -1378,6 +1408,7 @@ if (!window.gtag) {
   }
   .bn-search-input::placeholder { color: var(--muted-mid); }
   .bn-search-input:focus { border-color: var(--gold); }
+  .bn-search-hl { background: rgba(255, 235, 59, 0.6); border-radius: 2px; }
   .bn-search-wrap {
     position: relative;
     flex: 1;
@@ -1411,153 +1442,6 @@ if (!window.gtag) {
   }
   .bn-search-clear:hover { background: var(--border-strong); color: var(--ink); }
 
-  /* -- AI Search -- */
-  @keyframes bnPulse {
-    0%, 100% { opacity: 1; transform: translateY(-50%) scale(1); }
-    50%       { opacity: 0.55; transform: translateY(-50%) scale(1.18); }
-  }
-  .bn-ai-row {
-    margin-top: 10px;
-    display: flex;
-    gap: 8px;
-    align-items: center;
-  }
-  .bn-ai-wrap {
-    position: relative;
-    flex: 1;
-    min-width: 0;
-  }
-  .bn-ai-input {
-    width: 100%;
-    padding: 12px 68px 12px 34px;
-    font-family: var(--ff-body);
-    font-size: 14px;
-    border: 1px solid var(--border-strong);
-    border-radius: 6px;
-    background-color: var(--card-bg);
-    color: var(--ink);
-    outline: none;
-    box-sizing: border-box;
-    transition: border-color 0.15s;
-  }
-  .bn-ai-input::placeholder { color: var(--muted-mid); }
-  .bn-ai-input:focus { border-color: var(--gold); }
-  .bn-ai-input.bn-ai-loading {
-    background: linear-gradient(90deg, var(--card-bg) 25%, #eee9de 50%, var(--card-bg) 75%);
-    background-size: 400px 100%;
-    animation: shimmer 1.2s ease infinite;
-    color: var(--muted-mid);
-    pointer-events: none;
-  }
-  .bn-ai-sparkle {
-    position: absolute;
-    left: 11px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 14px;
-    height: 14px;
-    color: var(--gold);
-    pointer-events: none;
-    flex-shrink: 0;
-  }
-  .bn-ai-mic-btn {
-    position: absolute;
-    right: 36px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 22px;
-    height: 22px;
-    border: none;
-    background: transparent;
-    color: var(--muted-mid);
-    font-size: 13px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
-    transition: color 0.15s;
-  }
-  .bn-ai-mic-btn:hover { color: var(--ink); }
-  .bn-ai-mic-btn.bn-mic-active {
-    color: #c0392b;
-    animation: bnPulse 1s ease infinite;
-  }
-  .bn-ai-clear-btn {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 22px;
-    height: 22px;
-    border: none;
-    background: var(--border);
-    color: var(--muted);
-    border-radius: 50%;
-    font-size: 13px;
-    font-family: var(--ff-body);
-    font-weight: 600;
-    cursor: pointer;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    line-height: 1;
-    padding: 0;
-    transition: background 0.15s;
-  }
-  .bn-ai-clear-btn:hover { background: var(--border-strong); color: var(--ink); }
-  .bn-ai-submit-btn {
-    padding: 12px 16px;
-    font-family: var(--ff-body);
-    font-size: 12px;
-    font-weight: 600;
-    border: 1px solid var(--gold);
-    border-radius: 6px;
-    background: var(--gold);
-    color: #fff;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: background 0.15s, border-color 0.15s;
-  }
-  .bn-ai-submit-btn:hover { background: #9f7b2e; border-color: #9f7b2e; }
-  .bn-ai-submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-  .bn-ai-status-row {
-    margin-top: 8px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-family: var(--ff-body);
-    font-size: 12px;
-    color: var(--muted-mid);
-    flex-wrap: wrap;
-  }
-  .bn-ai-clear-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 3px;
-    padding: 3px 10px;
-    background: var(--border);
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--ink);
-    text-decoration: none;
-    transition: background 0.15s;
-    margin-left: 4px;
-  }
-  .bn-ai-clear-pill:hover { background: var(--border-strong); }
-  .bn-ai-rationale {
-    font-family: var(--ff-body);
-    font-size: 11px;
-    color: #2a7a3a;
-    background: #edf7f0;
-    border-left: 2px solid #4caf6e;
-    padding: 5px 10px;
-    margin: 8px 0 0;
-    border-radius: 0 4px 4px 0;
-    line-height: 1.45;
-  }
-
   .bn-filter-toggle {
     padding: 12px 16px;
     font-family: var(--ff-body);
@@ -1580,7 +1464,7 @@ if (!window.gtag) {
   }
   .bn-count {
     font-family: var(--ff-body);
-    font-size: 24px;
+    font-size: 14px;
     color: var(--muted-mid);
     flex-shrink: 0;
     white-space: nowrap;
@@ -1907,6 +1791,8 @@ if (!window.gtag) {
     .bn-map-wrap { height: 220px; border-radius: 10px; }
     .bn-stat-number { font-size: 2rem; }
     .bn-grid-2 { grid-template-columns: 1fr; }
+    .bn-journey-video-row { grid-template-columns: 1fr; }
+    .bn-journey-video-col { order: -1; }
     .bn-grid-3 { grid-template-columns: 1fr; }
     .bn-grid-4 { grid-template-columns: 1fr; }
     .bn-grid { grid-template-columns: 1fr; }
@@ -1938,7 +1824,7 @@ if (!window.gtag) {
     <div class="bn-sub-popup" onclick="event.stopPropagation()">
       <button class="bn-sub-popup-close" onclick="bnCloseSubPopup()">&#x2715;</button>
       <div id="bn-sub-popup-form-state">
-        <p class="bn-sub-popup-kicker">Weekly highlights</p>
+        <p class="bn-sub-popup-kicker">The Weekly Fish &amp; Dish</p>
         <h3 class="bn-sub-popup-title">See who joined before anyone else</h3>
         <p class="bn-sub-popup-text">Every week we send a short highlights reel of the newest profiles added to the network. One email, no spam. You'll know exactly when to check back and who's worth requesting an introduction to.</p>
         <div class="bn-sub-popup-form">
@@ -1949,7 +1835,7 @@ if (!window.gtag) {
       <div id="bn-sub-popup-success-state" style="display:none;text-align:center;padding:10px 0;">
         <p class="bn-sub-popup-kicker">You're in</p>
         <h3 class="bn-sub-popup-title">Welcome to the network</h3>
-        <p class="bn-sub-popup-text" style="margin-bottom:0;">Your first weekly highlights are on the way. New profiles drop daily in between.</p>
+        <p class="bn-sub-popup-text" style="margin-bottom:0;">Your first edition of The Fish &amp; Dish is on the way. New profiles drop daily in between.</p>
       </div>
     </div>
   </div>
@@ -1986,10 +1872,10 @@ if (!window.gtag) {
   <!-- Sticky Subscribe Bar -->
   <div class="bn-sticky-sub" id="bn-sticky-sub">
     <div class="bn-sticky-sub-inner">
-      <span class="bn-sticky-sub-text">New profiles added daily. Weekly highlights in your inbox &gt;&gt;&gt;</span>
+      <span class="bn-sticky-sub-text">New profiles added daily. The <em>Fish &amp; Dish</em> lands every Wednesday &gt;&gt;&gt;</span>
       <div class="bn-sticky-sub-form" id="bn-sticky-sub-form">
         <input type="email" class="bn-sticky-sub-input" id="bn-sticky-email" placeholder="your@email.com" />
-        <button class="bn-sticky-sub-btn" onclick="bnSubscribe('sticky')">Subscribe</button>
+        <button class="bn-sticky-sub-btn" onclick="bnSubscribe('sticky')">Subscribe &rarr;</button>
       </div>
       <div id="bn-sticky-sub-success" style="display:none;">
         <span class="bn-sticky-sub-success">You're in. We'll be in touch.</span>
@@ -2017,30 +1903,35 @@ if (!window.gtag) {
       <!-- 1. Headline -->
       <section class="bn-block">
         <h1 class="bn-title">The Bearhug Network</h1>
-        <h2 style="font-family:var(--ff-display);font-size:1.65rem;font-weight:600;color:var(--gold);margin:4px 0 14px;line-height:1.3;letter-spacing:-0.01em;">The answer to <em>"who do you know"</em> you've needed for years. Thousands of vetted leaders, searchable in seconds. No blind intros. No hours lost on LinkedIn. No more awkward silence when someone asks. Browse, click, request an intro, and we handle the rest. For yourself, and for the people right now who are hiring and are counting on you.</h2>
-        <p style="font-family:var(--ff-body);font-size:15px;line-height:1.7;color:var(--ink);margin:0 0 10px;opacity:0.85;">Someone asked you who you know for a critical role. Or maybe you're the one asking. Either way, you're weighing the lift, the risk, and whether the right person is even out there. We built this so you don't have to figure that out alone.</p>
+        <h2 style="font-family:var(--ff-display);font-size:1.65rem;font-weight:600;color:var(--gold);margin:4px 0 14px;line-height:1.3;letter-spacing:-0.01em;">For the First Time Ever, a Fully Searchable Front-Facing Database of Vetted Executives in Consumer Brands &amp; Enterprise Tech.</h2>
+        <p style="font-family:var(--ff-display);font-size:1.15rem;font-weight:500;line-height:1.6;color:var(--ink);margin:0 0 0;opacity:0.9;">See someone worth meeting? Click for an intro. We'll handle the rest.</p>
       </section>
 
-      <!-- 3. Journey cards (HIRING / GETTING HIRED) — moved 2026-05-25 to sit
-           above the stats so the two persona stories are the first thing visitors
-           see after the headline. Stats row drops to position 4. -->
+      <!-- 3. Journey cards (HIRING / GETTING HIRED) + video -->
       <section class="bn-block">
-        <div class="bn-grid-2">
-          <div class="bn-journey-card">
-            <div class="bn-journey-meta">
-              <span class="bn-badge bn-badge-hiring">HIRING</span>
-              <span class="bn-journey-persona">CEO of a Series B ClimateTech startup needing a CRO</span>
+        <div class="bn-journey-video-row">
+          <div class="bn-journey-stack">
+            <div class="bn-journey-card">
+              <div class="bn-journey-meta">
+                <span class="bn-badge bn-badge-hiring">HIRING</span>
+                <span class="bn-journey-persona">CEO of a Series B ClimateTech startup needing a CRO</span>
+              </div>
+              <h4>Intro booked in less than 48 hours. Found their CRO.</h4>
+              <p>Four profiles matched. One had the exact enterprise experience they needed. Requested an intro. On the phone within two days.</p>
             </div>
-            <h4>Intro booked in less than 48 hours. Found their CRO.</h4>
-            <p>Four profiles matched. One had the exact enterprise experience they needed. Requested an intro. On the phone within two days.</p>
+            <div class="bn-journey-card">
+              <div class="bn-journey-meta">
+                <span class="bn-badge bn-badge-hired">GETTING HIRED</span>
+                <span class="bn-journey-persona">COO with 20 years in technical consumer brands</span>
+              </div>
+              <h4>Registered on a Tuesday. Met their new CEO by Thursday.</h4>
+              <p>Five-minute signup. Profile live within 24 hours. Hiring CEO found new COO using the network. Fireworks conversation within 36 hours.</p>
+            </div>
           </div>
-          <div class="bn-journey-card">
-            <div class="bn-journey-meta">
-              <span class="bn-badge bn-badge-hired">GETTING HIRED</span>
-              <span class="bn-journey-persona">COO with 20 years in technical consumer brands</span>
+          <div class="bn-journey-video-col">
+            <div class="bn-journey-video">
+              <iframe src="https://www.loom.com/embed/8c809fc8ede14c048d9ad1a7afa4353d" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
             </div>
-            <h4>Registered on a Tuesday. Met their new CEO by Thursday.</h4>
-            <p>Five-minute signup. Profile live within 24 hours. Hiring CEO found new COO using the network. Fireworks conversation within 36 hours.</p>
           </div>
         </div>
       </section>
@@ -2186,7 +2077,7 @@ if (!window.gtag) {
             <div class="bn-action-icon-wrap bn-action-icon-mail">&#x1F4E7;</div>
             <div class="bn-action-body">
               <h4>Stay in the loop</h4>
-              <p>Profiles added daily. Weekly highlights delivered to your inbox.</p>
+              <p>100's of new profiles added weekly. The <em>Fish &amp; Dish</em> drops Wednesday.</p>
               <span class="bn-action-link">Subscribe &rarr;</span>
             </div>
           </a>
@@ -2327,19 +2218,6 @@ if (!window.gtag) {
               </select>
             </div>
           </div>
-          <!-- AI Natural Language Search -->
-          <div class="bn-ai-row" id="bn-ai-row">
-            <div class="bn-ai-wrap">
-              <svg class="bn-ai-sparkle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2l2.09 6.43L21 10l-6.91 1.57L12 18l-2.09-6.43L3 10l6.91-1.57L12 2z"/><path d="M19 14l1.09 2.91L23 18l-2.91 1.09L19 22l-1.09-2.91L15 18l2.91-1.09L19 14z"/><path d="M5 3L5.8 5.2 8 6l-2.2.8L5 9l-.8-2.2L2 6l2.2-.8L5 3z"/></svg>
-              <input type="text" class="bn-ai-input" id="bn-ai-search" placeholder='Ask anything. "Sales VP in outdoor with DTC experience and $200K+ comp..."' autocomplete="off" />
-              <button class="bn-ai-mic-btn" id="bn-ai-mic" type="button" aria-label="Voice search" onclick="bnAiMic()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg></button>
-              <button class="bn-ai-clear-btn" id="bn-ai-input-clear" type="button" aria-label="Clear AI search" onclick="bnAiInputClear()">&times;</button>
-            </div>
-            <button class="bn-ai-submit-btn" id="bn-ai-submit" type="button" onclick="bnAiSearch()">Ask AI</button>
-          </div>
-          <div class="bn-ai-status-row" id="bn-ai-status-row" style="display:none;">
-            <span id="bn-ai-status-text"></span>
-          </div>
         </div>
       </section>
 
@@ -2465,7 +2343,7 @@ if (!window.gtag) {
           <a class="bn-dark-cta bn-dark-cta-muted" href="#" onclick="bnTrack('subscribe_clicked',{page_location:'footer_dark_cta'});bnScrollToSubscribe();return false;">
             <svg class="bn-dark-cta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2" ry="2"></rect><polyline points="3 7 12 13 21 7"></polyline></svg>
             <span class="bn-dark-cta-body">
-              <span>Subscribe for weekly highlights</span>
+              <span>Subscribe to the weekly <em>Fish &amp; Dish</em></span>
               <span class="bn-dark-cta-sub">Get first dibs on the best new profiles</span>
             </span>
           </a>
@@ -2577,9 +2455,6 @@ if (!window.gtag) {
   var showAllCards = false;
   var filtersOpen = true;
   var searchTimeout = null;
-  var bnAiActive = false;
-  var bnAiMatchedIds = null;
-  var bnAiRationales = null;
   var isInternal = (window.location.search.indexOf('internal=true') > -1);
 
   /* ==============================================
@@ -3060,6 +2935,24 @@ if (!window.gtag) {
 
   function bnEscapeRegex(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
 
+  function bnHighlightSearch(query) {
+    var grid = document.getElementById('bn-grid');
+    if (!grid) return;
+    var targets = grid.querySelectorAll('.bn-card-summary, .bn-card-expanded-text');
+    if (!query || !query.trim()) return;
+    var terms = query.trim().split(/\s+/).filter(Boolean);
+    if (!terms.length) return;
+    var pattern = terms.map(bnEscapeRegex).join('|');
+    var re = new RegExp('(' + pattern + ')', 'gi');
+    for (var i = 0; i < targets.length; i++) {
+      var el = targets[i];
+      var text = el.textContent;
+      if (re.test(text)) {
+        el.innerHTML = text.replace(re, '<span class="bn-search-hl">$1</span>');
+      }
+    }
+  }
+
   // Build one tester per term. Short tokens require word boundaries; longer
   // tokens stay substring. Built once per query, used across N profiles.
   function bnMakeTermTester(term) {
@@ -3196,6 +3089,7 @@ if (!window.gtag) {
 
     renderCards();
     updateCount();
+    bnHighlightSearch(filters.search);
 
     if (filters.search) bnTrack('search_entered', { search_query: filters.search });
     if (filters.fn !== 'All Functions') bnTrack('filter_applied', { filter_type: 'function', filter_value: filters.fn });
@@ -3447,7 +3341,6 @@ if (!window.gtag) {
         capEl.style.display = 'none';
       }
     }
-    applyAiHighlights();
   }
 
   window.bnShowAllCards = function() {
@@ -6066,226 +5959,6 @@ if (!window.gtag) {
   };
 
   /* ==============================================
-     AI SEARCH
-     ============================================== */
-  var AI_WORKER_URL = 'https://bearhug-ai-search.kraigward.workers.dev';
-  var AI_PREFILTER_LIMIT = 150;
-  var AI_PLACEHOLDER = 'Ask anything. "Sales VP in outdoor with DTC experience..."';
-
-  function bnAiPreFilter(query) {
-    var terms = query.toLowerCase().split(/\s+/).filter(Boolean);
-    var scored = allProfiles.map(function(p) {
-      var score = 0;
-      var text = [
-        p.summary || '',
-        p.search_keywords || '',
-        (p.functions || []).join(' '),
-        (p.channel_expertise || []).join(' '),
-        (p.stage_experience || []).join(' '),
-        p.region || '',
-        p.comp_band || ''
-      ].join(' ').toLowerCase();
-      terms.forEach(function(t) {
-        if (text.indexOf(t) !== -1) score += 1;
-        if ((p.search_keywords || '').toLowerCase().indexOf(t) !== -1) score += 2;
-      });
-      return { profile: p, score: score };
-    });
-    scored.sort(function(a, b) { return b.score - a.score; });
-    return scored.slice(0, AI_PREFILTER_LIMIT).map(function(item) {
-      var p = item.profile;
-      return {
-        id: p.profile_id || p.id,
-        summary: p.summary || '',
-        functions: p.functions || [],
-        channel_expertise: p.channel_expertise || [],
-        stage_experience: p.stage_experience || [],
-        region: p.region || '',
-        comp_band: p.comp_band || '',
-        search_keywords: p.search_keywords || ''
-      };
-    });
-  }
-
-  function applyAiHighlights() {
-    if (!bnAiActive || !bnAiMatchedIds) return;
-    var cards = document.querySelectorAll('#bn-grid .bn-card');
-    for (var i = 0; i < cards.length; i++) {
-      var card = cards[i];
-      var idEl = card.querySelector('.bn-card-id');
-      var profileId = idEl ? idEl.textContent.trim() : '';
-      if (bnAiMatchedIds[profileId]) {
-        card.style.opacity = '1';
-        if (!card.querySelector('.bn-ai-rationale')) {
-          var rationale = bnAiRationales[profileId] || '';
-          if (rationale) {
-            var rEl = document.createElement('div');
-            rEl.className = 'bn-ai-rationale';
-            rEl.textContent = rationale;
-            var bodyEl = card.querySelector('.bn-card-body');
-            if (bodyEl) bodyEl.insertBefore(rEl, bodyEl.firstChild);
-          }
-        }
-      } else {
-        card.style.opacity = '0.4';
-      }
-    }
-  }
-
-  window.bnAiSearch = function() {
-    var input = document.getElementById('bn-ai-search');
-    var query = (input ? input.value : '').trim();
-    if (!query) return;
-
-    var submitBtn = document.getElementById('bn-ai-submit');
-    var statusRow = document.getElementById('bn-ai-status-row');
-    var statusText = document.getElementById('bn-ai-status-text');
-    var micBtn = document.getElementById('bn-ai-mic');
-
-    input.classList.add('bn-ai-loading');
-    submitBtn.disabled = true;
-    if (micBtn) micBtn.disabled = true;
-    statusRow.style.display = 'flex';
-    statusText.textContent = 'Matching profiles...';
-
-    var profiles = bnAiPreFilter(query);
-    var timedOut = false;
-    var timer = setTimeout(function() {
-      timedOut = true;
-      bnAiSearchError('Search unavailable — try the filters above.');
-    }, 10000);
-
-    fetch(AI_WORKER_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ query: query, profiles: profiles })
-    })
-    .then(function(res) {
-      if (!res.ok) throw new Error('HTTP ' + res.status);
-      return res.json();
-    })
-    .then(function(data) {
-      if (timedOut) return;
-      clearTimeout(timer);
-      bnAiSearchDone(data.matches || [], query);
-    })
-    .catch(function(err) {
-      if (timedOut) return;
-      clearTimeout(timer);
-      console.warn('AI search:', err.message);
-      bnAiSearchError('Search unavailable — try the filters above.');
-    });
-  };
-
-  function bnAiSearchDone(matches, query) {
-    var input = document.getElementById('bn-ai-search');
-    var submitBtn = document.getElementById('bn-ai-submit');
-    var micBtn = document.getElementById('bn-ai-mic');
-    var statusRow = document.getElementById('bn-ai-status-row');
-    var statusText = document.getElementById('bn-ai-status-text');
-    var clearBtn = document.getElementById('bn-ai-input-clear');
-
-    input.classList.remove('bn-ai-loading');
-    submitBtn.disabled = false;
-    if (micBtn) micBtn.disabled = false;
-    clearBtn.style.display = 'flex';
-
-    if (!matches.length) {
-      bnAiActive = false;
-      bnAiMatchedIds = null;
-      bnAiRationales = null;
-      statusText.textContent = 'No profiles matched your query. Try rephrasing or use the filters above.';
-      renderCards();
-      return;
-    }
-
-    bnAiMatchedIds = {};
-    bnAiRationales = {};
-    matches.forEach(function(m) {
-      bnAiMatchedIds[m.bhrn] = true;
-      bnAiRationales[m.bhrn] = m.rationale || '';
-    });
-    bnAiActive = true;
-
-    var clearLink = '<a href="javascript:void(0)" class="bn-ai-clear-pill" onclick="bnAiClear()">&#x2715; Clear AI search</a>';
-    statusText.innerHTML = '<strong>' + matches.length + '</strong> AI match' + (matches.length !== 1 ? 'es' : '') + ' found' + clearLink;
-
-    showAllCards = true;
-    renderCards();
-    bnTrack('ai_search', { query: query, results_count: matches.length });
-  }
-
-  function bnAiSearchError(msg) {
-    var input = document.getElementById('bn-ai-search');
-    var submitBtn = document.getElementById('bn-ai-submit');
-    var micBtn = document.getElementById('bn-ai-mic');
-    var statusRow = document.getElementById('bn-ai-status-row');
-    var statusText = document.getElementById('bn-ai-status-text');
-
-    input.classList.remove('bn-ai-loading');
-    submitBtn.disabled = false;
-    if (micBtn) micBtn.disabled = false;
-    statusRow.style.display = 'flex';
-    statusText.textContent = msg;
-  }
-
-  window.bnAiClear = function() {
-    bnAiActive = false;
-    bnAiMatchedIds = null;
-    bnAiRationales = null;
-    showAllCards = false;
-
-    var input = document.getElementById('bn-ai-search');
-    var clearBtn = document.getElementById('bn-ai-input-clear');
-    var statusRow = document.getElementById('bn-ai-status-row');
-
-    if (input) { input.value = ''; input.placeholder = AI_PLACEHOLDER; }
-    if (clearBtn) clearBtn.style.display = 'none';
-    if (statusRow) statusRow.style.display = 'none';
-
-    renderCards();
-  };
-
-  window.bnAiInputClear = function() {
-    var input = document.getElementById('bn-ai-search');
-    var clearBtn = document.getElementById('bn-ai-input-clear');
-    if (input) input.value = '';
-    if (clearBtn) clearBtn.style.display = 'none';
-    if (bnAiActive) window.bnAiClear();
-  };
-
-  window.bnAiMic = function() {
-    var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    var micBtn = document.getElementById('bn-ai-mic');
-    if (!SpeechRecognition) {
-      var inp = document.getElementById('bn-ai-search');
-      if (inp) inp.focus();
-      return;
-    }
-    if (micBtn && micBtn.classList.contains('bn-mic-active')) return;
-
-    var recognition = new SpeechRecognition();
-    recognition.lang = 'en-US';
-    recognition.interimResults = false;
-    recognition.maxAlternatives = 1;
-
-    if (micBtn) micBtn.classList.add('bn-mic-active');
-
-    recognition.onresult = function(event) {
-      if (micBtn) micBtn.classList.remove('bn-mic-active');
-      var transcript = event.results[0][0].transcript.trim();
-      var input = document.getElementById('bn-ai-search');
-      var clearBtn = document.getElementById('bn-ai-input-clear');
-      if (input) input.value = transcript;
-      if (clearBtn) clearBtn.style.display = 'flex';
-      window.bnAiSearch();
-    };
-    recognition.onerror = function() { if (micBtn) micBtn.classList.remove('bn-mic-active'); };
-    recognition.onend   = function() { if (micBtn) micBtn.classList.remove('bn-mic-active'); };
-    recognition.start();
-  };
-
-  /* ==============================================
      EVENT WIRING
      ============================================== */
   function wireEvents() {
@@ -6300,17 +5973,6 @@ if (!window.gtag) {
     document.getElementById('bn-filter-fn').addEventListener('change', applyFilters);
     document.getElementById('bn-filter-expertise').addEventListener('change', applyFilters);
     document.getElementById('bn-filter-stage').addEventListener('change', applyFilters);
-
-    var aiInput = document.getElementById('bn-ai-search');
-    var aiClearBtn = document.getElementById('bn-ai-input-clear');
-    if (aiInput) {
-      aiInput.addEventListener('input', function() {
-        if (aiClearBtn) aiClearBtn.style.display = aiInput.value ? 'flex' : 'none';
-      });
-      aiInput.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') { e.preventDefault(); window.bnAiSearch(); }
-      });
-    }
   }
 
   /* ==============================================
