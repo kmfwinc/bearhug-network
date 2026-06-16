@@ -2958,16 +2958,134 @@ if (!window.gtag) {
     profile_id:          1   // BHRN-#### / EMN-#### public id — without this, deep-links like ?q=BHRN-1438 silently match nothing
   };
 
+  // ── Synonym expansion (v8.3) ───────────────────────────────────────────────
+  //
+  // Each cluster is a set of interchangeable terms. When a user types any term
+  // in a cluster, the search matches ALL terms in that cluster (OR within a
+  // cluster, AND across clusters). Multi-word phrases are detected via greedy
+  // longest-match before falling back to single-word lookup.
+
+  var BN_SYNONYM_CLUSTERS = [
+    // Titles and roles
+    ['cmo', 'chief marketing officer', 'head of marketing', 'vp marketing', 'marketing leader'],
+    ['cro', 'chief revenue officer', 'head of revenue', 'vp revenue', 'revenue leader'],
+    ['coo', 'chief operating officer', 'head of operations', 'vp operations'],
+    ['cfo', 'chief financial officer', 'head of finance', 'vp finance'],
+    ['cpo', 'chief product officer', 'head of product', 'vp product'],
+    ['cto', 'chief technology officer', 'head of engineering', 'vp engineering'],
+    ['ceo', 'chief executive officer', 'founder', 'co-founder', 'cofounder'],
+    ['gm', 'general manager'],
+    ['svp', 'senior vice president'],
+    ['evp', 'executive vice president'],
+    ['vp', 'vice president'],
+    // Channels and models
+    ['dtc', 'direct to consumer', 'd2c', 'ecommerce', 'e-commerce'],
+    ['b2b', 'business to business', 'enterprise'],
+    ['b2c', 'business to consumer', 'consumer'],
+    ['plg', 'product led growth', 'product-led growth'],
+    ['saas', 'software as a service'],
+    // Industries and categories
+    ['ai', 'artificial intelligence', 'machine learning', 'ml', 'deep learning'],
+    ['cpg', 'consumer packaged goods', 'consumer goods', 'fmcg'],
+    ['f&b', 'food and beverage', 'food & beverage', 'food', 'beverage'],
+    ['wellness', 'health and wellness', 'health & wellness'],
+    ['beauty', 'cosmetics', 'personal care'],
+    ['apparel', 'fashion', 'clothing'],
+    ['fintech', 'financial technology'],
+    ['healthtech', 'health tech', 'digital health'],
+    ['edtech', 'education technology'],
+    ['martech', 'marketing technology'],
+    ['adtech', 'advertising technology'],
+    ['cleantech', 'clean tech', 'climate tech', 'climatetech'],
+    // Functions
+    ['growth', 'growth marketing', 'performance marketing', 'paid media', 'paid acquisition'],
+    ['brand', 'brand marketing', 'brand strategy', 'creative'],
+    ['supply chain', 'logistics', 'operations', 'fulfillment'],
+    ['merchandising', 'buying', 'assortment', 'planning'],
+    ['retail', 'wholesale', 'brick and mortar'],
+    ['product', 'product management', 'product development'],
+    ['engineering', 'software engineering', 'development'],
+    ['data', 'data science', 'analytics', 'business intelligence', 'bi'],
+    ['hr', 'human resources', 'people', 'talent', 'people ops'],
+    ['legal', 'general counsel', 'compliance'],
+    ['m&a', 'mergers and acquisitions', 'corporate development'],
+    // Stages
+    ['seed', 'pre-seed', 'early stage', 'early-stage'],
+    ['series a', 'series b', 'growth stage', 'growth-stage'],
+    ['scale', 'scaleup', 'scale-up', 'scaling'],
+    ['public', 'publicly traded', 'ipo', 'post-ipo'],
+    ['pe', 'private equity', 'pe-backed'],
+    ['vc', 'venture capital', 'vc-backed', 'venture-backed']
+  ];
+
+  var BN_SYNONYM_MAP = {};
+  BN_SYNONYM_CLUSTERS.forEach(function(cluster) {
+    cluster.forEach(function(term) { BN_SYNONYM_MAP[term] = cluster; });
+  });
+
+  var BN_SYNONYM_PHRASES = [];
+  BN_SYNONYM_CLUSTERS.forEach(function(cluster) {
+    cluster.forEach(function(phrase) {
+      var words = phrase.split(/\s+/);
+      if (words.length > 1) {
+        BN_SYNONYM_PHRASES.push({ words: words, cluster: cluster });
+      }
+    });
+  });
+  BN_SYNONYM_PHRASES.sort(function(a, b) { return b.words.length - a.words.length; });
+
+  function bnExpandSearch(query) {
+    var words = query.toLowerCase().split(/\s+/).filter(Boolean);
+    if (!words.length) return [];
+    var consumed = [];
+    for (var i = 0; i < words.length; i++) consumed[i] = false;
+    var termSets = [];
+    for (var p = 0; p < BN_SYNONYM_PHRASES.length; p++) {
+      var entry = BN_SYNONYM_PHRASES[p];
+      var pw = entry.words;
+      for (var i = 0; i <= words.length - pw.length; i++) {
+        if (consumed[i]) continue;
+        var match = true;
+        for (var j = 0; j < pw.length; j++) {
+          if (consumed[i + j] || words[i + j] !== pw[j]) { match = false; break; }
+        }
+        if (match) {
+          for (var j = 0; j < pw.length; j++) consumed[i + j] = true;
+          termSets.push(entry.cluster);
+          break;
+        }
+      }
+    }
+    for (var i = 0; i < words.length; i++) {
+      if (consumed[i]) continue;
+      var cluster = BN_SYNONYM_MAP[words[i]];
+      termSets.push(cluster || [words[i]]);
+    }
+    return termSets;
+  }
+
   function bnEscapeRegex(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
 
-  function bnHighlightSearch(query) {
+  function bnHighlightSearch(query, termSets) {
     var grid = document.getElementById('bn-grid');
     if (!grid) return;
     var targets = grid.querySelectorAll('.bn-card-summary, .bn-card-expanded-text');
     if (!query || !query.trim()) return;
-    var terms = query.trim().split(/\s+/).filter(Boolean);
-    if (!terms.length) return;
-    var pattern = terms.map(bnEscapeRegex).join('|');
+    var allTerms = [];
+    if (termSets && termSets.length) {
+      var seen = {};
+      for (var s = 0; s < termSets.length; s++) {
+        for (var t = 0; t < termSets[s].length; t++) {
+          var term = termSets[s][t];
+          if (!seen[term]) { seen[term] = true; allTerms.push(term); }
+        }
+      }
+    } else {
+      allTerms = query.trim().split(/\s+/).filter(Boolean);
+    }
+    if (!allTerms.length) return;
+    allTerms.sort(function(a, b) { return b.length - a.length; });
+    var pattern = allTerms.map(bnEscapeRegex).join('|');
     var re = new RegExp('(' + pattern + ')', 'gi');
     for (var i = 0; i < targets.length; i++) {
       var el = targets[i];
@@ -2988,6 +3106,16 @@ if (!window.gtag) {
     }
     var lower = term.toLowerCase();
     return function(text) { return !!text && text.toLowerCase().indexOf(lower) !== -1; };
+  }
+
+  function bnMakeGroupTester(synonyms) {
+    var testers = synonyms.map(bnMakeTermTester);
+    return function(text) {
+      for (var k = 0; k < testers.length; k++) {
+        if (testers[k](text)) return true;
+      }
+      return false;
+    };
   }
 
   // Fallback matchers preserved from v8.1: "remote" keyword + full state name.
@@ -3048,7 +3176,16 @@ if (!window.gtag) {
           if (w > bestWeight) bestWeight = w;
         }
       }
-      if (bestWeight === 0 && bnTermSpecialMatch(terms[i], profile)) bestWeight = 1;
+      if (bestWeight === 0) {
+        var group = terms[i];
+        if (Array.isArray(group)) {
+          for (var k = 0; k < group.length; k++) {
+            if (bnTermSpecialMatch(group[k], profile)) { bestWeight = 1; break; }
+          }
+        } else {
+          if (bnTermSpecialMatch(group, profile)) bestWeight = 1;
+        }
+      }
       if (bestWeight === 0) return { matched: false, score: 0 };
       total += bestWeight;
     }
@@ -3087,17 +3224,20 @@ if (!window.gtag) {
     showAllCards = false;
 
     // Build per-query term testers once, not per profile.
-    var searchTerms   = filters.search ? filters.search.split(/\s+/).filter(Boolean) : [];
-    var searchTesters = searchTerms.map(bnMakeTermTester);
+    // Synonym expansion: each "term set" is an array of synonyms (OR within,
+    // AND across sets). bnExpandSearch detects multi-word phrases first, then
+    // falls back to single-word lookup. Unexpanded terms become [term].
+    var searchTermSets = filters.search ? bnExpandSearch(filters.search) : [];
+    var searchTesters  = searchTermSets.map(bnMakeGroupTester);
 
     filteredProfiles = allProfiles.filter(function(p) {
-      return matchesFilter(p, filters, searchTerms, searchTesters);
+      return matchesFilter(p, filters, searchTermSets, searchTesters);
     });
 
     // Ordering: keyword searches sort by relevance score (set on profile by
     // matchesFilter as a side effect). Facet-only and unfiltered states keep
     // the deterministic weekly shuffle so the network feels fresh.
-    if (searchTerms.length) {
+    if (searchTermSets.length) {
       filteredProfiles.sort(function(a, b) {
         return (b._searchScore || 0) - (a._searchScore || 0);
       });
@@ -3114,7 +3254,7 @@ if (!window.gtag) {
 
     renderCards();
     updateCount();
-    bnHighlightSearch(filters.search);
+    bnHighlightSearch(filters.search, searchTermSets);
 
     if (filters.search) bnTrack('search_entered', { search_query: filters.search });
     if (filters.fn !== 'All Functions') bnTrack('filter_applied', { filter_type: 'function', filter_value: filters.fn });
