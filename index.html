@@ -295,16 +295,22 @@ if (!window.gtag) {
   /* -- Hero 50/50 split (headline left, Loom video right) -- */
   .bn-hero-split {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 2rem;
   }
   .bn-hero-text {
     flex: 1 1 50%;
     min-width: 0;
+    margin: auto 0;
   }
   .bn-hero-video {
     flex: 1 1 50%;
     min-width: 0;
+  }
+  .bn-hero-text .bn-title {
+    font-size: 50px;
+    white-space: nowrap;
+    margin-bottom: 12px;
   }
   .bn-journey-video {
     position: relative;
@@ -371,7 +377,7 @@ if (!window.gtag) {
 
   /* -- 7. Grand Slam (plain bordered white card, matches action cards) -- */
   .bn-grand-slam-card {
-    background-color: #fff;
+    background-color: var(--card-bg);
     border: 1px solid var(--border);
     border-radius: 10px;
     padding: 22px 24px;
@@ -1808,6 +1814,7 @@ if (!window.gtag) {
     .bn-grid-2 { grid-template-columns: 1fr; }
     .bn-hero-split { flex-direction: column; }
     .bn-hero-text, .bn-hero-video { flex: 0 0 100%; width: 100%; }
+    .bn-hero-text .bn-title { white-space: normal; font-size: 2.1rem; }
     .bn-journey-video-row { grid-template-columns: 1fr; }
     .bn-journey-video-col { order: -1; }
     .bn-grid-3 { grid-template-columns: 1fr; }
@@ -1922,13 +1929,35 @@ if (!window.gtag) {
         <div class="bn-hero-split">
           <div class="bn-hero-text">
             <h1 class="bn-title">The Bearhug Network</h1>
-            <h2 style="font-family:var(--ff-display);font-size:1.65rem;font-weight:600;color:var(--gold);margin:4px 0 14px;line-height:1.3;letter-spacing:-0.01em;">For the First Time Ever, a Fully Searchable Front-Facing Database of Vetted Executives in Consumer Brands &amp; Enterprise Tech.</h2>
-            <p style="font-family:var(--ff-display);font-size:1.15rem;font-weight:500;line-height:1.6;color:var(--ink);margin:0 0 0;opacity:0.9;">See someone worth meeting? Click for an intro. We'll handle the rest.</p>
+            <h2 style="font-family:var(--ff-display);font-size:1.45rem;font-weight:600;color:var(--gold);margin:2px 0 12px;line-height:1.3;letter-spacing:-0.01em;">For the First Time Ever, a Fully Searchable Front-Facing Database of Vetted Executives in Consumer Brands &amp; Enterprise Tech.</h2>
+            <p style="font-family:var(--ff-display);font-size:1.25rem;font-weight:500;line-height:1.55;color:var(--ink);margin:0 0 0;opacity:0.9;">See someone worth meeting? Click for an intro. We'll handle the rest.</p>
           </div>
           <div class="bn-hero-video">
             <div class="bn-journey-video">
               <iframe src="https://www.loom.com/embed/8c809fc8ede14c048d9ad1a7afa4353d" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. Journey cards (HIRING / GETTING HIRED), side-by-side -->
+      <section class="bn-block">
+        <div class="bn-grid-2">
+          <div class="bn-journey-card">
+            <div class="bn-journey-meta">
+              <span class="bn-badge bn-badge-hiring">HIRING</span>
+              <span class="bn-journey-persona">CEO of a Series B ClimateTech startup needing a CRO</span>
+            </div>
+            <h4>Intro booked in less than 48 hours. Found their CRO.</h4>
+            <p>Four profiles matched. One had the exact enterprise experience they needed. Requested an intro. On the phone within two days.</p>
+          </div>
+          <div class="bn-journey-card">
+            <div class="bn-journey-meta">
+              <span class="bn-badge bn-badge-hired">GETTING HIRED</span>
+              <span class="bn-journey-persona">COO with 20 years in technical consumer brands</span>
+            </div>
+            <h4>Registered on a Tuesday. Met their new CEO by Thursday.</h4>
+            <p>Five-minute signup. Profile live within 24 hours. Hiring CEO found new COO using the network. Fireworks conversation within 36 hours.</p>
           </div>
         </div>
       </section>
@@ -1980,28 +2009,6 @@ if (!window.gtag) {
         if (elContacts) elContacts.textContent = fmt(contacts);
       })();
       </script>
-
-      <!-- 3. Journey cards (HIRING / GETTING HIRED), side-by-side -->
-      <section class="bn-block">
-        <div class="bn-grid-2">
-          <div class="bn-journey-card">
-            <div class="bn-journey-meta">
-              <span class="bn-badge bn-badge-hiring">HIRING</span>
-              <span class="bn-journey-persona">CEO of a Series B ClimateTech startup needing a CRO</span>
-            </div>
-            <h4>Intro booked in less than 48 hours. Found their CRO.</h4>
-            <p>Four profiles matched. One had the exact enterprise experience they needed. Requested an intro. On the phone within two days.</p>
-          </div>
-          <div class="bn-journey-card">
-            <div class="bn-journey-meta">
-              <span class="bn-badge bn-badge-hired">GETTING HIRED</span>
-              <span class="bn-journey-persona">COO with 20 years in technical consumer brands</span>
-            </div>
-            <h4>Registered on a Tuesday. Met their new CEO by Thursday.</h4>
-            <p>Five-minute signup. Profile live within 24 hours. Hiring CEO found new COO using the network. Fireworks conversation within 36 hours.</p>
-          </div>
-        </div>
-      </section>
 
       <!-- 6b. Social proof trust strip (15 headshots, left ~50%, text right) -->
       <style>
@@ -2075,39 +2082,7 @@ if (!window.gtag) {
             <img class="bn-social-proof-avatar" src="https://images.squarespace-cdn.com/content/v1/6617fdf695e57356285dfdbc/caa12e16-cf2d-4e07-bb21-761037ed94ad/Somya-Kapoor.png?format=100w" alt="" loading="lazy" />
           </div>
           <div class="bn-social-proof-divider" aria-hidden="true"></div>
-          <p class="bn-social-proof-text">Trusted by <span class="bn-sp-accent">1,000+</span> investors and founders from startups to scaleups to public companies to find and connect with proven leaders across consumer &amp; B2B</p>
-        </div>
-      </section>
-
-      <!-- 7. Three action cards (header, v7 emoji icon style) — moved 2026-05-25
-           from below the how-it-works section to here, immediately under the
-           HIRING / GETTING HIRED journey cards and above the map. -->
-      <section class="bn-block">
-        <div class="bn-grid-3">
-          <a class="bn-action-card bn-has-icon" href="#" onclick="event.preventDefault();bnTrack('cant_find_clicked',{context:'action_cards_top',card_function:'',card_expertise:'',card_person_type:'',card_region:''});bnOpenScreenPopup('https://cal.mixmax.com/kraigward-722/bearhug-network-inquiry?source=cant_find','cant_find_action')">
-            <div class="bn-action-icon-wrap bn-action-icon-search">&#x1F50D;</div>
-            <div class="bn-action-body">
-              <h4>Can't find the right person?</h4>
-              <p>Request private access to our full database of vetted professionals.</p>
-              <span class="bn-action-link">Request access &rarr;</span>
-            </div>
-          </a>
-          <a class="bn-action-card bn-has-icon" href="#" onclick="bnTrack('subscribe_clicked',{page_location:'action_cards_top'});bnScrollToSubscribe();return false;">
-            <div class="bn-action-icon-wrap bn-action-icon-mail">&#x1F4E7;</div>
-            <div class="bn-action-body">
-              <h4>Stay in the loop</h4>
-              <p>100's of new profiles added weekly. The <em>Fish &amp; Dish</em> drops Wednesday.</p>
-              <span class="bn-action-link">Subscribe &rarr;</span>
-            </div>
-          </a>
-          <a class="bn-action-card bn-has-icon" href="https://bearhugrecruiting.com/join-network" target="_blank" rel="noopener noreferrer" onclick="bnTrack('submit_yourself_clicked',{page_section:'action_cards_top'})">
-            <div class="bn-action-icon-wrap bn-action-icon-star">&#x2B50;</div>
-            <div class="bn-action-body">
-              <h4>Want to be featured?</h4>
-              <p>Submit your profile and join the network. Takes less than 5 minutes.</p>
-              <span class="bn-action-link">Register now &rarr;</span>
-            </div>
-          </a>
+          <p class="bn-social-proof-text">Trusted by <span class="bn-sp-accent">1,000+</span> investors, founders, and other hiring authorities from startups to scaleups to public companies to find and connect with proven leaders across consumer brands and enterprise tech</p>
         </div>
       </section>
 
@@ -2253,6 +2228,36 @@ if (!window.gtag) {
         </div>
       </main>
 
+      <!-- 7. Three action cards (header, v7 emoji icon style) -->
+      <section class="bn-block">
+        <div class="bn-grid-3">
+          <a class="bn-action-card bn-has-icon" href="#" onclick="event.preventDefault();bnTrack('cant_find_clicked',{context:'action_cards_top',card_function:'',card_expertise:'',card_person_type:'',card_region:''});bnOpenScreenPopup('https://cal.mixmax.com/kraigward-722/bearhug-network-inquiry?source=cant_find','cant_find_action')">
+            <div class="bn-action-icon-wrap bn-action-icon-search">&#x1F50D;</div>
+            <div class="bn-action-body">
+              <h4>Can't find the right person?</h4>
+              <p>Request private access to our full database of vetted professionals.</p>
+              <span class="bn-action-link">Request access &rarr;</span>
+            </div>
+          </a>
+          <a class="bn-action-card bn-has-icon" href="#" onclick="bnTrack('subscribe_clicked',{page_location:'action_cards_top'});bnScrollToSubscribe();return false;">
+            <div class="bn-action-icon-wrap bn-action-icon-mail">&#x1F4E7;</div>
+            <div class="bn-action-body">
+              <h4>Stay in the loop</h4>
+              <p>100's of new profiles added weekly. The <em>Fish &amp; Dish</em> drops Wednesday.</p>
+              <span class="bn-action-link">Subscribe &rarr;</span>
+            </div>
+          </a>
+          <a class="bn-action-card bn-has-icon" href="https://bearhugrecruiting.com/join-network" target="_blank" rel="noopener noreferrer" onclick="bnTrack('submit_yourself_clicked',{page_section:'action_cards_top'})">
+            <div class="bn-action-icon-wrap bn-action-icon-star">&#x2B50;</div>
+            <div class="bn-action-body">
+              <h4>Want to be featured?</h4>
+              <p>Submit your profile and join the network. Takes less than 5 minutes.</p>
+              <span class="bn-action-link">Register now &rarr;</span>
+            </div>
+          </a>
+        </div>
+      </section>
+
       <!-- 8. Grand Slam (plain bordered white card) -->
       <section class="bn-block">
         <div class="bn-grand-slam-card">
@@ -2295,7 +2300,7 @@ if (!window.gtag) {
           align-items: flex-start;
           gap: 16px;
           padding: 22px 24px;
-          background-color: rgba(184,150,62,0.06);
+          background-color: var(--card-bg);
           border: 1px solid rgba(184,150,62,0.18);
           border-radius: 12px;
         }
@@ -5389,11 +5394,13 @@ if (!window.gtag) {
 
     mapboxgl.accessToken = MAPBOX_TOKEN;
 
+    var initialZoom = window.innerWidth <= 768 ? 1.8 : 3.1;
+
     var map = new mapboxgl.Map({
       container: 'density-map',
       style: 'mapbox://styles/mapbox/streets-v12',
       center: [-96, 39],
-      zoom: 3.1,
+      zoom: initialZoom,
       interactive: true
     });
 
