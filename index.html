@@ -1516,6 +1516,7 @@ if (!window.gtag) {
     grid-template-columns: repeat(3, 1fr);
     gap: 10px;
     margin-top: 12px;
+    margin-bottom: 1rem;
     width: 100%;
     animation: fadeUp 0.2s ease both;
   }
@@ -2153,17 +2154,6 @@ if (!window.gtag) {
       <!-- 10/11. Search + Filters -->
       <section class="bn-block">
         <div class="bn-filters">
-          <div class="bn-search-row">
-            <div class="bn-search-wrap">
-              <input type="text" class="bn-search-input" id="bn-search" placeholder="Search by title, skill, channel, comp, or location..." />
-              <button class="bn-search-clear" id="bn-search-clear" type="button" onclick="bnClearSearch()" aria-label="Clear search">&times;</button>
-            </div>
-            <button class="bn-filter-toggle open" id="bn-filter-btn" onclick="bnToggleFilters()">Filters</button>
-            <div class="bn-count-wrap">
-              <a href="javascript:void(0)" class="bn-reset-filters" id="bn-reset-filters" onclick="bnResetFilters()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;margin-right:3px"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>Reset filters</a>
-              <span class="bn-count" id="bn-count"></span>
-            </div>
-          </div>
           <div class="bn-filter-row" id="bn-filter-row">
             <div class="bn-filter-group">
               <label class="bn-filter-label">Function</label>
@@ -2210,6 +2200,17 @@ if (!window.gtag) {
                 <option value="At-Scale Operations">Large-org leadership</option>
                 <option value="Turnaround / Transformation">Turnaround and transformation</option>
               </select>
+            </div>
+          </div>
+          <div class="bn-search-row">
+            <div class="bn-search-wrap">
+              <input type="text" class="bn-search-input" id="bn-search" placeholder="Search by title, skill, channel, comp, or location..." />
+              <button class="bn-search-clear" id="bn-search-clear" type="button" onclick="bnClearSearch()" aria-label="Clear search">&times;</button>
+            </div>
+            <button class="bn-filter-toggle open" id="bn-filter-btn" onclick="bnToggleFilters()">Filters</button>
+            <div class="bn-count-wrap">
+              <a href="javascript:void(0)" class="bn-reset-filters" id="bn-reset-filters" onclick="bnResetFilters()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;margin-right:3px"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>Reset filters</a>
+              <span class="bn-count" id="bn-count"></span>
             </div>
           </div>
         </div>
