@@ -1565,6 +1565,7 @@ if (!window.gtag) {
     grid-template-columns: repeat(3, 1fr);
     gap: 10px;
     width: 100%;
+    align-items: start;
   }
   .bn-grid-cap {
     text-align: center;
@@ -2094,7 +2095,6 @@ if (!window.gtag) {
              sit directly below the map; the timestamp is about the underlying
              network data, which the map visualizes. -->
         <p id="bn-last-refreshed" style="text-align:center;font-size:12px;color:var(--muted);margin:12px 0 0;font-family:var(--ff-body);"></p>
-        <p style="font-family:var(--ff-body);font-size:15px;line-height:1.7;color:var(--ink);margin:16px 0 0;opacity:0.85;">Below is a curated cross-section of our deeply vetted network. Executives and emerging leaders across consumer and B2B, each profiled by what they've built, the value they bring, and the relationships they carry. Every person is either actively looking or open to the right conversation. Names stay protected until both sides want to connect. Interact with the clusters on the map or use the search bar and filters to sort profiles.</p>
         <script>
         // bn-last-refreshed — pure client-side. "Latest Network Update: Month DD, YYYY".
         // Cutoff: 3pm America/New_York. At/after 3pm NY → today's NY date. Before
@@ -2116,6 +2116,82 @@ if (!window.gtag) {
         </script>
       </section>
 
+      <!-- Social proof testimonial cards (Maria + Ryan, side by side) — copied
+           verbatim from /join-network so styling stays identical on both pages. -->
+      <section class="bn-block">
+        <style>
+        /* Width + spacing inherit from the enclosing .bn-container and
+           .bn-block ~ .bn-block sibling rule. Do NOT re-apply max-width or
+           padding here — that double-wraps the section and shrinks the
+           cards to ~95% of the flywheel section above. */
+        .bn-intake-testimonial {
+          width: 100%;
+          margin: 0;
+        }
+        .bn-intake-testimonial-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 16px;
+        }
+        .bn-intake-testimonial-card {
+          display: flex;
+          align-items: flex-start;
+          gap: 16px;
+          padding: 22px 24px;
+          background-color: var(--card-bg);
+          border: 1px solid rgba(184,150,62,0.18);
+          border-radius: 12px;
+        }
+        .bn-intake-testimonial-avatar {
+          width: 52px; height: 52px;
+          border-radius: 50%;
+          border: 2px solid #B8963E;
+          object-fit: cover;
+          flex-shrink: 0;
+          background-color: #ddd;
+        }
+        .bn-intake-testimonial-body { flex: 1; min-width: 0; }
+        .bn-intake-testimonial-quote {
+          font-family: 'DM Sans', sans-serif;
+          font-style: italic;
+          font-size: 15px;
+          color: #0E0E0E;
+          line-height: 1.55;
+          margin: 0 0 10px;
+        }
+        .bn-intake-testimonial-attr {
+          font-family: 'DM Sans', sans-serif;
+          font-size: 13px;
+          font-weight: 600;
+          color: #B8963E;
+          margin: 0;
+        }
+        @media (max-width: 600px) {
+          /* Container already provides side padding on mobile. */
+          .bn-intake-testimonial-grid { grid-template-columns: 1fr; }
+          .bn-intake-testimonial-card { flex-direction: column; align-items: center; text-align: center; }
+        }
+        </style>
+        <div class="bn-intake-testimonial">
+          <div class="bn-intake-testimonial-grid">
+            <div class="bn-intake-testimonial-card">
+              <img class="bn-intake-testimonial-avatar" src="https://images.squarespace-cdn.com/content/v1/6617fdf695e57356285dfdbc/15f6891b-4060-40eb-ace1-35f6ab2de215/1517507756845+%281%29.jpg?format=100w" alt="Maria Khokhlova" loading="lazy" />
+              <div class="bn-intake-testimonial-body">
+                <p class="bn-intake-testimonial-quote">"Bearhug helped us hire damn great department heads who've all built strong teams. We're growing 10% MoM and have expanded into 30 states!"</p>
+                <p class="bn-intake-testimonial-attr">Maria Khokhlova, Co-founder of TraceAir</p>
+              </div>
+            </div>
+            <div class="bn-intake-testimonial-card">
+              <img class="bn-intake-testimonial-avatar" src="https://images.squarespace-cdn.com/content/v1/6617fdf695e57356285dfdbc/04744f26-09dd-4b50-8742-2c8f18e08436/1675709069868.jpg?format=100w" alt="Ryan Alshak" loading="lazy" />
+              <div class="bn-intake-testimonial-body">
+                <p class="bn-intake-testimonial-quote">"Bearhug's a N of 1 at what they do. Any early or growth-stage startup with go-to-market hiring would be very lucky to work with them."</p>
+                <p class="bn-intake-testimonial-attr">Ryan Alshak, CEO of Laurel</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!--
         Sticky-bar sentinel. The window-scroll listener in initStickyBar
         doesn't fire reliably inside Squarespace's embedded scroll container,
@@ -2126,6 +2202,10 @@ if (!window.gtag) {
         scroll fallback.
       -->
       <div id="bn-sticky-sentinel" aria-hidden="true" style="height:1px;width:1px;opacity:0;pointer-events:none;"></div>
+
+      <section class="bn-block">
+        <p style="font-family:var(--ff-body);font-size:15px;line-height:1.7;color:var(--ink);margin:0;opacity:0.85;">Below is a curated cross-section of our deeply vetted network. Executives and emerging leaders across consumer and B2B, each profiled by what they've built, the value they bring, and the relationships they carry. Every person is either actively looking or open to the right conversation. Names stay protected until both sides want to connect. Interact with the clusters on the map or use the search bar and filters to sort profiles.</p>
+      </section>
 
       <!-- 9. Network selector (equal 50/50) -->
       <section class="bn-block bn-net-selector">
@@ -2259,17 +2339,7 @@ if (!window.gtag) {
         </div>
       </section>
 
-      <!-- 8. Grand Slam (plain bordered white card) -->
-      <section class="bn-block">
-        <div class="bn-grand-slam-card">
-          <h3>When browsing turns into a full search process</h3>
-          <p class="bn-gs-body">While 1-off intros may get the job done, often times a full search process is required. Every Bearhug search engagement includes a complimentary Structural Growth Review where we'll map your leadership team against the leadership benchmark we've developed over 30 years of category-specific searches. You'll walk away with a concrete 90-day Topgrading and sequencing recommendation whether you engage us for a formal search or not. When you do, every search includes a comp benchmarking deck for the role and a qualified shortlist delivered in 21 days, along with the following guarantee that should give you total certainty we can help you get the job done:</p>
-          <p class="bn-gs-guarantee">If we can't present a candidate worth interviewing in 30 days, we will cut you a check for $10,000 and keep working until we do.</p>
-        </div>
-      </section>
-
-
-      <!-- How the flywheel works (below Grand Slam) -->
+      <!-- How the flywheel works -->
       <section class="bn-block">
         <h3 class="bn-howit-heading">How the <em>flywheel</em> benefits you and the people counting on you</h3>
             <div class="bn-howit-list">
@@ -2279,79 +2349,12 @@ if (!window.gtag) {
         </div>
       </section>
 
-      <!-- Social proof testimonial cards (Maria + Ryan, side by side) — copied
-           verbatim from /join-network so styling stays identical on both pages. -->
+      <!-- 8. Grand Slam (plain bordered white card) -->
       <section class="bn-block">
-        <style>
-        /* Width + spacing inherit from the enclosing .bn-container and
-           .bn-block ~ .bn-block sibling rule. Do NOT re-apply max-width or
-           padding here — that double-wraps the section and shrinks the
-           cards to ~95% of the flywheel section above. */
-        .bn-intake-testimonial {
-          width: 100%;
-          margin: 0;
-        }
-        .bn-intake-testimonial-grid {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 16px;
-        }
-        .bn-intake-testimonial-card {
-          display: flex;
-          align-items: flex-start;
-          gap: 16px;
-          padding: 22px 24px;
-          background-color: var(--card-bg);
-          border: 1px solid rgba(184,150,62,0.18);
-          border-radius: 12px;
-        }
-        .bn-intake-testimonial-avatar {
-          width: 52px; height: 52px;
-          border-radius: 50%;
-          border: 2px solid #B8963E;
-          object-fit: cover;
-          flex-shrink: 0;
-          background-color: #ddd;
-        }
-        .bn-intake-testimonial-body { flex: 1; min-width: 0; }
-        .bn-intake-testimonial-quote {
-          font-family: 'DM Sans', sans-serif;
-          font-style: italic;
-          font-size: 15px;
-          color: #0E0E0E;
-          line-height: 1.55;
-          margin: 0 0 10px;
-        }
-        .bn-intake-testimonial-attr {
-          font-family: 'DM Sans', sans-serif;
-          font-size: 13px;
-          font-weight: 600;
-          color: #B8963E;
-          margin: 0;
-        }
-        @media (max-width: 600px) {
-          /* Container already provides side padding on mobile. */
-          .bn-intake-testimonial-grid { grid-template-columns: 1fr; }
-          .bn-intake-testimonial-card { flex-direction: column; align-items: center; text-align: center; }
-        }
-        </style>
-        <div class="bn-intake-testimonial">
-          <div class="bn-intake-testimonial-grid">
-            <div class="bn-intake-testimonial-card">
-              <img class="bn-intake-testimonial-avatar" src="https://images.squarespace-cdn.com/content/v1/6617fdf695e57356285dfdbc/15f6891b-4060-40eb-ace1-35f6ab2de215/1517507756845+%281%29.jpg?format=100w" alt="Maria Khokhlova" loading="lazy" />
-              <div class="bn-intake-testimonial-body">
-                <p class="bn-intake-testimonial-quote">"Bearhug helped us hire damn great department heads who've all built strong teams. We're growing 10% MoM and have expanded into 30 states!"</p>
-                <p class="bn-intake-testimonial-attr">Maria Khokhlova, Co-founder of TraceAir</p>
-              </div>
-            </div>
-            <div class="bn-intake-testimonial-card">
-              <img class="bn-intake-testimonial-avatar" src="https://images.squarespace-cdn.com/content/v1/6617fdf695e57356285dfdbc/04744f26-09dd-4b50-8742-2c8f18e08436/1675709069868.jpg?format=100w" alt="Ryan Alshak" loading="lazy" />
-              <div class="bn-intake-testimonial-body">
-                <p class="bn-intake-testimonial-quote">"Bearhug's a N of 1 at what they do. Any early or growth-stage startup with go-to-market hiring would be very lucky to work with them."</p>
-                <p class="bn-intake-testimonial-attr">Ryan Alshak, CEO of Laurel</p>
-              </div>
-            </div>
-          </div>
+        <div class="bn-grand-slam-card">
+          <h3>When browsing turns into a full search process</h3>
+          <p class="bn-gs-body">While 1-off intros may get the job done, often times a full search process is required. Every Bearhug search engagement includes a complimentary Structural Growth Review where we'll map your leadership team against the leadership benchmark we've developed over 30 years of category-specific searches. You'll walk away with a concrete 90-day Topgrading and sequencing recommendation whether you engage us for a formal search or not. When you do, every search includes a comp benchmarking deck for the role and a qualified shortlist delivered in 21 days, along with the following guarantee that should give you total certainty we can help you get the job done:</p>
+          <p class="bn-gs-guarantee">If we can't present a candidate worth interviewing in 30 days, we will cut you a check for $10,000 and keep working until we do.</p>
         </div>
       </section>
 
@@ -3387,7 +3390,7 @@ if (!window.gtag) {
       }
     }
     html += '<div class="bn-card-meta">' + fns + (displayRegion ? ' &middot; ' + displayRegion : '') + '</div>';
-    html += '<p class="bn-card-expanded-label">The Hook</p>';
+    html += '<p class="bn-card-expanded-label">Why You Should Care</p>';
     html += '<p class="bn-card-summary clamped" id="summary-' + profile.id + '">' + (profile.summary || '') + '</p>';
 
     // Expanded content (hidden by default)
@@ -3427,41 +3430,24 @@ if (!window.gtag) {
     var clickedToggle = document.getElementById('toggle-' + id);
     var clickedCard = clickedToggle && clickedToggle.closest('.bn-card');
     var clickedExpanded = document.getElementById('expanded-' + id);
-    if (!clickedCard || !clickedExpanded) return;
+    var summary = document.getElementById('summary-' + id);
+    if (!clickedCard || !clickedExpanded || !summary) return;
 
     var willExpand = clickedExpanded.style.display === 'none';
 
-    var grid = document.getElementById('bn-grid');
-    if (!grid) return;
-    var rowTop = clickedCard.offsetTop;
-    var allCards = grid.querySelectorAll('.bn-card');
-    var rowCards = [];
-    for (var i = 0; i < allCards.length; i++) {
-      if (allCards[i].offsetTop === rowTop) rowCards.push(allCards[i]);
-    }
-
-    for (var j = 0; j < rowCards.length; j++) {
-      var card = rowCards[j];
-      var expandedEl = card.querySelector('[id^="expanded-"]');
-      if (!expandedEl) continue;
-      var cardId = expandedEl.id.replace(/^expanded-/, '');
-      var summary = document.getElementById('summary-' + cardId);
-      var toggle = document.getElementById('toggle-' + cardId);
-      if (!summary || !toggle) continue;
-      if (willExpand) {
-        summary.classList.remove('clamped');
-        expandedEl.style.display = 'block';
-        toggle.innerHTML = 'Show less &#x2191;';
-      } else {
-        summary.classList.add('clamped');
-        expandedEl.style.display = 'none';
-        toggle.innerHTML = 'Read full profile &#x2193;';
-      }
+    if (willExpand) {
+      summary.classList.remove('clamped');
+      clickedExpanded.style.display = 'block';
+      clickedToggle.innerHTML = 'Show less &#x2191;';
+    } else {
+      summary.classList.add('clamped');
+      clickedExpanded.style.display = 'none';
+      clickedToggle.innerHTML = 'Read full profile &#x2193;';
     }
 
     if (willExpand) bnTrack('profile_expanded', {
       profile_id: id,
-      row_size: rowCards.length,
+      row_size: 1,
       card_function: clickedCard.dataset.function || '',
       card_expertise: clickedCard.dataset.expertise || '',
       card_person_type: clickedCard.dataset.personType || '',
