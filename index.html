@@ -3435,19 +3435,34 @@ if (!window.gtag) {
 
     var willExpand = clickedExpanded.style.display === 'none';
 
-    if (willExpand) {
-      summary.classList.remove('clamped');
-      clickedExpanded.style.display = 'block';
-      clickedToggle.innerHTML = 'Show less &#x2191;';
-    } else {
-      summary.classList.add('clamped');
-      clickedExpanded.style.display = 'none';
-      clickedToggle.innerHTML = 'Read full profile &#x2193;';
-    }
+    // Find all cards in the same grid row by matching offsetTop
+    var grid = clickedCard.closest('#bn-grid');
+    var allCards = grid ? Array.from(grid.querySelectorAll('.bn-card')) : [clickedCard];
+    var clickedTop = clickedCard.offsetTop;
+    var rowCards = allCards.filter(function(c) { return c.offsetTop === clickedTop; });
+
+    rowCards.forEach(function(card) {
+      var toggleEl = card.querySelector('[id^="toggle-"]');
+      if (!toggleEl) return;
+      var cid = toggleEl.id.replace('toggle-', '');
+      var expanded = document.getElementById('expanded-' + cid);
+      var cardSummary = document.getElementById('summary-' + cid);
+      var toggle = document.getElementById('toggle-' + cid);
+      if (!expanded || !cardSummary || !toggle) return;
+      if (willExpand) {
+        cardSummary.classList.remove('clamped');
+        expanded.style.display = 'block';
+        toggle.innerHTML = 'Show less &#x2191;';
+      } else {
+        cardSummary.classList.add('clamped');
+        expanded.style.display = 'none';
+        toggle.innerHTML = 'Read full profile &#x2193;';
+      }
+    });
 
     if (willExpand) bnTrack('profile_expanded', {
       profile_id: id,
-      row_size: 1,
+      row_size: rowCards.length,
       card_function: clickedCard.dataset.function || '',
       card_expertise: clickedCard.dataset.expertise || '',
       card_person_type: clickedCard.dataset.personType || '',
