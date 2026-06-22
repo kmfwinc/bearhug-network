@@ -633,8 +633,12 @@ if (!window.gtag) {
     text-decoration: none;
     color: inherit;
     display: flex; flex-direction: column; gap: 6px;
-    transition: background-color 0.2s, border-color 0.2s;
+    transition: background-color 0.2s, border-color 0.2s, transform 0.2s ease, box-shadow 0.2s ease;
     cursor: pointer;
+  }
+  .bn-net-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.12);
   }
   .bn-net-card.active {
     padding-left: 24px;
@@ -1597,11 +1601,11 @@ if (!window.gtag) {
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    transition: box-shadow 0.3s ease, transform 0.3s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
   }
   .bn-card:hover {
-    box-shadow: 0 6px 24px rgba(14,14,14,0.07);
-    transform: translateY(-2px);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.12);
   }
   .bn-card-bar { height: 3px; }
   .bn-card-body { padding: 20px 20px 0; flex: 1; }
