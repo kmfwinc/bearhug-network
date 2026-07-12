@@ -6168,9 +6168,29 @@ if (!window.gtag) {
   /* ==============================================
      INIT
      ============================================== */
+  // Prepend FUNCTION_ICONS to the Function filter dropdown options. Runs
+  // once on page load, before loadData/initPage, so option.value stays the
+  // plain function name (filtering unaffected) while option.textContent
+  // gets the icon for display. "All Functions" has no icon, so it is
+  // untouched.
+  function applyFunctionIcons() {
+    var fnSelect = document.getElementById('bn-filter-fn');
+    if (!fnSelect) return;
+    for (var i = 0; i < fnSelect.options.length; i++) {
+      var opt = fnSelect.options[i];
+      if (FUNCTION_ICONS[opt.value]) {
+        opt.textContent = FUNCTION_ICONS[opt.value] + ' ' + opt.value;
+      }
+    }
+  }
+
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', loadData);
+    document.addEventListener('DOMContentLoaded', function() {
+      applyFunctionIcons();
+      loadData();
+    });
   } else {
+    applyFunctionIcons();
     loadData();
   }
 
