@@ -857,8 +857,8 @@ if (!window.gtag) {
     color: #D5D0C7;
   }
   .bn-dark-cta-muted:hover {
-    border-color: #6B665E;
-    color: #fff;
+    border-color: var(--gold);
+    color: var(--gold);
   }
   .bn-dark-cta-icon {
     width: 20px;
@@ -2246,19 +2246,19 @@ if (!window.gtag) {
             <div class="bn-filter-group">
               <label class="bn-filter-label">Function</label>
               <select class="bn-filter-select" id="bn-filter-fn">
-                <option>All Functions</option>
-                <option>General Management</option>
-                <option>Sales and Commercial</option>
-                <option>Marketing and Brand</option>
-                <option>Finance and Strategy</option>
-                <option>Product and Design</option>
-                <option>Operations and Supply Chain</option>
-                <option>Digital and Ecommerce</option>
-                <option>Engineering and Technology</option>
-                <option>People and Culture</option>
-                <option>Data and Analytics</option>
-                <option>Customer Success and Support</option>
-                <option>Legal Compliance and Security</option>
+                <option value="All Functions">All Functions</option>
+                <option value="General Management">🏢 General Management</option>
+                <option value="Sales and Commercial">📈 Sales and Commercial</option>
+                <option value="Marketing and Brand">🎯 Marketing and Brand</option>
+                <option value="Finance and Strategy">💰 Finance and Strategy</option>
+                <option value="Product and Design">🛠️ Product and Design</option>
+                <option value="Operations and Supply Chain">⚙️ Operations and Supply Chain</option>
+                <option value="Digital and Ecommerce">🖥️ Digital and Ecommerce</option>
+                <option value="Engineering and Technology">💻 Engineering and Technology</option>
+                <option value="People and Culture">👥 People and Culture</option>
+                <option value="Data and Analytics">📊 Data and Analytics</option>
+                <option value="Customer Success and Support">🤝 Customer Success and Support</option>
+                <option value="Legal Compliance and Security">⚖️ Legal Compliance and Security</option>
               </select>
             </div>
             <div class="bn-filter-group">
@@ -2353,7 +2353,7 @@ if (!window.gtag) {
             <div class="bn-howit-list">
           <div class="bn-howit-item"><span class="bn-howit-num">01</span><span class="bn-howit-text">What you see above is the freshest slice of our full database. We deliberately keep the public preview curated, reserving full database access for our retained clients and privately invited subscribers.</span></div>
           <div class="bn-howit-item"><span class="bn-howit-num">02</span><span class="bn-howit-text">Use the search bar and filters above to narrow profiles by function, expertise, or stage experience. Layer on keywords to further narrow your results. Found the right profile? Copy/Share the link to a single profile, or send your filtered results URL to the person who asked you "who do you know." You become the one with the answer, without having to spend an hour digging through LinkedIn or risking your reputation on a blind intro. Request an intro with anyone. We'll do the rest. Let our network fill the gaps in yours.</span></div>
-          <div class="bn-howit-item"><span class="bn-howit-num">03</span><span class="bn-howit-text">The more people you point here, the stronger the flywheel gets. <a href="#" onclick="event.preventDefault();bnTrack('subscribe_clicked',{page_location:'flywheel_step_03'});bnScrollToSubscribe();" style="color:var(--gold);text-decoration:underline;">Subscribe</a> for a weekly highlights reel or even better, <a href="https://www.linkedin.com/in/kraigward/" target="_blank" style="color:var(--gold);text-decoration:underline;">follow us on LinkedIn</a> so the best profiles come to you. And when browsing isn't enough and you need extra support, <a href="#" onclick="event.preventDefault();bnTrack('cant_find_clicked',{context:'flywheel_step_03'});bnOpenScreenPopup('https://cal.mixmax.com/kraigward-722/bearhug-network-inquiry?source=flywheel','flywheel_book_call');" style="color:var(--gold);text-decoration:underline;">book a call</a>. We'll open the full database and give you the white glove treatment where we'll do the matching for you personally. Let us do the heavy lifting so you don't have to.</span></div>
+          <div class="bn-howit-item"><span class="bn-howit-num">03</span><span class="bn-howit-text">The more people you point here, the stronger the flywheel gets. <a href="#" onclick="event.preventDefault();bnTrack('subscribe_clicked',{page_location:'flywheel_step_03'});bnScrollToSubscribe();" style="color:var(--ink);text-decoration:underline;">Subscribe</a> for a weekly highlights reel or even better, <a href="https://www.linkedin.com/in/kraigward/" target="_blank" style="color:var(--ink);text-decoration:underline;">follow us on LinkedIn</a> so the best profiles come to you. And when browsing isn't enough and you need extra support, <a href="#" onclick="event.preventDefault();bnTrack('cant_find_clicked',{context:'flywheel_step_03'});bnOpenScreenPopup('https://cal.mixmax.com/kraigward-722/bearhug-network-inquiry?source=flywheel','flywheel_book_call');" style="color:var(--ink);text-decoration:underline;">book a call</a>. We'll open the full database and give you the white glove treatment where we'll do the matching for you personally. Let us do the heavy lifting so you don't have to.</span></div>
         </div>
       </section>
 
@@ -2406,7 +2406,7 @@ if (!window.gtag) {
               <span class="bn-dark-practice-dot" style="background-color:#27ae60;"></span>
               Environmental &amp; DeepTech
             </div>
-            <p class="bn-dark-practice-desc">GTM, product, and finance executive search. Early- and growth-stage environmental technology and deep-tech startups. Scale-ups doing $3M to $50M+.</p>
+            <p class="bn-dark-practice-desc">GTM, product, and finance executive search. Early- and growth-stage environmental technology and deep-tech startups. Scale-ups doing $3M to $30M+.</p>
             <a class="bn-dark-practice-link" href="https://drive.google.com/file/d/1V5xut-bFge0djOZTIwTQSmA1Wq0F-J7H/view" target="_blank" rel="noopener noreferrer" onclick="bnTrack('deck_viewed',{practice:'tech'})">Practice overview &rarr;</a>
           </div>
         </div>
@@ -2472,6 +2472,20 @@ if (!window.gtag) {
     'Founder': '#8B5E3C',
     'Investor': '#5F4B8B',
     'Board Member / Advisor': '#4A6741'
+  };
+  var FUNCTION_ICONS = {
+    'Sales and Commercial': '📈',
+    'Marketing and Brand': '🎯',
+    'Product and Design': '🛠️',
+    'Digital and Ecommerce': '🖥️',
+    'Engineering and Technology': '💻',
+    'Operations and Supply Chain': '⚙️',
+    'Finance and Strategy': '💰',
+    'People and Culture': '👥',
+    'Data and Analytics': '📊',
+    'General Management': '🏢',
+    'Legal Compliance and Security': '⚖️',
+    'Customer Success and Support': '🤝'
   };
   var DISPOSITION_COLORS = {
     'Actively Looking': '#4a7c59',
@@ -3343,7 +3357,7 @@ if (!window.gtag) {
   function renderCard(profile, index) {
     var pt = (profile.person_types || ['Executive']);
     var primaryColor = PERSON_TYPE_COLORS[pt[0]] || '#2C5F7C';
-    var fns = (profile.functions || []).join(', ');
+    var fns = (profile.functions || []).map(function(f) { return (FUNCTION_ICONS[f] || '') + ' ' + f; }).join(', ');
     var expertise = (profile.channel_expertise || []);
 
     var typePills = pt.map(function(t) {
