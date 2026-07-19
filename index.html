@@ -675,6 +675,26 @@ if (!window.gtag) {
      matching the existing :not(.active) treatment of h4 and the icon. */
   .bn-net-card:not(.active) .bn-net-count { color: var(--muted-mid); }
   .bn-net-count-soon { color: var(--muted-mid); }
+  .bn-net-sample {
+    display: block;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #E8E0D4;
+    font-family: var(--ff-body);
+    font-size: 0.78rem;
+    color: #9B9590;
+    line-height: 1.5;
+  }
+  .bn-net-sample-link {
+    color: var(--gold);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    cursor: pointer;
+  }
+  .bn-net-sample-link:hover {
+    color: #B8963E;
+  }
+  .bn-net-card:not(.active) .bn-net-sample { color: #9B9590; }
   .bn-net-row {
     display: flex;
     align-items: center;
@@ -2225,7 +2245,8 @@ if (!window.gtag) {
               <h4>Our Executive Network</h4>
             </div>
             <p>Director-level and above. Proven executives who've scaled companies through the exact stage you're navigating.</p>
-            <span class="bn-net-count" id="exec-count">—</span>
+            <span class="bn-net-count" id="exec-count">&#8212;</span>
+            <span class="bn-net-sample">This is a public sample. <span class="bn-net-sample-link" onclick="event.preventDefault();event.stopPropagation();bnTrack('sample_book_call',{context:'network_tile'});bnOpenScreenPopup('https://cal.mixmax.com/kraigward-722/bearhug-network-inquiry?source=network_tile','network_tile_book_call');">Book a call</span> for full network access.</span>
           </a>
           <a class="bn-net-card" id="toggle-emerging" href="#" onclick="switchNetwork('emerging');return false;">
             <span class="bn-net-badge">Viewing</span>
@@ -2234,7 +2255,8 @@ if (!window.gtag) {
               <h4>Our Emerging Leaders Network</h4>
             </div>
             <p>Manager and individual contributor. The next generation of functional leaders, earlier in their career and ready to step up.</p>
-            <span class="bn-net-count" id="emerging-count">—</span>
+            <span class="bn-net-count" id="emerging-count">&#8212;</span>
+            <span class="bn-net-sample">This is a public sample. <span class="bn-net-sample-link" onclick="event.preventDefault();event.stopPropagation();bnTrack('sample_book_call',{context:'network_tile'});bnOpenScreenPopup('https://cal.mixmax.com/kraigward-722/bearhug-network-inquiry?source=network_tile','network_tile_book_call');">Book a call</span> for full network access.</span>
           </a>
         </div>
       </section>
