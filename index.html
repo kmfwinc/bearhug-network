@@ -1097,6 +1097,23 @@ if (!window.gtag) {
     transition: background-color 0.2s;
   }
   .bn-sub-popup-btn:hover { background-color: var(--gold); }
+  /* Side toggle inside the subscribe popup. Borrows the .bn-screen-option /
+     .bn-screen-radio look from the intro screening popup but keeps its own
+     wrapper so the two popups don't share layout rules. */
+  .bn-sub-popup-toggle {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 18px;
+  }
+  /* Subscribe stays inert until a side is chosen. pointer-events:none means the
+     onclick cannot fire at all, so the disabled state is enforced visually and
+     functionally by the same rule. */
+  .bn-sub-popup-btn.is-disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+  .bn-sub-popup-toggle.bn-toggle-error .bn-screen-option { border-color: #c44; }
 
   /* -- Intro Screening Popup -- */
   .bn-screen-popup {
@@ -1881,9 +1898,19 @@ if (!window.gtag) {
         <p class="bn-sub-popup-kicker">The Weekly Fish &amp; Dish</p>
         <h3 class="bn-sub-popup-title">See who joined before anyone else</h3>
         <p class="bn-sub-popup-text">Every week we send a short highlights reel of the newest profiles added to the network. One email, no spam. You'll know exactly when to check back and who's worth requesting an introduction to.</p>
+        <div class="bn-sub-popup-toggle" id="bn-sub-popup-toggle">
+          <div class="bn-screen-option" onclick="bnSelectSubSide(this, 'supply-side')">
+            <div class="bn-screen-radio"><div class="bn-screen-radio-dot"></div></div>
+            I'm a leader open to new opportunities
+          </div>
+          <div class="bn-screen-option" onclick="bnSelectSubSide(this, 'demand-side')">
+            <div class="bn-screen-radio"><div class="bn-screen-radio-dot"></div></div>
+            I'm hiring or investing
+          </div>
+        </div>
         <div class="bn-sub-popup-form">
           <input type="email" class="bn-sub-popup-input" id="bn-sub-popup-email" placeholder="your@email.com" />
-          <button class="bn-sub-popup-btn" onclick="bnSubscribe('popup')">Subscribe</button>
+          <button class="bn-sub-popup-btn is-disabled" id="bn-sub-popup-btn" onclick="bnSubscribe('popup')">Subscribe</button>
         </div>
       </div>
       <div id="bn-sub-popup-success-state" style="display:none;text-align:center;padding:10px 0;">
@@ -1929,7 +1956,7 @@ if (!window.gtag) {
       <span class="bn-sticky-sub-text">New profiles added daily. The <em>Fish &amp; Dish</em> lands every Wednesday &gt;&gt;&gt;</span>
       <div class="bn-sticky-sub-form" id="bn-sticky-sub-form">
         <input type="email" class="bn-sticky-sub-input" id="bn-sticky-email" placeholder="your@email.com" />
-        <button class="bn-sticky-sub-btn" onclick="bnSubscribe('sticky')">Subscribe &rarr;</button>
+        <button class="bn-sticky-sub-btn" onclick="bnOpenSubPopupFromSticky()">Subscribe &rarr;</button>
       </div>
       <div id="bn-sticky-sub-success" style="display:none;">
         <span class="bn-sticky-sub-success">You're in. We'll be in touch.</span>
@@ -2633,25 +2660,62 @@ if (!window.gtag) {
 
   var bnAlreadySubscribed = bnGetCookie('bn_subscribed') === '1';
 
+  // Which side of the network the subscriber picked in the popup toggle.
+  // Empty until they choose. There is deliberately no default: an unchosen
+  // value would have to guess, and guessing wrong routes someone into the
+  // wrong newsletter audience.
+  var bnSubSide = '';
+
+  window.bnSelectSubSide = function(el, side) {
+    bnSubSide = side;
+    // Scoped to the subscribe popup's own container. A bare
+    // querySelectorAll('.bn-screen-option') would also match the intro
+    // screening popup's four options, which share the same class.
+    var opts = document.querySelectorAll('#bn-sub-popup-toggle .bn-screen-option');
+    for (var i = 0; i < opts.length; i++) opts[i].classList.remove('selected');
+    el.classList.add('selected');
+    var toggle = document.getElementById('bn-sub-popup-toggle');
+    if (toggle) toggle.classList.remove('bn-toggle-error');
+    var btn = document.getElementById('bn-sub-popup-btn');
+    if (btn) btn.classList.remove('is-disabled');
+  };
+
+  // The sticky bar no longer submits. It collects an email and hands off to the
+  // popup, because the side toggle lives there and a subscribe without a side
+  // would land untagged. Untagged is not a neutral state on the Beehiiv side.
+  window.bnOpenSubPopupFromSticky = function() {
+    var stickyEmail = (document.getElementById('bn-sticky-email').value || '').trim();
+    var popupEmail = document.getElementById('bn-sub-popup-email');
+    if (stickyEmail && popupEmail) popupEmail.value = stickyEmail;
+    document.getElementById('bn-sticky-sub').classList.remove('visible');
+    document.getElementById('bn-sub-popup').style.display = 'flex';
+    window.bnLastSubscribeTrigger = 'sticky';
+    bnTrack('subscribe_popup_opened', { trigger: 'sticky' });
+    bnSubInteracted = true;
+    setTimeout(function() {
+      if (popupEmail && !popupEmail.value) popupEmail.focus();
+    }, 100);
+  };
+
   window.bnSubscribe = function(source) {
-    var emailEl, formEl, successEl;
-    if (source === 'popup') {
-      emailEl = document.getElementById('bn-sub-popup-email');
-      formEl = document.getElementById('bn-sub-popup-form-state');
-      successEl = document.getElementById('bn-sub-popup-success-state');
-    } else if (source === 'sticky') {
-      emailEl = document.getElementById('bn-sticky-email');
-      formEl = document.getElementById('bn-sticky-sub-form');
-      successEl = document.getElementById('bn-sticky-sub-success');
-    } else {
-      // The inline subscribe block was removed in an earlier revision; the
-      // bn-inline-email / bn-inline-subscribe-form / bn-inline-subscribe-success
-      // IDs no longer exist. Only 'popup' and 'sticky' are valid sources today.
-      // Any other source is a caller bug — log and bail rather than calling
-      // getElementById on a missing node and dereferencing null below.
+    // The sticky bar used to submit directly and the inline block before it.
+    // Both paths are gone. 'popup' is the only surface that carries the side
+    // toggle, so it is the only valid source. Anything else is a caller bug —
+    // log and bail rather than dereferencing a missing node below.
+    if (source !== 'popup') {
       console.warn('Unknown subscribe source: ' + source);
       return;
     }
+    var emailEl = document.getElementById('bn-sub-popup-email');
+    var formEl = document.getElementById('bn-sub-popup-form-state');
+    var successEl = document.getElementById('bn-sub-popup-success-state');
+
+    if (!bnSubSide) {
+      var toggleEl = document.getElementById('bn-sub-popup-toggle');
+      if (toggleEl) toggleEl.classList.add('bn-toggle-error');
+      return;
+    }
+
     var email = (emailEl.value || '').trim();
     if (!email || email.indexOf('@') === -1) {
       emailEl.style.borderColor = '#c44';
@@ -2661,7 +2725,8 @@ if (!window.gtag) {
 
     // Immediate visual feedback while the no-cors fetch is in flight.
     // `formEl.querySelector('button')` finds the subscribe button inside the
-    // popup (bn-sub-popup-btn) or sticky (bn-sticky-sub-btn) container.
+    // popup form-state container. The toggle options above it are divs, so the
+    // subscribe button is still the first button descendant.
     var submitBtn = formEl.querySelector('button');
     if (submitBtn) {
       submitBtn.textContent = 'Subscribing...';
@@ -2674,6 +2739,7 @@ if (!window.gtag) {
       headers: { 'Content-Type': 'text/plain' },
       body: JSON.stringify({
         email: email,
+        tag: bnSubSide,
         utm_source: 'bearhug_network',
         utm_medium: 'web',
         utm_campaign: source
@@ -2686,23 +2752,15 @@ if (!window.gtag) {
       bnSubInteracted = true;
       bnTrack('subscribe_completed', {
         page_location: source,
-        trigger: window.bnLastSubscribeTrigger || ''
+        trigger: window.bnLastSubscribeTrigger || '',
+        side: bnSubSide
       });
-      // Sticky bar hide rules:
-      //   - source === 'sticky' → user subscribed from the bottom bar itself.
-      //     The form is now hidden and the success message is showing inside
-      //     the bar. Give them 3s to register the success before dismissing.
-      //   - source !== 'sticky' (popup, etc.) → the popup already owns the
-      //     screen with its own success state, so hide any visible sticky
-      //     immediately to avoid double-confirmation.
+      // The popup owns the screen and shows its own success state, so hide any
+      // visible sticky bar immediately to avoid double-confirmation. The old
+      // 3s delayed-hide branch was for the sticky bar's own inline success
+      // message, which no longer exists now that sticky hands off to the popup.
       var stickyEl = document.getElementById('bn-sticky-sub');
-      if (source === 'sticky') {
-        setTimeout(function() {
-          if (stickyEl) stickyEl.classList.remove('visible');
-        }, 3000);
-      } else {
-        if (stickyEl) stickyEl.classList.remove('visible');
-      }
+      if (stickyEl) stickyEl.classList.remove('visible');
       stickyDismissed = true;
     }).catch(function(err) {
       // Network-level failure (DNS, offline, fetch rejected before reaching
@@ -6074,7 +6132,10 @@ if (!window.gtag) {
     pendingIntroUrl = enrichedUrl;
     pendingIntroProfileId = profileId;
     selectedIntent = '';
-    var options = document.querySelectorAll('.bn-screen-option');
+    // Scoped to #bn-screen-options. The subscribe popup's side toggle reuses
+    // .bn-screen-option for its look, so an unscoped query here would clear
+    // that selection too and silently desync it from bnSubSide.
+    var options = document.querySelectorAll('#bn-screen-options .bn-screen-option');
     for (var i = 0; i < options.length; i++) options[i].classList.remove('selected');
     document.getElementById('bn-screen-proceed').classList.remove('active');
     document.getElementById('bn-screen-popup').style.display = 'flex';
@@ -6096,7 +6157,8 @@ if (!window.gtag) {
 
   window.bnSelectIntent = function(el, intent) {
     selectedIntent = intent;
-    var options = document.querySelectorAll('.bn-screen-option');
+    // Scoped for the same reason as bnOpenScreenPopup above.
+    var options = document.querySelectorAll('#bn-screen-options .bn-screen-option');
     for (var i = 0; i < options.length; i++) options[i].classList.remove('selected');
     el.classList.add('selected');
     document.getElementById('bn-screen-proceed').classList.add('active');
